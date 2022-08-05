@@ -1,0 +1,7 @@
+2022-08-05 at 11:46:40 | SUCCESS | [测试log] hello, world
+2022-08-05 at 11:46:40 | INFO | [测试log] hello, world
+2022-08-05 at 11:46:40 | WARNING | [测试log] hello, world
+2022-08-05 at 11:46:40 | ERROR | [测试log] hello, world
+2022-08-05 at 11:46:40 | CRITICAL | [测试log] hello, world
+2022-08-05 at 11:46:40 | ERROR | [测试log] hello, world
+NoneType: None
