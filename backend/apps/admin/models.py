@@ -16,6 +16,7 @@ from typing import Optional, Dict, Any
 import simplejson as json
 from sqlmodel import Column, JSON
 from sqlmodel import Relationship
+from pydantic import BaseModel as requestBaseModel
 
 default_application_params = "{\"app_name\": \"Capricornus\", \"app_version\": \"v2.1.5\", \"app_description\": \"REST API for RDBMS\", \"app_prefix\": \"/api/v2\", \"app_cors_origins\": \"'*'\", \"app_service_model\": \"Standalone\", \"app_param_prefix\": \"up_b_\", \"app_force_generate_meta\": true, \"app_log_level\": \"INFO\", \"app_user_func\": true, \"app_exception_detail\": true, \"app_admin_use_https\": false, \"app_confirm_key\": \"Confirmed\", \"app_http_port\": 8880, \"app_https_port\": 8843, \"app_http_timeout\": 10, \"app_load_metadat_on_load\": true, \"app_clear_metadat_on_startup\": true, \"app_clear_metadat_on_shutdown\": true}"
 default_connection_params = "{\"con_pool_size\": 20, \"con_max_overflow\": 5, \"con_pool_use_lifo\": true, \"con_pool_pre_ping\": true, \"con_pool_recycle\": 3600}"
@@ -25,6 +26,9 @@ default_admin_params = "{\"DEBUG\": true, \"SECRET_KEY\": \"bgt56yh@Passw0rd\", 
 default_security_params = "{\"security_key\": \"47051d5e3bafcfcba3c80d6d1119a7adf78d2967a8972b00af1ea231ca61f589\", \"security_algorithm\": \"HS256\", \"access_token_expire_minutes\": 30}"
 
 # Create your models here.
+class DBURIModel(requestBaseModel):
+    db_uri: str
+
 class BaseSQLModel(sqlmodel.SQLModel):
     id: int = models.Field(default=None, title='ID', primary_key=True, nullable=False)
     class Config:

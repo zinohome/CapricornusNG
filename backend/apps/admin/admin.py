@@ -10,7 +10,7 @@ from core.adminsite import site
 from starlette.requests import Request
 
 from .models import Category, DBConnection, DBConfig
-from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, Dialog, ActionType, LevelEnum
+from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
@@ -26,18 +26,6 @@ class AdminApp(admin.AdminApp):
 # Register your models here.
 
 # DBConnection Admin
-class TestConnectionAction(admin.ModelAction):
-    action = ActionType.Dialog(label=_('Test Connection'), dialog=Dialog())
-
-    async def handle(self, request: Request, item_id: List[str], data: Optional[BaseModel], session: AsyncSession,
-                     **kwargs):
-        # 从数据库获取用户选择的数据列表
-        items = await self.fetch_item_scalars(session, item_id)
-        # 执行动作处理
-        ...
-        # 返回动作处理结果
-        return BaseApiOut(data=dict(item_id=item_id, data=data, items=list(items)))
-
 class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
@@ -50,10 +38,16 @@ class DBConnectionAdmin(admin.ModelAdmin):
         if not bulk:
             drawer = c_action.drawer
             actions = []
+            api = {
+                'url':'/admin/db_connection_test',
+                'method':'post',
+                'data':{
+                    'db_uri':'${db_uri}'
+                        },
+                'cache':10000
+                    }
             actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
-            action = await self.test_connection_action.get_action(request)
-            action.label = _('Test Connection')
-            actions.append(action.copy())
+            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=api))
             actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
             drawer.actions = actions
         return c_action
@@ -62,18 +56,19 @@ class DBConnectionAdmin(admin.ModelAdmin):
         u_action = await super().get_update_action(request)
         drawer = u_action.drawer
         actions = []
+        api = {
+            'url':'/admin/db_connection_test',
+            'method':'post',
+            'data':{
+                'db_uri':'${db_uri}'
+                    },
+            'cache':10000
+                }
         actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
-        action = await self.test_connection_action.get_action(request)
-        action.label = _('Test Connection')
-        actions.append(action.copy())
+        actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=api))
         actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
         drawer.actions = actions
         return u_action
-
-    def register_router(self):
-        super().register_router()
-        # 注册动作路由
-        self.test_connection_action = TestConnectionAction(self).register_router()
 
 
 # DBConfig Admin
