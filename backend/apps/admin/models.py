@@ -34,6 +34,7 @@ class BaseSQLModel(sqlmodel.SQLModel):
     class Config:
         use_enum_values = True
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
 # DBConnection Model
@@ -69,29 +70,73 @@ class DBConnection(BaseSQLModel, table=True):
 class DBConfig(BaseSQLModel, table=True):
     __tablename__ = 'capricornus_db_config'
     dbconnection: Optional[DBConnection] = Relationship(back_populates="dbconfig")
-    application_params: Optional[str] = models.Field(index=False, default=default_application_params,
+    application_params: Optional[dict] = models.Field(index=False, default=json.loads(default_application_params),sa_column=Column(JSON),
                                                      title='ApplicationParams',
-                                                     amis_form_item=amis.Editor(language='json', allowFullscreen=False),
+                                                     amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='app_name', label='app_name'),
+                                                                                                 amis.InputText(name='app_version', label='app_version'),
+                                                                                                 amis.InputText(name='app_description', label='app_description'),
+                                                                                                 amis.InputText(name='app_prefix', label='app_prefix'),
+                                                                                                 amis.InputText(name='app_cors_origins', label='app_cors_origins'),
+                                                                                                 amis.InputText(name='app_service_model', label='app_service_model'),
+                                                                                                 amis.InputText(name='app_param_prefix', label='app_param_prefix'),
+                                                                                                 amis.InputText(name='app_force_generate_meta', label='app_force_generate_meta'),
+                                                                                                 amis.InputText(name='app_log_level', label='app_log_level'),
+                                                                                                 amis.InputText(name='app_user_func', label='app_user_func'),
+                                                                                                 amis.InputText(name='app_exception_detail', label='app_exception_detail'),
+                                                                                                 amis.InputText(name='app_admin_use_https', label='app_admin_use_https'),
+                                                                                                 amis.InputText(name='app_confirm_key', label='app_confirm_key'),
+                                                                                                 amis.InputText(name='app_http_port', label='app_http_port'),
+                                                                                                 amis.InputText(name='app_https_port', label='app_https_port'),
+                                                                                                 amis.InputText(name='app_http_timeout', label='app_http_timeout'),
+                                                                                                 amis.InputText(name='app_load_metadat_on_load', label='app_load_metadat_on_load'),
+                                                                                                 amis.InputText(name='app_clear_metadat_on_startup', label='app_clear_metadat_on_startup'),
+                                                                                                 amis.InputText(name='app_clear_metadat_on_shutdown', label='app_clear_metadat_on_shutdown')],
+                                                                            canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    connection_params: Optional[str] = models.Field(index=False, default=default_connection_params,
+    connection_params: Optional[dict] = models.Field(index=False, default=json.loads(default_connection_params),sa_column=Column(JSON),
                                                     title='ConnectionParams',
-                                                    amis_form_item=amis.Editor(language='json', allowFullscreen=False),
+                                                    amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='con_pool_size', label='con_pool_size'),
+                                                                                                 amis.InputText(name='con_max_overflow', label='con_max_overflow'),
+                                                                                                 amis.InputText(name='con_pool_use_lifo', label='con_pool_use_lifo'),
+                                                                                                 amis.InputText(name='con_pool_pre_ping', label='con_pool_pre_ping'),
+                                                                                                 amis.InputText(name='con_pool_recycle', label='con_pool_recycle')],
+                                                                            canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    schema_params: Optional[str] = models.Field(index=False, default=default_schema_params,
+    schema_params: Optional[dict] = models.Field(index=False, default=json.loads(default_schema_params),sa_column=Column(JSON),
                                                 title='SchemaParams',
-                                                amis_form_item=amis.Editor(language='json', allowFullscreen=False),
+                                                amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='schema_cache_enabled', label='schema_cache_enabled'),
+                                                                                                 amis.InputText(name='schema_model_refresh', label='schema_model_refresh'),
+                                                                                                 amis.InputText(name='schema_cache_filename', label='schema_cache_filename'),
+                                                                                                 amis.InputText(name='schema_db_metafile', label='schema_db_metafile'),
+                                                                                                 amis.InputText(name='schema_db_logicpkfile', label='schema_db_logicpkfile'),
+                                                                                                 amis.InputText(name='schema_db_logicpkneedfile', label='schema_db_logicpkneedfile'),
+                                                                                                 amis.InputText(name='schema_fetch_all_table', label='schema_fetch_all_table'),
+                                                                                                 amis.InputText(name='schema_fetch_tables', label='schema_fetch_tables')],
+                                                                            canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    query_params: Optional[str] = models.Field(index=False, default=default_query_params,
+    query_params: Optional[dict] = models.Field(index=False, default=json.loads(default_query_params),sa_column=Column(JSON),
                                                title='QueryParams',
-                                               amis_form_item=amis.Editor(language='json', allowFullscreen=False),
+                                               amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='query_limit_upset', label='query_limit_upset'),
+                                                                                                 amis.InputText(name='query_default_limit', label='query_default_limit'),
+                                                                                                 amis.InputText(name='query_default_offset', label='query_default_offset')],
+                                                                            canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    admin_params: Optional[str] = models.Field(index=False, default=default_admin_params,
+    admin_params: Optional[dict] = models.Field(index=False, default=json.loads(default_admin_params),sa_column=Column(JSON),
                                                title='AdminParams',
-                                               amis_form_item=amis.Editor(language='json', allowFullscreen=False),
+                                               amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='DEBUG', label='DEBUG'),
+                                                                                                 amis.InputText(name='SECRET_KEY', label='SECRET_KEY'),
+                                                                                                 amis.InputText(name='SESSION_COOKIE_HTTPONLY', label='SESSION_COOKIE_HTTPONLY'),
+                                                                                                 amis.InputText(name='REMEMBER_COOKIE_HTTPONLY', label='REMEMBER_COOKIE_HTTPONLY'),
+                                                                                                 amis.InputText(name='REMEMBER_COOKIE_DURATION', label='REMEMBER_COOKIE_DURATION'),
+                                                                                                 amis.InputText(name='admin_ignore_primary_key', label='admin_ignore_primary_key')],
+                                                                            canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    security_params: Optional[str] = models.Field(index=False, default=default_security_params,
+    security_params: Optional[dict] = models.Field(index=False, default=json.loads(default_security_params),sa_column=Column(JSON),
                                                   title='SecurityParams',
-                                                  amis_form_item=amis.Editor(language='json', allowFullscreen=False),
+                                                  amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='security_key', label='security_key'),
+                                                                                                 amis.InputText(name='security_algorithm', label='security_algorithm'),
+                                                                                                 amis.InputText(name='access_token_expire_minutes', label='access_token_expire_minutes')],
+                                                                            canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
 
 
