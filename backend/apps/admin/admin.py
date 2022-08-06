@@ -79,10 +79,30 @@ class DBConfigAdmin(admin.ModelAdmin):
 
     async def get_create_form(self, request: Request, bulk: bool = False) -> Form:
         c_form = await super().get_create_form(request, bulk)
+        if not bulk:
+            formtab = amis.Tabs(tabsMode='line')
+            formtab.tabs=[]
+            tbody = c_form.body.copy()
+            for item in c_form.body:
+                tlabel = item.label
+                item.label=''
+                tabitem = amis.Tabs.Item(title=tlabel,tab=item)
+                formtab.tabs.append(tabitem)
+            c_form.body=formtab
         return c_form
 
     async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
         u_form = await super().get_update_form(request)
+        if not bulk:
+            formtab = amis.Tabs(tabsMode='line')
+            formtab.tabs=[]
+            tbody = u_form.body.copy()
+            for item in u_form.body:
+                tlabel = item.label
+                item.label=''
+                tabitem = amis.Tabs.Item(title=tlabel,tab=item)
+                formtab.tabs.append(tabitem)
+            u_form.body=formtab
         return u_form
 
 class CategoryAdmin(admin.ModelAdmin):
