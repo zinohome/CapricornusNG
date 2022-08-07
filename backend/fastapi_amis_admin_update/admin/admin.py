@@ -426,6 +426,7 @@ class BaseModelAdmin(SQLModelCrud):
             return Form(
                 api=f'post:{self.router_path}/item',
                 name=CrudEnum.create,
+                mode = DisplayModeEnum.normal,
                 body=await self._conv_modelfields_to_formitems(request, fields, CrudEnum.create),
             )
         columns, keys = [], {}
@@ -448,12 +449,14 @@ class BaseModelAdmin(SQLModelCrud):
         if not bulk:
             api = f'put:{self.router_path}/item/${self.pk_name}'
             fields = self.schema_update.__fields__.values()
+            mode = DisplayModeEnum.normal
         else:
             api = f'put:{self.router_path}/item/' + '${ids|raw}'
             fields = self.bulk_update_fields
         return Form(
             api=api,
             name=CrudEnum.update,
+            mode=DisplayModeEnum.normal,
             body=await self._conv_modelfields_to_formitems(
                 request, fields, CrudEnum.update
             ),

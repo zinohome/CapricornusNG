@@ -10,7 +10,7 @@ from core.adminsite import site
 from starlette.requests import Request
 
 from .models import Category, DBConnection, DBConfig
-from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum
+from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
@@ -69,7 +69,6 @@ class DBConnectionAdmin(admin.ModelAdmin):
         actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
         drawer.actions = actions
         return u_action
-
 
 # DBConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
