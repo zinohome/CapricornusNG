@@ -32,7 +32,7 @@ async def db_connection_test(dburi: DBURIModel) -> str:
     except Exception as e:
         log.error('Database Test Connected Error !')
         traceback.print_exc()
-        return {"status":0,"msg":_("DataBase Connect Error")}
+        return {"status":1,"msg":_("DataBase Connect Error")}
 
 @router.get('/users',
          tags=["admin"],

@@ -26,28 +26,37 @@ class AdminApp(admin.AdminApp):
 # Register your models here.
 
 # DBConnection Admin
+
 class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
     model = DBConnection
     list_display = [DBConnection.id, DBConnection.db_Type, DBConnection.db_profilename, DBConnection.db_Dialect, DBConnection.db_useschema, DBConnection.db_schema]
     search_fields = [DBConnection.db_profilename]
+    test_connection_api = {
+                'url':'/admin/db_connection_test',
+                'method':'post',
+                'data':{
+                    'db_uri':'${db_uri}'
+                        },
+                'cache':30000
+                    }
+    sync_schema_api = {
+                'url':'/admin/db_connection_test',
+                'method':'post',
+                'data':{
+                    'db_uri':'${db_uri}'
+                        },
+                'cache':30000
+                    }
 
     async def get_create_action(self, request: Request, bulk: bool = False) -> Action:
         c_action = await super().get_create_action(request, bulk)
         if not bulk:
             drawer = c_action.drawer
             actions = []
-            api = {
-                'url':'/admin/db_connection_test',
-                'method':'post',
-                'data':{
-                    'db_uri':'${db_uri}'
-                        },
-                'cache':10000
-                    }
             actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
-            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=api))
+            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
             actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
             drawer.actions = actions
         return c_action
@@ -56,16 +65,9 @@ class DBConnectionAdmin(admin.ModelAdmin):
         u_action = await super().get_update_action(request)
         drawer = u_action.drawer
         actions = []
-        api = {
-            'url':'/admin/db_connection_test',
-            'method':'post',
-            'data':{
-                'db_uri':'${db_uri}'
-                    },
-            'cache':10000
-                }
         actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
-        actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=api))
+        actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
+        actions.append(ActionType.Ajax(label=_('Sync Structure'), confirmText=_('Confirm to sync all tables immediately?'), required=['db_profilename','db_uri'], level=LevelEnum.danger, api=DBConnectionAdmin.sync_schema_api))
         actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
         drawer.actions = actions
         return u_action
