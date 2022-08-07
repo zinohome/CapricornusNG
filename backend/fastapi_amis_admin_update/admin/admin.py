@@ -471,7 +471,12 @@ class BaseModelAdmin(SQLModelCrud):
                 level=LevelEnum.primary,
                 drawer=Drawer(
                     title=_('Create'),
-                    size=SizeEnum.lg,
+                    position="right",
+                    showCloseButton=False,
+                    overlay=False,
+                    closeOnOutside=True,
+                    size=SizeEnum.md,
+                    resizable=True,
                     body=await self.get_create_form(request, bulk=bulk),
                 ),
             )
@@ -481,7 +486,12 @@ class BaseModelAdmin(SQLModelCrud):
             level=LevelEnum.primary,
             drawer=Drawer(
                 title=_('Bulk Create'),
+                position="right",
+                showCloseButton=False,
+                overlay=False,
+                closeOnOutside=True,
                 size=SizeEnum.full,
+                resizable=True,
                 body=await self.get_create_form(request, bulk=bulk),
             ),
         )
@@ -496,7 +506,12 @@ class BaseModelAdmin(SQLModelCrud):
                 tooltip=_('Update'),
                 drawer=Drawer(
                     title=_('Update'),
-                    size=SizeEnum.lg,
+                    position="right",
+                    showCloseButton=False,
+                    overlay=False,
+                    closeOnOutside=True,
+                    size=SizeEnum.md,
+                    resizable=True,
                     body=await self.get_update_form(request, bulk=bulk),
                 ),
             )
@@ -506,7 +521,12 @@ class BaseModelAdmin(SQLModelCrud):
                 label=_('Bulk Update'),
                 drawer=Drawer(
                     title=_('Bulk Update'),
-                    size=SizeEnum.lg,
+                    position="right",
+                    showCloseButton=False,
+                    overlay=False,
+                    closeOnOutside=True,
+                    size=SizeEnum.md,
+                    resizable=True,
                     body=await self.get_update_form(request, bulk=True),
                 ),
             )
@@ -1143,11 +1163,15 @@ class AdminApp(PageAdmin, AdminGroup):
     async def _get_page_as_app(self, request: Request) -> App:
         app = App()
         app.brandName = self.site.settings.site_title
+        #app.header = Tpl(
+        #    className='w-full',
+        #    tpl='<div class="flex justify-between"><div></div>'
+        #        f'<div><a href="{fastapi_amis_admin.__url__}" target="_blank" '
+        #        'title="Copyright"><i class="fa fa-github fa-2x"></i></a></div></div>'
+        #)
         app.header = Tpl(
             className='w-full',
             tpl='<div class="flex justify-between"><div></div>'
-                f'<div><a href="{fastapi_amis_admin.__url__}" target="_blank" '
-                'title="Copyright"><i class="fa fa-github fa-2x"></i></a></div></div>'
         )
         # app.footer = '<div class="p-2 text-center bg-light">Copyright © 2021 - 2022  ' \
         #             f'<a href="{fastapi_amis_admin.__url__}" target="_blank" ' \

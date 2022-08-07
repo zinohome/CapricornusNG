@@ -85,7 +85,7 @@ class DBConfigAdmin(admin.ModelAdmin):
             tbody = c_form.body.copy()
             for item in c_form.body:
                 tlabel = item.label
-                item.label=''
+                item.label=False
                 tabitem = amis.Tabs.Item(title=tlabel,tab=item)
                 formtab.tabs.append(tabitem)
             c_form.body=formtab
@@ -99,7 +99,7 @@ class DBConfigAdmin(admin.ModelAdmin):
             tbody = u_form.body.copy()
             for item in u_form.body:
                 tlabel = item.label
-                item.label=''
+                item.label=False
                 tabitem = amis.Tabs.Item(title=tlabel,tab=item)
                 formtab.tabs.append(tabitem)
             u_form.body=formtab
