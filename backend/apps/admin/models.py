@@ -57,11 +57,14 @@ class DBConnection(BaseSQLModel, table=True):
     __tablename__ = 'capricornus_db_connection'
     db_profilename: str = models.Field(
         title='Profile',
+        max_length=100,
         sa_column=sqlmodel.Column(sqlmodel.String(100), unique=True, index=True, nullable=False)
     )
     db_Type: DataBaseType = models.Field(DataBaseType.mysql, title='Type')
     db_Dialect: DataBaseDialect = models.Field(DataBaseDialect.aiomysql, title='Dialect')
-    db_uri: str = models.Field(default='', title='URI', max_length=256, amis_form_item=amis.InputText(placeholder='mysql+aiomysql://root:bgt56yhn@127.0.0.1:3306/capricornus?charset=utf8mb4'))
+    db_uri: str = models.Field(title='URI', max_length=256,
+                               sa_column=sqlmodel.Column(sqlmodel.String(256), unique=False, index=False, nullable=False),
+                               amis_form_item=amis.InputText(placeholder='mysql+aiomysql://root:bgt56yhn@127.0.0.1:3306/capricornus?charset=utf8mb4'))
     db_useschema: bool = models.Field(None, title='UseSchema')
     db_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256, amis_form_item=amis.InputText())
     db_exclude_tablespaces: Optional[str] = models.Field(default='', title='ExcludedTableSpace', max_length=256, amis_form_item=amis.InputText())

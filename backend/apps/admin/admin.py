@@ -5,12 +5,15 @@ from fastapi_amis_admin.admin import AdminApp
 from fastapi_amis_admin.crud import BaseApiOut
 from pydantic import BaseModel
 from sqlmodel.ext.asyncio.session import AsyncSession
-
+try:
+    import ujson as json
+except ImportError:
+    import json
 from core.adminsite import site
 from starlette.requests import Request
 
 from .models import Category, DBConnection, DBConfig
-from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum
+from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
@@ -57,7 +60,18 @@ class DBConnectionAdmin(admin.ModelAdmin):
             actions = []
             actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
             actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
-            actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
+            submitaction = Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary)
+            subactionlist = []
+            subactionlist.append(
+                amis.Event(actionType='submit',preventDefault=True))
+            subactionlist.append(
+                amis.Event(actionType='toast',args={'msgType':'success','msg':'test','position':'top-right'},
+                           preventDefault=True))
+            submitaction.onEvent = {}
+            submitaction.onEvent['click']={'actions':subactionlist}
+            log.debug(submitaction)
+            log.debug(submitaction.amis_json())
+            actions.append(submitaction)
             drawer.actions = actions
         return c_action
 
@@ -72,11 +86,53 @@ class DBConnectionAdmin(admin.ModelAdmin):
         drawer.actions = actions
         return u_action
 
+    async def get_list_table(self, request: Request) -> TableCRUD:
+        list_table = await super().get_list_table(request)
+        headerToolbar = list_table.headerToolbar
+        for action in headerToolbar:
+            if isinstance(action, amis.components.ActionType.Drawer):
+                if action.label==_('Bulk Create'):
+                    action.hidden = True
+                '''
+                if action.label==_('Create'):
+                    for formaction in action.drawer.actions:
+                        if formaction.label==_('Submit'):
+                            #log.debug(formaction)
+                            submitevent = amis.Event(actionType='toast')
+                            formaction.onEvent={'submitSucc':
+                                                    {'actions':
+                                                         [
+                                                             {'actionType':'toast',
+                                                              'args':{
+                                                                  'msgType':'success',
+                                                                  'msg':'test',
+                                                                  'position':'top'
+                                                                },
+                                                              'preventDefault':True
+                                                              }
+                                                         ]
+                                                     }
+                                                }
+                            formaction.onEvent = {'submitSucc':submitevent}
+                        #log.debug(formaction)
+                '''
+        return list_table
+
+
 # DBConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Config', icon='fa fa-wrench')
     model = DBConfig
+
+    async def get_list_table(self, request: Request) -> TableCRUD:
+        list_table = await super().get_list_table(request)
+        headerToolbar = list_table.headerToolbar
+        for action in headerToolbar:
+            if isinstance(action, amis.components.ActionType.Drawer):
+                if action.label==_('Bulk Create'):
+                    action.hidden = True
+        return list_table
 
     async def get_create_form(self, request: Request, bulk: bool = False) -> Form:
         c_form = await super().get_create_form(request, bulk)
