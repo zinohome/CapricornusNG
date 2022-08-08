@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "width": 3900,
+  "height": 3900,
+  "scrollTop": 0,
+  "scrollLeft": 0,
+  "zoomLevel": 1,
+  "show": {
+    "tableComment": true,
+    "columnComment": true,
+    "columnDataType": true,
+    "columnDefault": false,
+    "columnAutoIncrement": false,
+    "columnPrimaryKey": true,
+    "columnUnique": false,
+    "columnNotNull": false,
+    "relationship": false
+  },
+  "database": "MySQL",
+  "databaseName": "",
+  "canvasType": "ERD",
+  "language": "GraphQL",
+  "tableCase": "pascalCase",
+  "columnCase": "camelCase",
+  "setting": {
+    "relationshipDataTypeSync": true,
+    "columnOrder": [
+      "columnName",
+      "columnDataType",
+      "columnNotNull",
+      "columnUnique",
+      "columnAutoIncrement",
+      "columnDefault",
+      "columnComment"
+    ]
+  }
+}
