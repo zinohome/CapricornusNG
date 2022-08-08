@@ -68,7 +68,7 @@ class DBConnection(BaseSQLModel, table=True):
     db_useschema: bool = models.Field(None, title='UseSchema')
     db_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256, amis_form_item=amis.InputText())
     db_exclude_tablespaces: Optional[str] = models.Field(default='', title='ExcludedTableSpace', max_length=256, amis_form_item=amis.InputText())
-    db_conf_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_config.id", title='Config')
+    db_conf_id: int = models.Field(title='Config', nullable=False, foreign_key="capricornus_db_config.id")
     dbconfig: Optional["DBConfig"] = Relationship(back_populates="dbconnection")
 
 # DBConfig Model
