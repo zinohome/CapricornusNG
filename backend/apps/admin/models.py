@@ -55,8 +55,8 @@ class DataBaseDialect(TextChoices):
 
 class DBConnection(BaseSQLModel, table=True):
     __tablename__ = 'capricornus_db_connection'
-    db_profilename: str = models.Field(
-        title='Profile',
+    name: str = models.Field(
+        title='ConnectName',
         max_length=100,
         sa_column=sqlmodel.Column(sqlmodel.String(100), unique=True, index=True, nullable=False)
     )
@@ -74,6 +74,11 @@ class DBConnection(BaseSQLModel, table=True):
 # DBConfig Model
 class DBConfig(BaseSQLModel, table=True):
     __tablename__ = 'capricornus_db_config'
+    name: str = models.Field(
+        title='ConfigName',
+        max_length=100,
+        sa_column=sqlmodel.Column(sqlmodel.String(100), unique=True, index=True, nullable=False)
+    )
     dbconnection: Optional[DBConnection] = Relationship(back_populates="dbconfig")
     application_params: Optional[dict] = models.Field(index=False, default=json.loads(default_application_params),sa_column=Column(JSON),
                                                      title='ApplicationParams',

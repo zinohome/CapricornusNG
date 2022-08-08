@@ -5,6 +5,8 @@ from fastapi_amis_admin.admin import AdminApp
 from fastapi_amis_admin.crud import BaseApiOut
 from pydantic import BaseModel
 from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlmodel.sql.expression import Select
+
 try:
     import ujson as json
 except ImportError:
@@ -34,8 +36,8 @@ class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
     model = DBConnection
-    list_display = [DBConnection.id, DBConnection.db_Type, DBConnection.db_profilename, DBConnection.db_Dialect, DBConnection.db_useschema, DBConnection.db_schema]
-    search_fields = [DBConnection.db_profilename]
+    list_display = [DBConnection.id, DBConnection.db_Type, DBConnection.name, DBConnection.db_Dialect, DBConnection.db_useschema, DBConnection.db_schema, DBConfig.name]
+    search_fields = [DBConnection.name, DBConfig.name]
     test_connection_api = {
                 'url':'/admin/db_connection_test',
                 'method':'post',
@@ -86,11 +88,16 @@ class DBConnectionAdmin(admin.ModelAdmin):
             drawer.actions = actions
         return u_action
 
+    async def get_select(self, request: Request) -> Select:
+        sel = await super().get_select(request)
+        return sel.join(DBConfig, isouter=True)
+
 # DBConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Config', icon='fa fa-wrench')
     model = DBConfig
+    search_fields = [DBConfig.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
