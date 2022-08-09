@@ -475,7 +475,7 @@ class BaseModelAdmin(SQLModelCrud):
                 drawer=Drawer(
                     title=_('Create'),
                     position="right",
-                    showCloseButton=False,
+                    showCloseButton=True,
                     overlay=False,
                     closeOnOutside=False,
                     size=SizeEnum.md,
@@ -490,7 +490,7 @@ class BaseModelAdmin(SQLModelCrud):
             drawer=Drawer(
                 title=_('Bulk Create'),
                 position="right",
-                showCloseButton=False,
+                showCloseButton=True,
                 overlay=False,
                 closeOnOutside=False,
                 size=SizeEnum.full,
@@ -510,7 +510,7 @@ class BaseModelAdmin(SQLModelCrud):
                 drawer=Drawer(
                     title=_('Update'),
                     position="right",
-                    showCloseButton=False,
+                    showCloseButton=True,
                     overlay=False,
                     closeOnOutside=False,
                     size=SizeEnum.md,
@@ -525,7 +525,7 @@ class BaseModelAdmin(SQLModelCrud):
                 drawer=Drawer(
                     title=_('Bulk Update'),
                     position="right",
-                    showCloseButton=False,
+                    showCloseButton=True,
                     overlay=False,
                     closeOnOutside=False,
                     size=SizeEnum.md,

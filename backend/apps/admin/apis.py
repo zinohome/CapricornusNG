@@ -3,7 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
-from apps.admin.models import DBURIModel
+from apps.admin.models import DBURIModel, DBConnection
 from core.adminsite import auth
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
@@ -33,6 +33,20 @@ async def db_connection_test(dburi: DBURIModel) -> str:
         log.error('Database Test Connected Error !')
         traceback.print_exc()
         return {"status":1,"msg":_("DataBase Connect Error")}
+
+@router.post('/db_sync_schema',
+         tags=["admin"],
+         summary="Synchronize database schema.",
+         description="Synchronize database schema",
+         include_in_schema=True)
+async def db_connection_test(dbconnection: DBConnection) -> str:
+    log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
+    log.debug('Database Connection infomation is : %s' % dbconnection.json())
+    try:
+        return {"status":0,"msg":_("DataBase synchronized")}
+    except Exception as e:
+        traceback.print_exc()
+        return {"status":1,"msg":_("DataBase synchronized Error")}
 
 @router.get('/users',
          tags=["admin"],

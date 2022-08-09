@@ -47,10 +47,18 @@ class DBConnectionAdmin(admin.ModelAdmin):
                 'cache':30000
                     }
     sync_schema_api = {
-                'url':'/admin/db_connection_test',
+                'url':'/admin/db_sync_schema',
                 'method':'post',
                 'data':{
-                    'db_uri':'${db_uri}'
+                    'id':'${id}',
+                    'name':'${name}',
+                    'db_Type':'${db_Type}',
+                    'db_Dialect':'${db_Dialect}',
+                    'db_uri':'${db_uri}',
+                    'db_useschema':'${db_useschema}',
+                    'db_schema':'${db_schema}',
+                    'db_exclude_tablespaces':'${db_exclude_tablespaces}',
+                    'db_conf_id':'${db_conf_id}'
                         },
                 'cache':30000
                     }

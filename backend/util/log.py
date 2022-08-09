@@ -11,7 +11,7 @@
 
 import os
 from loguru import logger as log
-from config.config import config
+from core.config import config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, 'log')
