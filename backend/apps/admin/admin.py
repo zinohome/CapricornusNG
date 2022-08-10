@@ -14,7 +14,7 @@ except ImportError:
 from core.adminsite import site
 from starlette.requests import Request
 
-from .models import Category, DBConnection, DBConfig
+from .models import Category, DBConnection, DBConfig, TableMeta
 from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
@@ -26,7 +26,7 @@ class AdminApp(admin.AdminApp):
 
     def __init__(self, app: "AdminApp"):
         super().__init__(app)
-        self.register_admin(DBConnectionAdmin, DBConfigAdmin, CategoryAdmin)
+        self.register_admin(DBConnectionAdmin, DBConfigAdmin, TableMetaAdmin, CategoryAdmin)
 
 # Register your models here.
 
@@ -143,6 +143,13 @@ class DBConfigAdmin(admin.ModelAdmin):
                 formtab.tabs.append(tabitem)
             u_form.body=formtab
         return u_form
+
+# TableMeta Admin
+class TableMetaAdmin(admin.ModelAdmin):
+    group_schema = None
+    page_schema = PageSchema(label='Table Meta', icon='fa fa-wrench')
+    model = TableMeta
+    search_fields = [TableMeta.name]
 
 class CategoryAdmin(admin.ModelAdmin):
     group_schema = None

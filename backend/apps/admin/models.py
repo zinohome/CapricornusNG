@@ -12,7 +12,7 @@
 import sqlmodel
 from fastapi_amis_admin import amis,models
 from fastapi_amis_admin.models import TextChoices
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 import simplejson as json
 from sqlmodel import Column, JSON
 from sqlmodel import Relationship
@@ -26,7 +26,7 @@ default_schema_params = "{\"schema_cache_enabled\": true, \"schema_model_refresh
 default_query_params = "{\"query_limit_upset\": 2000, \"query_default_limit\": 10, \"query_default_offset\": 0}"
 default_admin_params = "{\"DEBUG\": true, \"SECRET_KEY\": \"bgt56yh@Passw0rd\", \"SESSION_COOKIE_HTTPONLY\": true, \"REMEMBER_COOKIE_HTTPONLY\": true, \"REMEMBER_COOKIE_DURATION\": 3600, \"admin_ignore_primary_key\": false}"
 default_security_params = "{\"security_key\": \"47051d5e3bafcfcba3c80d6d1119a7adf78d2967a8972b00af1ea231ca61f589\", \"security_algorithm\": \"HS256\", \"access_token_expire_minutes\": 30}"
-
+default_column_defile="{\"column_name\":{\"name\": \"column_name\", \"type\": \"INTEGER\", \"nullable\": \"False\", \"default\": \"None\", \"autoincrement\": \"auto\", \"primary_key\": 0, \"pythonType\": \"int\"}}"
 # Create your models here.
 class DBURIModel(requestBaseModel):
     db_uri: str
@@ -70,6 +70,7 @@ class DBConnection(BaseSQLModel, table=True):
     db_exclude_tablespaces: Optional[str] = models.Field(default='', title='ExcludedTableSpace', max_length=256, amis_form_item=amis.InputText())
     db_conf_id: int = models.Field(title='Config', nullable=False, foreign_key="capricornus_db_config.id")
     dbconfig: Optional["DBConfig"] = Relationship(back_populates="dbconnection")
+    tablemetas: List["TableMeta"] = Relationship(back_populates="dbconnection")
 
 # DBConfig Model
 class DBConfig(BaseSQLModel, table=True):
@@ -150,12 +151,39 @@ class DBConfig(BaseSQLModel, table=True):
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
 
 
-class Category(BaseSQLModel, table=True):
-    __tablename__ = 'blog_category'
-    name: str = models.Field(
-        title='Category Name',
-        sa_column=sqlmodel.Column(sqlmodel.String(100), unique=True, index=True, nullable=False)
-    )
-    description: str = models.Field(default='', title='Description', amis_form_item=amis.Textarea())
-    is_active: bool = models.Field(None, title='Is Active')
+# TableMeta Model
+class TableType(TextChoices):
+    table = 'table', 'Table'
+    view = 'view', 'View'
 
+class TableMeta(BaseSQLModel, table=True):
+    __tablename__ = 'capricornus_table_meta'
+    name: str = models.Field(
+        title='Table Name',
+        sa_column=sqlmodel.Column(sqlmodel.String(100), unique=False, index=True, nullable=False)
+    )
+    table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
+                                            amis_form_item=amis.InputText())
+    table_Type: TableType = models.Field(TableType.table, title='Type')
+    primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
+                                                         amis_form_item=amis.InputText())
+    logicprimarykeys: Optional[str] = models.Field(default='', title='LogicPrimaryKey', max_length=256,
+                                                         amis_form_item=amis.InputText())
+    indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
+                                                         amis_form_item=amis.InputText())
+    columns: Optional[dict] = models.Field(index=False, default=json.loads(default_column_defile),
+                                                   sa_column=Column(JSON),
+                                                   title='Columns',
+                                                   amis_form_item=amis.Editor())
+    pagedefine: Optional[dict] = models.Field(index=False, default=json.loads(default_column_defile),
+                                                   sa_column=Column(JSON),
+                                                   title='PageDefine',
+                                                   amis_form_item=amis.Editor())
+    dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')
+    dbconnection: Optional[DBConnection] = Relationship(back_populates="tablemetas")
+
+class Category(BaseSQLModel, table=True):
+    id: int = models.Field(default=None, primary_key=True, nullable=False)
+    name: str = models.Field(title='CategoryName', sa_column=Column(sqlmodel.String(100), unique=True, index=True, nullable=False))
+    description: str = models.Field(default='', title='Description', amis_form_item='textarea')
+    status: bool = models.Field(None, title='status')

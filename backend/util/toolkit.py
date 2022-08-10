@@ -17,7 +17,7 @@ import simplejson as json
 import sqlalchemy.types as satypes
 from sqlalchemy.engine.url import URL
 from apiconfig.config import config
-from apiconfig.dbconfig import dsconfig
+from apiconfig.dsconfig import dsconfig
 from util.log import log as log
 from datetime import datetime
 

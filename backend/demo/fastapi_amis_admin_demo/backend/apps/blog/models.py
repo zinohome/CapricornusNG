@@ -22,6 +22,9 @@ class Category(SQLModel, table=True):
     status: bool = Field(None, title='status')
     articles: List["Article"] = Relationship(back_populates="category")
 
+    category_id: Optional[int] = Field(default=None, foreign_key="category.id", title='CategoryId')
+    category: Optional[Category] = Relationship(back_populates="articles")
+
 
 class ArticleTagLink(SQLModel, table=True):
     tag_id: Optional[int] = Field(
