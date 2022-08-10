@@ -12,11 +12,10 @@ from types import SimpleNamespace
 import asyncio
 import weakref
 import simplejson as json
-from async_class import AsyncClass
 from sqlalchemy import select
 from apps.admin.models import DBConnection, DBConfig
 from core.adminsite import site
-from core.config import config
+from apiconfig.config import config
 from util.log import log as log
 
 class CachedDSConfig:
@@ -62,7 +61,7 @@ class DSConfig:
         connresult = await site.db.async_scalars_all(connstmt)
         if len(connresult) > 0:
             self.Database_Config = SimpleNamespace(**json.loads(connresult[0].json()))
-            log.debug('Database_Config: %s' % self.Database_Config)
+            #log.debug('Database_Config: %s' % self.Database_Config)
             confstmt = select(DBConfig).where(
                 DBConfig.id == self.Database_Config.db_conf_id)
             confresult = await site.db.async_scalars_all(confstmt)
@@ -73,17 +72,25 @@ class DSConfig:
                 self.Security_Config = SimpleNamespace(**confresult[0].security_params)
                 self.Connection_Config = SimpleNamespace(**confresult[0].connection_params)
                 self.Admin_Config = SimpleNamespace(**confresult[0].admin_params)
-                log.debug('Application_Config: %s' % self.Application_Config)
-                log.debug('Schema_Config: %s' % self.Schema_Config)
-                log.debug('Query_Config: %s' % self.Query_Config)
-                log.debug('Security_Config: %s' % self.Security_Config)
-                log.debug('Connection_Config: %s' % self.Connection_Config)
-                log.debug('Admin_Config: %s' % self.Admin_Config)
+                #log.debug('Application_Config: %s' % self.Application_Config)
+                #log.debug('Schema_Config: %s' % self.Schema_Config)
+                #log.debug('Query_Config: %s' % self.Query_Config)
+                #log.debug('Security_Config: %s' % self.Security_Config)
+                #log.debug('Connection_Config: %s' % self.Connection_Config)
+                #log.debug('Admin_Config: %s' % self.Admin_Config)
 
+dsconfig = CachedDSConfig().get_config(config('app_profile', default='default-datasource'))
 
 if __name__ == '__main__':
-    dsconfig = CachedDSConfig().get_config(config('app_profile', default='default-datasource'))
-    log.debug(dsconfig.Admin_Config.DEBUG)
+    #dsconfig = CachedDSConfig().get_config(config('app_profile', default='default-datasource'))
+    #log.debug(dsconfig.Admin_Config)
+    log.debug('Application_Config: %s' % dsconfig.Application_Config)
+    log.debug('Schema_Config: %s' % dsconfig.Schema_Config)
+    log.debug('Query_Config: %s' % dsconfig.Query_Config)
+    log.debug('Security_Config: %s' % dsconfig.Security_Config)
+    log.debug('Connection_Config: %s' % dsconfig.Connection_Config)
+    log.debug('Admin_Config: %s' % dsconfig.Admin_Config)
+    log.debug('Database_Config: %s' % dsconfig.Database_Config)
 
 '''
 class DSConfig(AsyncClass):
