@@ -49,7 +49,7 @@ class DataBaseType(TextChoices):
 class DataBaseDialect(TextChoices):
     aiosqlite = 'aiosqlite', 'aiosqlite'
     aiomysql = 'aiomysql', 'aiomysql'
-    cx_oracle = 'cx_oracle', 'cx_oracle'
+    cx_oracle = 'cx_oracle_async', 'cx_oracle_async'
     asyncpg = 'asyncpg', 'asyncpg'
 
 
@@ -66,7 +66,7 @@ class DBConnection(BaseSQLModel, table=True):
                                sa_column=sqlmodel.Column(sqlmodel.String(256), unique=False, index=False, nullable=False),
                                amis_form_item=amis.InputText(placeholder='mysql+aiomysql://root:bgt56yhn@127.0.0.1:3306/capricornus?charset=utf8mb4'))
     db_useschema: bool = models.Field(default=False, title='UseSchema')
-    db_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256, amis_form_item=amis.InputText())
+    db_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256, amis_form_item=amis.InputText(requiredOn='this.db_useschema==true'))
     db_exclude_tablespaces: Optional[str] = models.Field(default='', title='ExcludedTableSpace', max_length=256, amis_form_item=amis.InputText())
     db_conf_id: int = models.Field(title='Config', nullable=False, foreign_key="capricornus_db_config.id")
     dbconfig: Optional["DBConfig"] = Relationship(back_populates="dbconnection")

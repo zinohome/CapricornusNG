@@ -50,7 +50,10 @@ class DSConfig:
         self.Database_Config = None
         self.Connection_Config = None
         self.Admin_Config = None
-        self.readconfig(name)
+        #await self.readconfig(name)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.wait([self.readconfig(name)]))
+        loop.close()
         return self
 
     async def readconfig(self,name):
@@ -79,8 +82,8 @@ class DSConfig:
 
 
 if __name__ == '__main__':
-    name = config('app_profile', default='default-datasource')
-    dsconfig = CachedDSConfig().get_config(name)
+    dsconfig = CachedDSConfig().get_config(config('app_profile', default='default-datasource'))
+    log.debug(dsconfig.Admin_Config.DEBUG)
 
 '''
 class DSConfig(AsyncClass):
