@@ -153,13 +153,6 @@ def validQueryJson(jsonstr):
     return True
     #TODO valid jsonstr from query parameter
 
-'''
-def uappend(lststr):
-    return dsconfig.Application_Config.app_param_prefix+'{}'.format(lststr)
-
-def uappendlist(slist):
-    return list(map(uappend, slist))
-'''
 
 if __name__ == '__main__':
     str1 = "{'name': 'productDescription', 'type': TEXT(), 'default': None, 'comment': None, 'nullable': False}"

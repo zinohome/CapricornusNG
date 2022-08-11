@@ -5,13 +5,12 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+import asyncio
 import weakref
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
-
 from apiconfig.config import config
-from apiconfig.dsconfig import DSConfig
 from util import toolkit
 from util.log import log as log
 
@@ -29,62 +28,62 @@ class Cached(type):
             return obj
 
 class APIEngine(metaclass=Cached):
-    def __init__(self, name=config('app_profile', default='default-datasource')):
+    def __init__(self, dsconfig, name=config('app_profile', default='default-datasource')):
+        self.dsconfig = dsconfig
         self.name = name
-        dsconfig = DSConfig(name)
-        uri = dsconfig.Database_Config.db_uri
+        uri = self.dsconfig.Database_Config.db_uri
         log.debug('Connect use uri [ %s ]' % uri)
         syncuri = self.__sync_uri(uri)
         if syncuri is None:
             raise RuntimeError("Can't create Engine, please check uri")
-        if dsconfig.Database_Config.db_Type.lower() == 'oracle':
+        if self.dsconfig.Database_Config.db_Type.lower() == 'oracle':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
-                                                pool_size=dsconfig.Connection_Config.con_pool_size,
-                                                max_overflow=dsconfig.Connection_Config.con_max_overflow,
-                                                pool_use_lifo=dsconfig.Connection_Config.con_pool_use_lifo,
-                                                pool_pre_ping=dsconfig.Connection_Config.con_pool_pre_ping,
-                                                pool_recycle=dsconfig.Connection_Config.con_pool_recycle,
+                                                pool_size=self.dsconfig.Connection_Config.con_pool_size,
+                                                max_overflow=self.dsconfig.Connection_Config.con_max_overflow,
+                                                pool_use_lifo=self.dsconfig.Connection_Config.con_pool_use_lifo,
+                                                pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
+                                                pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle,
                                                 exclude_tablespaces=toolkit.to_list(
-                                                    dsconfig.Database_Config.db_exclude_tablespaces)
+                                                    self.dsconfig.Database_Config.db_exclude_tablespaces)
                                                 )
             self.__engine = create_engine(syncuri,
                                                 echo=False,
-                                                pool_size=dsconfig.Connection_Config.con_pool_size,
-                                                max_overflow=dsconfig.Connection_Config.con_max_overflow,
-                                                pool_use_lifo=dsconfig.Connection_Config.con_pool_use_lifo,
-                                                pool_pre_ping=dsconfig.Connection_Config.con_pool_pre_ping,
-                                                pool_recycle=dsconfig.Connection_Config.con_pool_recycle,
+                                                pool_size=self.dsconfig.Connection_Config.con_pool_size,
+                                                max_overflow=self.dsconfig.Connection_Config.con_max_overflow,
+                                                pool_use_lifo=self.dsconfig.Connection_Config.con_pool_use_lifo,
+                                                pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
+                                                pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle,
                                                 exclude_tablespaces=toolkit.to_list(
-                                                    dsconfig.Database_Config.db_exclude_tablespaces)
+                                                    self.dsconfig.Database_Config.db_exclude_tablespaces)
                                                 )
-        elif dsconfig.Database_Config.db_Type.lower() == 'sqlite':
+        elif self.dsconfig.Database_Config.db_Type.lower() == 'sqlite':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
-                                                pool_pre_ping=dsconfig.Connection_Config.con_pool_pre_ping,
-                                                pool_recycle=dsconfig.Connection_Config.con_pool_recycle
+                                                pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
+                                                pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle
                                                 )
             self.__engine = create_engine(syncuri,
                                                 echo=False,
-                                                pool_pre_ping=dsconfig.Connection_Config.con_pool_pre_ping,
-                                                pool_recycle=dsconfig.Connection_Config.con_pool_recycle
+                                                pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
+                                                pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle
                                                 )
         else:
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
-                                                pool_size=dsconfig.Connection_Config.con_pool_size,
-                                                max_overflow=dsconfig.Connection_Config.con_max_overflow,
-                                                pool_use_lifo=dsconfig.Connection_Config.con_pool_use_lifo,
-                                                pool_pre_ping=dsconfig.Connection_Config.con_pool_pre_ping,
-                                                pool_recycle=dsconfig.Connection_Config.con_pool_recycle
+                                                pool_size=self.dsconfig.Connection_Config.con_pool_size,
+                                                max_overflow=self.dsconfig.Connection_Config.con_max_overflow,
+                                                pool_use_lifo=self.dsconfig.Connection_Config.con_pool_use_lifo,
+                                                pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
+                                                pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle
                                                 )
             self.__engine = create_engine(syncuri,
                                                 echo=False,
-                                                pool_size=dsconfig.Connection_Config.con_pool_size,
-                                                max_overflow=dsconfig.Connection_Config.con_max_overflow,
-                                                pool_use_lifo=dsconfig.Connection_Config.con_pool_use_lifo,
-                                                pool_pre_ping=dsconfig.Connection_Config.con_pool_pre_ping,
-                                                pool_recycle=dsconfig.Connection_Config.con_pool_recycle
+                                                pool_size=self.dsconfig.Connection_Config.con_pool_size,
+                                                max_overflow=self.dsconfig.Connection_Config.con_max_overflow,
+                                                pool_use_lifo=self.dsconfig.Connection_Config.con_pool_use_lifo,
+                                                pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
+                                                pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle
                                                 )
 
     def __sync_uri(self, uri):
@@ -113,8 +112,12 @@ class APIEngine(metaclass=Cached):
         return self.__async_engine
 
 if __name__ == '__main__':
-    apiengine = APIEngine(config('app_profile', default='default-datasource'))
+    '''
+    dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    asyncio.run(dsconfig.readconfig())
+    apiengine = APIEngine(dsconfig, config('app_profile', default='default-datasource'))
     engine = apiengine.connect()
     log.debug(engine.__class__)
     async_engine = apiengine.async_connect()
     log.debug(async_engine.__class__)
+    '''

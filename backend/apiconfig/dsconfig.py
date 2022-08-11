@@ -12,6 +12,8 @@ import asyncio
 import weakref
 from types import SimpleNamespace
 import simplejson as json
+import uvloop
+from asgiref.sync import async_to_sync
 from sqlalchemy import select
 
 from apiconfig.config import config
@@ -44,15 +46,11 @@ class DSConfig(metaclass=Cached):
         self.Database_Config = None
         self.Connection_Config = None
         self.Admin_Config = None
-        #await self.readconfig(name)
-        #dbconfigloop = asyncio.get_event_loop()
-        #dbconfigloop.run_until_complete(asyncio.wait([self.readconfig(name)]))
-        #dbconfigloop.close()
-        asyncio.run(self.readconfig(name))
+        async_to_sync(self.readconfig)()
 
-    async def readconfig(self,name):
+    async def readconfig(self):
         connstmt = select(DBConnection).where(
-            DBConnection.name == name)
+            DBConnection.name == self.name)
         connresult = await site.db.async_scalars_all(connstmt)
         if len(connresult) > 0:
             self.Database_Config = SimpleNamespace(**json.loads(connresult[0].json()))

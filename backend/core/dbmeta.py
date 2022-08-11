@@ -8,12 +8,14 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+import asyncio
 import os
 import pickle
 import traceback
 import uuid
 import weakref
 
+import uvloop
 from sqlalchemy import inspect, Table
 
 from apiconfig.config import config
@@ -21,7 +23,7 @@ from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
 
 from apiconfig.dsconfig import DSConfig
-from core.apiengine import apiengine
+from core.apiengine import APIEngine
 from core.apitable import ApiTable
 from core.tableschema import TableSchema
 from util import toolkit
@@ -44,11 +46,12 @@ class Cached(type):
             return obj
 
 class DBMeta(metaclass=Cached):
-    def __init__(self, name=config('app_profile', default='default-datasource')):
-        dsconfig = DSConfig(name)
+    def __init__(self, dsconfig, apiengine, name=config('app_profile', default='default-datasource')):
+        self.dsconfig = dsconfig
+        self.apiengine = apiengine
         self.name = name
-        self._useschema = dsconfig.Database_Config.db_useschema
-        self._schema = dsconfig.Database_Config.db_schema
+        self._useschema = self.dsconfig.Database_Config.db_useschema
+        self._schema = self.dsconfig.Database_Config.db_schema
         self._tableCount = 0
         self._tables = 'N/A'
         self._viewCount = 0
@@ -56,11 +59,11 @@ class DBMeta(metaclass=Cached):
 
         '''
         self.load_metadata()
-        if dsconfig.Application_Config.app_force_generate_meta:
+        if self.dsconfig.Application_Config.app_force_generate_meta:
             log.debug('Generate Schema file from database ...')
             self.gen_schema()
         else:
-            if dsconfig.db_schema_existed:
+            if self.dsconfig.db_schema_existed:
                 log.debug('Schema exists, now load it to application ...')
             else:
                 log.debug('Schema does not exists, generate it from database ...')
@@ -98,11 +101,10 @@ class DBMeta(metaclass=Cached):
             return None
 
     def load_metadata(self):
-        engine = apiengine.connect()
+        engine = self.apiengine.connect()
         cached_metadata = None
-        dsconfig = DSConfig(self.name)
-        metadata_pickle_filename = dsconfig.Schema_Config.schema_cache_filename
-        if dsconfig.Schema_Config.schema_cache_enabled == True:
+        metadata_pickle_filename = self.dsconfig.Schema_Config.schema_cache_filename
+        if self.dsconfig.Schema_Config.schema_cache_enabled == True:
             if os.path.exists(os.path.join(cache_path, metadata_pickle_filename)):
                 try:
                     with open(os.path.join(cache_path, metadata_pickle_filename), 'rb') as cache_file:
@@ -119,10 +121,10 @@ class DBMeta(metaclass=Cached):
                 metadata = MetaData(bind=engine)
                 if self._useschema:
                     metadata = MetaData(bind=engine, schema=self._schema)
-                if dsconfig.Schema_Config.schema_fetch_all_table == True:
+                if self.dsconfig.Schema_Config.schema_fetch_all_table == True:
                     metadata.reflect(views=True)
                 else:
-                    metadata.reflect(views=True, only=toolkit.to_list(dsconfig.Schema_Config.schema_fetch_tables))
+                    metadata.reflect(views=True, only=toolkit.to_list(self.dsconfig.Schema_Config.schema_fetch_tables))
                 self._metadata = metadata
                 try:
                     if not os.path.exists(cache_path):
@@ -139,32 +141,31 @@ class DBMeta(metaclass=Cached):
             metadata = MetaData(bind=engine)
             if self._useschema:
                 metadata = MetaData(bind=engine, schema=self._schema)
-            if dsconfig.Schema_Config.schema_fetch_all_table == True:
+            if self.dsconfig.Schema_Config.schema_fetch_all_table == True:
                 metadata.reflect(views=True)
             else:
-                metadata.reflect(views=True, only=toolkit.to_list(dsconfig.Schema_Config.schema_fetch_tables))
+                metadata.reflect(views=True, only=toolkit.to_list(self.dsconfig.Schema_Config.schema_fetch_tables))
             self._metadata = metadata
 
     def gen_schema(self):
-        engine = apiengine.connect()
+        engine = self.apiengine.connect()
         inspector = inspect(engine)
         metadata = self.metadata
         try:
-            dsconfig = DSConfig(self.name)
             if metadata is not None:
-                log.debug("Generate Schema from : [ %s ] with db schema [ %s ]" % (dsconfig.Database_Config.db_uri, self._schema))
+                log.debug("Generate Schema from : [ %s ] with db schema [ %s ]" % (self.dsconfig.Database_Config.db_uri, self._schema))
                 jmeta = {}
-                jmeta['Schema'] = dsconfig.Database_Config.db_schema
+                jmeta['Schema'] = self.dsconfig.Database_Config.db_schema
                 jtbls = {}
                 jmeta['Tables'] = jtbls
-                table_list_set = set(toolkit.to_list(dsconfig.Schema_Config.schema_fetch_tables))
+                table_list_set = set(toolkit.to_list(self.dsconfig.Schema_Config.schema_fetch_tables))
                 # gen schema for tables
                 table_names = inspector.get_table_names()
                 if self._useschema:
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if dsconfig.Schema_Config.schema_fetch_all_table:
+                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
                         persist_table = True
                     else:
                         if table_name in table_list_set:
@@ -181,8 +182,8 @@ class DBMeta(metaclass=Cached):
                         jtbl = {}
                         jtbls[table_name] = jtbl
                         jtbl['name'] = table_name
-                        jtbl['dbconn_id'] = dsconfig.Database_Config.id
-                        jtbl['table_schema'] = dsconfig.Database_Config.db_schema
+                        jtbl['dbconn_id'] = self.dsconfig.Database_Config.id
+                        jtbl['table_schema'] = self.dsconfig.Database_Config.db_schema
                         jtbl['table_type'] = 'table'
                         pk = inspector.get_pk_constraint(table_name)
                         if self._useschema:
@@ -214,7 +215,7 @@ class DBMeta(metaclass=Cached):
                             jtbl['columns'][cdict['name']] = cdict
                             jtbl['pagedefine'][cdict['name']] = cdict
                     log.debug('Extracting table schema for : %s ……' % jtbl['name'])
-                    japitable = ApiTable(jtbl['dbconn_id'], jtbl['name'], self.name)
+                    japitable = ApiTable(self.dsconfig, jtbl['name'])
                     japitable.loadfrom_json(jtbl)
                     japitable.create_update_table()
                 # gen schema for views
@@ -223,7 +224,7 @@ class DBMeta(metaclass=Cached):
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if dsconfig.Schema_Config.schema_fetch_all_table:
+                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
                         persist_view = True
                     else:
                         if view_name in table_list_set:
@@ -239,8 +240,8 @@ class DBMeta(metaclass=Cached):
                         vtbl = {}
                         jtbls[view_name] = vtbl
                         vtbl['name'] = view_name
-                        vtbl['dbconn_id'] = dsconfig.Database_Config.id
-                        vtbl['table_schema'] = dsconfig.Database_Config.db_schema
+                        vtbl['dbconn_id'] = self.dsconfig.Database_Config.id
+                        vtbl['table_schema'] = self.dsconfig.Database_Config.db_schema
                         vtbl['table_type'] = 'view'
                         pk = inspector.get_pk_constraint(view_name)
                         if self._useschema:
@@ -272,18 +273,17 @@ class DBMeta(metaclass=Cached):
                             vtbl['columns'][vdict['name']] = vdict
                             vtbl['pagedefine'][vdict['name']] = vdict
                     log.debug('Extracting view schema for : %s ……' % vtbl['name'])
-                    vapitable = ApiTable(vtbl['dbconn_id'], vtbl['name'], self.name)
+                    vapitable = ApiTable(self.dsconfig, vtbl['name'])
                     vapitable.loadfrom_json(vtbl)
                     vapitable.create_update_table()
         except Exception as exp:
             log.error('Exception at dbmeta.gen_schema() %s ' % exp)
-            if dsconfig.Application_Config.app_exception_detail:
+            if self.dsconfig.Application_Config.app_exception_detail:
                 traceback.print_exc()
 
     def load_schema(self):
         log.debug('Loading schema from %s ……' % config('app_profile', default='default-datasource'))
-        dsconfig = DSConfig(self.name)
-        apitable = ApiTable(dsconfig.Database_Config.id, dsconfig.Database_Config.name, self.name)
+        apitable = ApiTable(self.dsconfig, 'None')
         metas = apitable.get_all_tables()
         self._tables = []
         for meta in metas:
@@ -312,8 +312,7 @@ class DBMeta(metaclass=Cached):
             return None
 
     def get_table_logicprimarykeys(self, table_name):
-        dsconfig = DSConfig(self.name)
-        apitable = ApiTable(dsconfig.Database_Config.id, table_name, self.name)
+        apitable = ApiTable(self.dsconfig, table_name)
         tablemetas = apitable.query_table_byName()
         if tablemetas is not None:
             return tablemetas[0].logicprimarykeys
@@ -367,7 +366,6 @@ class DBMeta(metaclass=Cached):
 
     def gen_dbdirgram(self):
         try:
-            dsconfig = DSConfig(self.name)
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
             configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
@@ -377,7 +375,7 @@ class DBMeta(metaclass=Cached):
             canvas = {}
             with open(canvasfilepath, 'r') as canvasfile:
                 canvas = json.loads(canvasfile.read())
-            canvas['databaseName'] = dsconfig.Database_Config.name
+            canvas['databaseName'] = self.dsconfig.Database_Config.name
             dbdiagram['canvas'] = canvas
             tables = self.get_tables()
             tbllist = []
@@ -422,12 +420,13 @@ class DBMeta(metaclass=Cached):
                           sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_dbdirgram() %s ' % exp)
-            if dsconfig.Application_Config.app_exception_detail:
+            if self.dsconfig.Application_Config.app_exception_detail:
                 traceback.print_exc()
 
     def gen_dbdirgramcanvas(self):
         try:
-            dsconfig = DSConfig(self.name)
+            log.debug("Generate DB Dirgram Canvas from : [ %s ] with db schema "
+                      "[ %s ]" % (self.dsconfig.Database_Config.name, self._schema))
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
             configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
@@ -437,7 +436,7 @@ class DBMeta(metaclass=Cached):
             canvas = {}
             with open(canvasfilepath, 'r') as canvasfile:
                 canvas = json.loads(canvasfile.read())
-            canvas['databaseName'] = dsconfig.Database_Config.name
+            canvas['databaseName'] = self.dsconfig.Database_Config.name
             dbdiagram['canvas'] = canvas
             # log.debug(dbdiagram)
             with open(diagramfilepath, 'w', encoding='utf-8') as diagramfile:
@@ -445,7 +444,7 @@ class DBMeta(metaclass=Cached):
                           sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_dbdirgramcanvas() %s ' % exp)
-            if dsconfig.Application_Config.app_exception_detail:
+            if self.dsconfig.Application_Config.app_exception_detail:
                 traceback.print_exc()
 
     def gen_ddl(self):
@@ -453,22 +452,21 @@ class DBMeta(metaclass=Cached):
         apppath = os.path.abspath(os.path.join(basepath, os.pardir))
         configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
         ddlfilepath = os.path.abspath(os.path.join(configpath, "dbddl.sql"))
-        engine = apiengine.connect()
+        engine = self.apiengine.connect()
         inspector = inspect(engine)
         metadata = self.metadata
         ddlstr = ''
         try:
-            dsconfig = DSConfig(self.name)
             if metadata is not None:
                 log.debug("Generate DLL from : [ %s ] with db schema "
-                          "[ %s ]" % (dsconfig.Database_Config.name, self._schema))
-                table_list_set = set(toolkit.to_list(dsconfig.Schema_Config.schema_fetch_tables))
+                          "[ %s ]" % (self.dsconfig.Database_Config.name, self._schema))
+                table_list_set = set(toolkit.to_list(self.dsconfig.Schema_Config.schema_fetch_tables))
                 table_names = inspector.get_table_names()
                 if self._useschema:
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if dsconfig.Schema_Config.schema_fetch_all_table:
+                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
                         persist_table = True
                     else:
                         if table_name in table_list_set:
@@ -494,7 +492,7 @@ class DBMeta(metaclass=Cached):
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if dsconfig.Schema_Config.schema_fetch_all_table:
+                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
                         persist_view = True
                     else:
                         if view_name in table_list_set:
@@ -524,11 +522,19 @@ class DBMeta(metaclass=Cached):
                 raise Exception('Can not get metadata at gen_ddl()')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_ddl() %s ' % exp)
-            if dsconfig.Application_Config.app_exception_detail:
+            if self.dsconfig.Application_Config.app_exception_detail:
                 traceback.print_exc()
 
 if __name__ == '__main__':
-    dbmeta = DBMeta(config('app_profile', default='default-datasource'))
+    dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    apiengine = APIEngine(dsconfig, config('app_profile', default='default-datasource'))
+    dbmeta = DBMeta(dsconfig, apiengine, config('app_profile', default='default-datasource'))
+    dbmeta.load_metadata()
+    dbmeta.gen_schema()
+    dbmeta.load_schema()
+    dbmeta.gen_dbdirgramcanvas()
+    dbmeta.gen_ddl()
+
     '''
     tbl = dbmeta.gettable('Customers')
     log.debug(tbl.json)

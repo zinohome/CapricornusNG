@@ -44,7 +44,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
                 'data':{
                     'db_uri':'${db_uri}'
                         },
-                'cache':30000
+                'cache':10000
                     }
     sync_schema_api = {
                 'url':'/admin/db_sync_schema',
@@ -60,7 +60,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
                     'db_exclude_tablespaces':'${db_exclude_tablespaces}',
                     'db_conf_id':'${db_conf_id}'
                         },
-                'cache':30000
+                'cache':1000
                     }
 
 
