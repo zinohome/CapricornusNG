@@ -21,7 +21,7 @@ from fastapi_amis_admin.utils.translation import i18n as _
 
 @site.register_admin
 class AdminApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label='Admin', icon='fa fa-tools')
+    page_schema = amis.PageSchema(label='Admin', icon='fa fa-tools', sort=2)
     router_prefix = '/admin'
 
     def __init__(self, app: "AdminApp"):

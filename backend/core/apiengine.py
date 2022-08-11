@@ -8,9 +8,11 @@
 import asyncio
 import weakref
 
+from asgiref.sync import async_to_sync
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
 from apiconfig.config import config
+from apiconfig.dsconfig import DSConfig
 from util import toolkit
 from util.log import log as log
 
@@ -112,12 +114,10 @@ class APIEngine(metaclass=Cached):
         return self.__async_engine
 
 if __name__ == '__main__':
-    '''
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
-    asyncio.run(dsconfig.readconfig())
+    async_to_sync(dsconfig.readconfig)()
     apiengine = APIEngine(dsconfig, config('app_profile', default='default-datasource'))
     engine = apiengine.connect()
     log.debug(engine.__class__)
     async_engine = apiengine.async_connect()
     log.debug(async_engine.__class__)
-    '''

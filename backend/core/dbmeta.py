@@ -16,6 +16,7 @@ import uuid
 import weakref
 
 import uvloop
+from asgiref.sync import async_to_sync
 from sqlalchemy import inspect, Table
 
 from apiconfig.config import config
@@ -527,6 +528,7 @@ class DBMeta(metaclass=Cached):
 
 if __name__ == '__main__':
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    async_to_sync(dsconfig.readconfig)()
     apiengine = APIEngine(dsconfig, config('app_profile', default='default-datasource'))
     dbmeta = DBMeta(dsconfig, apiengine, config('app_profile', default='default-datasource'))
     dbmeta.load_metadata()

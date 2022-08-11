@@ -46,7 +46,7 @@ class DSConfig(metaclass=Cached):
         self.Database_Config = None
         self.Connection_Config = None
         self.Admin_Config = None
-        async_to_sync(self.readconfig)()
+        #async_to_sync(self.readconfig)()
 
     async def readconfig(self):
         connstmt = select(DBConnection).where(
@@ -78,6 +78,7 @@ class DSConfig(metaclass=Cached):
 
 if __name__ == '__main__':
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    async_to_sync(dsconfig.readconfig)()
     log.debug(config('app_mode', default='worker'))
     #log.debug(dsconfig.Admin_Config)
     log.debug('Application_Config: %s' % dsconfig.Application_Config)

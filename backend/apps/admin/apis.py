@@ -48,7 +48,9 @@ async def db_connection_test(dbconnection: DBConnection) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:
-        dsconfig = await sync_to_async(func=DSConfig)(config('app_profile', default='default-datasource'))
+        dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+        await dsconfig.readconfig()
+        #dsconfig = await sync_to_async(func=DSConfig)(config('app_profile', default='default-datasource'))
         log.debug(dsconfig.Database_Config)
         apiengine = await sync_to_async(func=APIEngine)(dsconfig, config('app_profile', default='default-datasource'))
         dbmeta = await sync_to_async(func=DBMeta)(dsconfig, apiengine, config('app_profile', default='default-datasource'))
