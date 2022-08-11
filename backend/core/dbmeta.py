@@ -19,7 +19,8 @@ from sqlalchemy import inspect, Table
 from apiconfig.config import config
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
-from apiconfig.dsconfig import dsconfig
+
+from apiconfig.dsconfig import DSConfig
 from core.apiengine import apiengine
 from core.apitable import ApiTable
 from core.tableschema import TableSchema
@@ -27,7 +28,6 @@ from util import toolkit
 from util.log import log as log
 
 # cache file define
-metadata_pickle_filename = dsconfig.Schema_Config.schema_cache_filename
 cache_path = os.path.join(os.path.expanduser("~"), ".capricornus_cache")
 
 class Cached(type):
@@ -44,7 +44,8 @@ class Cached(type):
             return obj
 
 class DBMeta(metaclass=Cached):
-    def __init__(self, name):
+    def __init__(self, name=config('app_profile', default='default-datasource')):
+        dsconfig = DSConfig(name)
         self.name = name
         self._useschema = dsconfig.Database_Config.db_useschema
         self._schema = dsconfig.Database_Config.db_schema
@@ -52,6 +53,8 @@ class DBMeta(metaclass=Cached):
         self._tables = 'N/A'
         self._viewCount = 0
         self._metadata = None
+
+        '''
         self.load_metadata()
         if dsconfig.Application_Config.app_force_generate_meta:
             log.debug('Generate Schema file from database ...')
@@ -65,6 +68,7 @@ class DBMeta(metaclass=Cached):
         self.load_schema()
         self.gen_dbdirgramcanvas()
         self.gen_ddl()
+        '''
 
     @property
     def schema(self):
@@ -96,6 +100,8 @@ class DBMeta(metaclass=Cached):
     def load_metadata(self):
         engine = apiengine.connect()
         cached_metadata = None
+        dsconfig = DSConfig(self.name)
+        metadata_pickle_filename = dsconfig.Schema_Config.schema_cache_filename
         if dsconfig.Schema_Config.schema_cache_enabled == True:
             if os.path.exists(os.path.join(cache_path, metadata_pickle_filename)):
                 try:
@@ -144,6 +150,7 @@ class DBMeta(metaclass=Cached):
         inspector = inspect(engine)
         metadata = self.metadata
         try:
+            dsconfig = DSConfig(self.name)
             if metadata is not None:
                 log.debug("Generate Schema from : [ %s ] with db schema [ %s ]" % (dsconfig.Database_Config.db_uri, self._schema))
                 jmeta = {}
@@ -207,7 +214,7 @@ class DBMeta(metaclass=Cached):
                             jtbl['columns'][cdict['name']] = cdict
                             jtbl['pagedefine'][cdict['name']] = cdict
                     log.debug('Extracting table schema for : %s ……' % jtbl['name'])
-                    japitable = ApiTable(jtbl['dbconn_id'], jtbl['name'])
+                    japitable = ApiTable(jtbl['dbconn_id'], jtbl['name'], self.name)
                     japitable.loadfrom_json(jtbl)
                     japitable.create_update_table()
                 # gen schema for views
@@ -265,7 +272,7 @@ class DBMeta(metaclass=Cached):
                             vtbl['columns'][vdict['name']] = vdict
                             vtbl['pagedefine'][vdict['name']] = vdict
                     log.debug('Extracting view schema for : %s ……' % vtbl['name'])
-                    vapitable = ApiTable(vtbl['dbconn_id'], vtbl['name'])
+                    vapitable = ApiTable(vtbl['dbconn_id'], vtbl['name'], self.name)
                     vapitable.loadfrom_json(vtbl)
                     vapitable.create_update_table()
         except Exception as exp:
@@ -275,7 +282,8 @@ class DBMeta(metaclass=Cached):
 
     def load_schema(self):
         log.debug('Loading schema from %s ……' % config('app_profile', default='default-datasource'))
-        apitable = ApiTable(dsconfig.Database_Config.id, dsconfig.Database_Config.name)
+        dsconfig = DSConfig(self.name)
+        apitable = ApiTable(dsconfig.Database_Config.id, dsconfig.Database_Config.name, self.name)
         metas = apitable.get_all_tables()
         self._tables = []
         for meta in metas:
@@ -304,7 +312,8 @@ class DBMeta(metaclass=Cached):
             return None
 
     def get_table_logicprimarykeys(self, table_name):
-        apitable = ApiTable(dsconfig.Database_Config.id, table_name)
+        dsconfig = DSConfig(self.name)
+        apitable = ApiTable(dsconfig.Database_Config.id, table_name, self.name)
         tablemetas = apitable.query_table_byName()
         if tablemetas is not None:
             return tablemetas[0].logicprimarykeys
@@ -358,6 +367,7 @@ class DBMeta(metaclass=Cached):
 
     def gen_dbdirgram(self):
         try:
+            dsconfig = DSConfig(self.name)
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
             configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
@@ -417,6 +427,7 @@ class DBMeta(metaclass=Cached):
 
     def gen_dbdirgramcanvas(self):
         try:
+            dsconfig = DSConfig(self.name)
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
             configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
@@ -434,7 +445,7 @@ class DBMeta(metaclass=Cached):
                           sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_dbdirgramcanvas() %s ' % exp)
-            if config('app_exception_detail', cast=bool, default=True):
+            if dsconfig.Application_Config.app_exception_detail:
                 traceback.print_exc()
 
     def gen_ddl(self):
@@ -447,6 +458,7 @@ class DBMeta(metaclass=Cached):
         metadata = self.metadata
         ddlstr = ''
         try:
+            dsconfig = DSConfig(self.name)
             if metadata is not None:
                 log.debug("Generate DLL from : [ %s ] with db schema "
                           "[ %s ]" % (dsconfig.Database_Config.name, self._schema))

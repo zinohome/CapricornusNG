@@ -17,7 +17,6 @@ import simplejson as json
 import sqlalchemy.types as satypes
 from sqlalchemy.engine.url import URL
 from apiconfig.config import config
-from apiconfig.dsconfig import dsconfig
 from util.log import log as log
 from datetime import datetime
 
@@ -154,11 +153,13 @@ def validQueryJson(jsonstr):
     return True
     #TODO valid jsonstr from query parameter
 
+'''
 def uappend(lststr):
     return dsconfig.Application_Config.app_param_prefix+'{}'.format(lststr)
 
 def uappendlist(slist):
     return list(map(uappend, slist))
+'''
 
 if __name__ == '__main__':
     str1 = "{'name': 'productDescription', 'type': TEXT(), 'default': None, 'comment': None, 'nullable': False}"

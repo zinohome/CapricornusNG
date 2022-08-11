@@ -11,7 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from apiconfig.config import config
-from apiconfig.dsconfig import dsconfig
+from apiconfig.dsconfig import DSConfig
 from util import toolkit
 from util.log import log as log
 
@@ -29,8 +29,9 @@ class Cached(type):
             return obj
 
 class APIEngine(metaclass=Cached):
-    def __init__(self, name):
+    def __init__(self, name=config('app_profile', default='default-datasource')):
         self.name = name
+        dsconfig = DSConfig(name)
         uri = dsconfig.Database_Config.db_uri
         log.debug('Connect use uri [ %s ]' % uri)
         syncuri = self.__sync_uri(uri)
@@ -111,9 +112,8 @@ class APIEngine(metaclass=Cached):
     def async_connect(self):
         return self.__async_engine
 
-apiengine = APIEngine(config('app_profile', default='default-datasource'))
-
 if __name__ == '__main__':
+    apiengine = APIEngine(config('app_profile', default='default-datasource'))
     engine = apiengine.connect()
     log.debug(engine.__class__)
     async_engine = apiengine.async_connect()

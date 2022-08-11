@@ -34,7 +34,7 @@ class Cached(type):
             return obj
 
 class DSConfig(metaclass=Cached):
-    def __init__(self, name):
+    def __init__(self, name=config('app_profile', default='default-datasource')):
         self.name = name
         self.db_schema_existed = False
         self.Application_Config = None
@@ -78,8 +78,9 @@ class DSConfig(metaclass=Cached):
             if len(tableresult) > 0:
                 self.db_schema_existed = True
 
-dsconfig = DSConfig(config('app_profile', default='default-datasource'))
 if __name__ == '__main__':
+    dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    log.debug(config('app_mode', default='worker'))
     #log.debug(dsconfig.Admin_Config)
     log.debug('Application_Config: %s' % dsconfig.Application_Config)
     log.debug('Schema_Config: %s' % dsconfig.Schema_Config)

@@ -12,10 +12,9 @@ import weakref
 from sqlalchemy import select, insert, update, delete
 import simplejson as json
 from apiconfig.config import config
-from apiconfig.dsconfig import dsconfig
+from apiconfig.dsconfig import DSConfig
 from apps.admin.models import TableMeta
 from core.adminsite import site
-from util import toolkit
 from util.log import log as log
 
 class Cached(type):
@@ -32,7 +31,7 @@ class Cached(type):
             return obj
 
 class ApiTable(metaclass=Cached):
-    def __init__(self, dbconn_id, name):
+    def __init__(self, dbconn_id, name, profilename=DSConfig(config('app_profile', default='default-datasource'))):
         self.id = None
         self.name = name
         self.dbconn_id = dbconn_id
@@ -44,6 +43,7 @@ class ApiTable(metaclass=Cached):
         self.columns = None
         self.pagedefine = None
         self.valuedict = None
+        self.profilename = profilename
 
     def loadfrom_json(self,jsonobj):
         if 'id' in jsonobj:
@@ -76,6 +76,7 @@ class ApiTable(metaclass=Cached):
 
     def existed_table(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_query_table_byName())
             if result is not None:
                 if len(result) > 0:
@@ -92,6 +93,7 @@ class ApiTable(metaclass=Cached):
 
     def query_table_byName(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_query_table_byName())
             return result
         except Exception as exp:
@@ -101,6 +103,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_query_table_byName(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
             result = await site.db.async_scalars_all(stmt)
             if len(result) > 0:
@@ -115,6 +118,7 @@ class ApiTable(metaclass=Cached):
 
     def get_all_tables(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_get_all_tables())
             return result
         except Exception as exp:
@@ -124,6 +128,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_get_all_tables(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
             result = await site.db.async_scalars_all(stmt)
             if len(result) > 0:
@@ -138,6 +143,7 @@ class ApiTable(metaclass=Cached):
 
     def getall_table_Name(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_getall_table_Name())
             return result
         except Exception as exp:
@@ -147,6 +153,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_getall_table_Name(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
             result = await site.db.async_scalars_all(stmt)
             if len(result) > 0:
@@ -164,6 +171,7 @@ class ApiTable(metaclass=Cached):
 
     def create_table(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_create_table())
             return result
         except Exception as exp:
@@ -173,6 +181,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_create_table(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             insertdict = self.valuedict.copy()
             if 'id' in insertdict:
                 del insertdict['id']
@@ -187,6 +196,7 @@ class ApiTable(metaclass=Cached):
 
     def create_update_table(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_create_update_table())
             return result
         except Exception as exp:
@@ -196,7 +206,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_create_update_table(self):
         try:
-
+            dsconfig = DSConfig(self.profilename)
             stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
             result = await site.db.async_scalars_all(stmt)
             if len(result) > 0:
@@ -225,6 +235,7 @@ class ApiTable(metaclass=Cached):
 
     def delete_table(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             result = asyncio.run(self.async_delete_table())
             return result
         except Exception as exp:
@@ -234,6 +245,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_delete_table(self):
         try:
+            dsconfig = DSConfig(self.profilename)
             stmt = delete(TableMeta).where(TableMeta.id == self.id)
             result = await site.db.async_execute(stmt)
             return result.rowcount
@@ -246,21 +258,6 @@ class ApiTable(metaclass=Cached):
 
 if __name__ == '__main__':
     ttt_table = ApiTable(2,'table1')
-    result = ttt_table.query_table_byName()
-    log.debug(result)
-    tt = result[0].json()
-    log.debug(tt.__class__)
-    log.debug(tt)
-    ttobj = json.loads(tt)
-    log.debug(ttobj)
-    ttobj['name'] = 'table22'
-    log.debug(ttobj)
-    t2 = ApiTable(2,'table2')
-    log.debug(t2.primarykeys)
-    t2.loadfrom_json(ttobj)
-    log.debug(t2.primarykeys)
-    log.debug(t2.valuedict)
-    log.debug(t2.create_table())
 
 
 
