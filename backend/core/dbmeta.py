@@ -563,6 +563,7 @@ class DBMeta(metaclass=Cached):
 
 
 if __name__ == '__main__':
+    '''
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
     apiengine = APIEngine(dsconfig)
     dbmeta = DBMeta(dsconfig, apiengine)
@@ -580,7 +581,7 @@ if __name__ == '__main__':
     log.debug(dbmeta.get_views())
     log.debug(dbmeta.response_schema())
     log.debug(dbmeta.check_table_schema('Brands'))
-
+'''
 
     #log.debug(dbmeta.response_table_pagdef('Brands'))
 

@@ -8,6 +8,7 @@ from apiconfig.config import config
 from core.adminsite import site, auth
 from apps.admin.models import DBURIModel, DBConnection
 from core.dbmeta import DBMeta
+from main import dsconfig, apiengine
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
@@ -46,7 +47,7 @@ async def db_sync_schema(dbconnection: DBConnection) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:
-        dbmeta = await sync_to_async(func=DBMeta)(site.dsconfig, site.apiengine)
+        dbmeta = await sync_to_async(func=DBMeta)(dsconfig, apiengine)
         log.debug('[Step 0/8] Meta synchronize initialized')
         await sync_to_async(func=dbmeta.load_metadata)()
         log.debug('[Step 1/8] Metadata loaded')

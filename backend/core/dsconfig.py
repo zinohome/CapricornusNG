@@ -10,7 +10,8 @@ from types import SimpleNamespace
 
 from sqlalchemy import select, create_engine
 import simplejson as json
-from sqlalchemy_database import Database
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy_database import Database, AsyncDatabase
 
 from apiconfig.config import config
 from apps.admin.models import TableMeta, DBConnection, DBConfig
@@ -45,6 +46,8 @@ class DSConfig(metaclass=Cached):
         self.Admin_Config = None
         self.engine = None
         self.db = None
+        self.asyncengine = None
+        self.asyncdb = None
         self.connect()
         self.loaddefault()
         self.readconfig()
@@ -52,6 +55,8 @@ class DSConfig(metaclass=Cached):
     def connect(self):
         self.engine = create_engine(url=toolkit.sync_uri(settings.database_url_async), echo=settings.debug, future=True)
         self.db = Database(self.engine)
+        self.asyncengine = create_async_engine(url=settings.database_url_async, echo=settings.debug, future=True)
+        self.asyncdb = AsyncDatabase(self.engine)
 
     def loaddefault(self):
         Database_Config_dict = {'name': 'sample-datasource', 'db_uri': 'sqlite+aiosqlite:////Users/zhangjun/PycharmProjects/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'db_Type': 'sqlite', 'db_useschema': False, 'db_exclude_tablespaces': None, 'id': 2, 'db_Dialect': 'aiosqlite', 'db_schema': None, 'db_conf_id': 2}
@@ -98,6 +103,7 @@ class DSConfig(metaclass=Cached):
                 self.db_schema_existed = True
 
 if __name__ == '__main__':
+    '''
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
     #log.debug(dsconfig.Query_Config)
     log.debug('Database_Config: %s' % dsconfig.Database_Config)
@@ -108,3 +114,4 @@ if __name__ == '__main__':
     log.debug('Connection_Config: %s' % dsconfig.Connection_Config)
     log.debug('Admin_Config: %s' % dsconfig.Admin_Config)
     log.debug('db_schema_existed: %s' % dsconfig.db_schema_existed)
+    '''

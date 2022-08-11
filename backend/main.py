@@ -14,14 +14,14 @@ from sqlmodel import SQLModel
 
 from apiconfig.config import config
 from core.adminsite import site
+from core.apiengine import APIEngine
 from core.dsconfig import DSConfig
 from core.settings import settings
 from util.log import log as log
 
 app = FastAPI(debug=settings.debug)
 dsconfig = DSConfig(config('app_profile', default='default-datasource'))
-dsconfig.readconfig()
-log.debug('Database_Config: %s' % dsconfig.Database_Config)
+apiengine = APIEngine(dsconfig)
 
 # 安装应用
 from apps import admin

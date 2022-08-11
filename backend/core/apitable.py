@@ -5,17 +5,15 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
-import asyncio
+
 import traceback
 import weakref
 
-import uvloop
-from asgiref.sync import async_to_sync
 from sqlalchemy import select, insert, update, delete
 import simplejson as json
+
 from apiconfig.config import config
 from apps.admin.models import TableMeta
-from core.adminsite import site
 from util.log import log as log
 
 class Cached(type):
@@ -36,7 +34,7 @@ class ApiTable(metaclass=Cached):
         self.dsconfig = dsconfig
         self.id = None
         self.name = name
-        self.dbconn_id = dsconfig.Database_Config.id
+        self.dbconn_id = self.dsconfig.Database_Config.id
         self.table_schema = None
         self.table_type = None
         self.primarykeys = None
@@ -77,8 +75,23 @@ class ApiTable(metaclass=Cached):
 
     def existed_table(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_query_table_byName)()
+            result = self.query_table_byName()
+            if result is not None:
+                if len(result) > 0:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        except Exception as exp:
+            log.error('Exception at ApiTable.existed_table() %s ' % exp)
+            if self.dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+            return False
+
+    async def async_existed_table(self):
+        try:
+            result = await self.async_query_table_byName()
             if result is not None:
                 if len(result) > 0:
                     return True
@@ -94,9 +107,12 @@ class ApiTable(metaclass=Cached):
 
     def query_table_byName(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_query_table_byName)()
-            return result
+            stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
+            result = self.dsconfig.db.scalars_all(stmt)
+            if len(result) > 0:
+                return result
+            else:
+                return None
         except Exception as exp:
             log.error('Exception at ApiTable.query_table_byName() %s ' % exp)
             if self.dsconfig.Application_Config.app_exception_detail:
@@ -105,7 +121,7 @@ class ApiTable(metaclass=Cached):
     async def async_query_table_byName(self):
         try:
             stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
-            result = await site.db.async_scalars_all(stmt)
+            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
             if len(result) > 0:
                 return result
             else:
@@ -118,8 +134,8 @@ class ApiTable(metaclass=Cached):
 
     def get_all_tables(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_get_all_tables)()
+            stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
+            result = self.dsconfig.db.scalars_all(stmt)
             return result
         except Exception as exp:
             log.error('Exception at ApiTable.get_all_tables() %s ' % exp)
@@ -129,7 +145,7 @@ class ApiTable(metaclass=Cached):
     async def async_get_all_tables(self):
         try:
             stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
-            result = await site.db.async_scalars_all(stmt)
+            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
             if len(result) > 0:
                 return result
             else:
@@ -142,8 +158,8 @@ class ApiTable(metaclass=Cached):
 
     def getall_table_Name(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_getall_table_Name)()
+            stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
+            result = self.dsconfig.db.scalars_all(stmt)
             return result
         except Exception as exp:
             log.error('Exception at ApiTable.getall_table_Name() %s ' % exp)
@@ -153,7 +169,7 @@ class ApiTable(metaclass=Cached):
     async def async_getall_table_Name(self):
         try:
             stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
-            result = await site.db.async_scalars_all(stmt)
+            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
             if len(result) > 0:
                 resultlist = []
                 for record in result:
@@ -169,9 +185,12 @@ class ApiTable(metaclass=Cached):
 
     def create_table(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_create_table)()
-            return result
+            insertdict = self.valuedict.copy()
+            if 'id' in insertdict:
+                del insertdict['id']
+            stmt = insert(TableMeta).values(insertdict)
+            result = self.dsconfig.db.execute(stmt)
+            return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.create_table() %s ' % exp)
             if self.dsconfig.Application_Config.app_exception_detail:
@@ -183,7 +202,7 @@ class ApiTable(metaclass=Cached):
             if 'id' in insertdict:
                 del insertdict['id']
             stmt = insert(TableMeta).values(insertdict)
-            result = await site.db.async_execute(stmt)
+            result = await self.dsconfig.asyncdb.async_execute(stmt)
             return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.async_create_table() %s ' % exp)
@@ -193,9 +212,26 @@ class ApiTable(metaclass=Cached):
 
     def create_update_table(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_create_update_table)()
-            return result
+            stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
+            result = self.dsconfig.db.scalars_all(stmt)
+            if len(result) > 0:
+                # update ingore pagedef
+                olddict = result[0].dict()
+                updatedict = self.valuedict.copy()
+                updatedict['pagedefine'] = olddict['pagedefine']
+                self.valuedict['pagedefine'] = olddict['pagedefine']
+                stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
+                result = self.dsconfig.db.execute(stmt)
+                self.valuedict['id'] = olddict['id']
+                return self.valuedict['id']
+            else:
+                # insert
+                insertdict = self.valuedict.copy()
+                if 'id' in insertdict:
+                    del insertdict['id']
+                stmt = insert(TableMeta).values(insertdict)
+                result = self.dsconfig.db.execute(stmt)
+                return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.create_update_table() %s ' % exp)
             if self.dsconfig.Application_Config.app_exception_detail:
@@ -204,7 +240,7 @@ class ApiTable(metaclass=Cached):
     async def async_create_update_table(self):
         try:
             stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
-            result = await site.db.async_scalars_all(stmt)
+            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
             if len(result) > 0:
                 #update ingore pagedef
                 olddict = result[0].dict()
@@ -212,7 +248,7 @@ class ApiTable(metaclass=Cached):
                 updatedict['pagedefine'] = olddict['pagedefine']
                 self.valuedict['pagedefine'] = olddict['pagedefine']
                 stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
-                result = await site.db.async_execute(stmt)
+                result = await self.dsconfig.asyncdb.async_execute(stmt)
                 self.valuedict['id'] = olddict['id']
                 return self.valuedict['id']
             else:
@@ -221,7 +257,7 @@ class ApiTable(metaclass=Cached):
                 if 'id' in insertdict:
                     del insertdict['id']
                 stmt = insert(TableMeta).values(insertdict)
-                result = await site.db.async_execute(stmt)
+                result = await self.dsconfig.asyncdb.async_execute(stmt)
                 return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.async_create_update_table() %s ' % exp)
@@ -231,9 +267,9 @@ class ApiTable(metaclass=Cached):
 
     def delete_table(self):
         try:
-            uvloop.install()
-            result = async_to_sync(self.async_delete_table)()
-            return result
+            stmt = delete(TableMeta).where(TableMeta.id == self.id)
+            result = self.dsconfig.db.execute(stmt)
+            return result.rowcount
         except Exception as exp:
             log.error('Exception at ApiTable.delete_table() %s ' % exp)
             if self.dsconfig.Application_Config.app_exception_detail:
@@ -242,7 +278,7 @@ class ApiTable(metaclass=Cached):
     async def async_delete_table(self):
         try:
             stmt = delete(TableMeta).where(TableMeta.id == self.id)
-            result = await site.db.async_execute(stmt)
+            result = await self.dsconfig.asyncdb.async_execute(stmt)
             return result.rowcount
         except Exception as exp:
             log.error('Exception at ApiTable.async_delete_table() %s ' % exp)
@@ -253,3 +289,5 @@ class ApiTable(metaclass=Cached):
 
 if __name__ == '__main__':
     pass
+    #apitable = ApiTable(main.dsconfig,'None')
+    #log.debug(apitable.get_all_tables())
