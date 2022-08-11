@@ -87,7 +87,7 @@ class APIEngine(metaclass=Cached):
                                                 )
 
     def __sync_uri(self, uri):
-        db_sub, dialect_sub, drv_sub = uri.split(':')[0].split('+')[0], uri.split(':')[0].split('+')[1], uri.split(':')[1]
+        db_sub, dialect_sub, drv_sub = uri.split(':')[0].split('+')[0].strip(), uri.split(':')[0].split('+')[1].strip(), uri.split(':')[1].strip()
         sync_dialect_sub = ''
         if db_sub == 'sqlite':
             sync_dialect_sub = 'pysqlite'

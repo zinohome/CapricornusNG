@@ -11,24 +11,33 @@
 
 
 class TableSchema(object):
-    def __init__(self, conn_id, table_name, table_type):
-        self._conn_id = conn_id
+    def __init__(self, id, table_name, table_type):
+        self._id = id
         self._name = table_name
-        self._table_Type = table_type
-        self._table_schema = 'N/A'
-        self._primarykeys = 'N/A'
-        self._logicprimarykeys = 'N/A'
-        self._indexes = 'N/A'
-        self._columns = 'N/A'
-        self._pagedefine = 'N/A'
+        self._table_type = table_type
+        self._dbconn_id = None
+        self._table_schema = None
+        self._primarykeys = None
+        self._logicprimarykeys = None
+        self._indexes = None
+        self._columns = None
+        self._pagedefine = None
 
     @property
-    def conn_id(self):
-        return self._conn_id
+    def id(self):
+        return self._id
 
-    @conn_id.setter
-    def conn_id(self, value):
-        self._conn_id = value
+    @id.setter
+    def id(self, value):
+        self._id = value
+
+    @property
+    def dbconn_id(self):
+        return self._dbconn_id
+
+    @dbconn_id.setter
+    def dbconn_id(self, value):
+        self._dbconn_id = value
 
     @property
     def name(self):
@@ -39,12 +48,12 @@ class TableSchema(object):
         self._name = value
 
     @property
-    def table_Type(self):
-        return self._table_Type
+    def table_type(self):
+        return self._table_type
 
-    @table_Type.setter
-    def table_Type(self, value):
-        self._table_Type = value
+    @table_type.setter
+    def table_type(self, value):
+        self._table_type = value
 
     @property
     def table_schema(self):
@@ -117,7 +126,8 @@ class TableSchema(object):
     @property
     def json(self):
         return {
-            'conn_id': self.conn_id,
+            '_id': self._id,
+            'dbconn_id': self._dbconn_id,
             'name': self._name,
             'table_type': self._table_type,
             'table_schema': self._table_schema,
@@ -135,3 +145,4 @@ class TableSchema(object):
                 rType = column['type']
                 rType = rType[:rType.find("(")] if rType.find("(") > -1 else rType
                 return rType
+

@@ -164,7 +164,7 @@ class TableMeta(BaseSQLModel, table=True):
     )
     table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
                                             amis_form_item=amis.InputText())
-    table_Type: TableType = models.Field(TableType.table, title='Type')
+    table_type: TableType = models.Field(TableType.table, title='Type')
     primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
                                                          amis_form_item=amis.InputText())
     logicprimarykeys: Optional[str] = models.Field(default='', title='LogicPrimaryKey', max_length=256,

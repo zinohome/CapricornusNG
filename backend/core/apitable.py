@@ -9,7 +9,7 @@ import asyncio
 import traceback
 import weakref
 
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, update, delete
 import simplejson as json
 from apiconfig.config import config
 from apiconfig.dsconfig import dsconfig
@@ -37,7 +37,7 @@ class ApiTable(metaclass=Cached):
         self.name = name
         self.dbconn_id = dbconn_id
         self.table_schema = None
-        self.table_Type = None
+        self.table_type = None
         self.primarykeys = None
         self.logicprimarykeys = None
         self.indexes = None
@@ -54,8 +54,8 @@ class ApiTable(metaclass=Cached):
             self.dbconn_id = jsonobj['dbconn_id']
         if 'table_schema' in jsonobj:
             self.table_schema = jsonobj['table_schema']
-        if 'table_Type' in jsonobj:
-            self.table_Type = jsonobj['table_Type']
+        if 'table_type' in jsonobj:
+            self.table_type = jsonobj['table_type']
         if 'primarykeys' in jsonobj:
             if isinstance(jsonobj['primarykeys'],list):
                 jsonobj['primarykeys'] = ','.join(jsonobj['primarykeys'])
@@ -113,6 +113,55 @@ class ApiTable(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    def get_all_tables(self):
+        try:
+            result = asyncio.run(self.async_get_all_tables())
+            return result
+        except Exception as exp:
+            log.error('Exception at ApiTable.get_all_tables() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+
+    async def async_get_all_tables(self):
+        try:
+            stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
+            result = await site.db.async_scalars_all(stmt)
+            if len(result) > 0:
+                return result
+            else:
+                return None
+        except Exception as exp:
+            log.error('Exception at ApiTable.async_get_all_tables() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+            return None
+
+    def getall_table_Name(self):
+        try:
+            result = asyncio.run(self.async_getall_table_Name())
+            return result
+        except Exception as exp:
+            log.error('Exception at ApiTable.getall_table_Name() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+
+    async def async_getall_table_Name(self):
+        try:
+            stmt = select(TableMeta).where(TableMeta.dbconn_id == self.dbconn_id)
+            result = await site.db.async_scalars_all(stmt)
+            if len(result) > 0:
+                resultlist = []
+                for record in result:
+                    resultlist.append(record.name)
+                return resultlist
+            else:
+                return None
+        except Exception as exp:
+            log.error('Exception at ApiTable.async_getall_table_Name() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+            return None
+
     def create_table(self):
         try:
             result = asyncio.run(self.async_create_table())
@@ -136,6 +185,63 @@ class ApiTable(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    def create_update_table(self):
+        try:
+            result = asyncio.run(self.async_create_update_table())
+            return result
+        except Exception as exp:
+            log.error('Exception at ApiTable.create_update_table() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+
+    async def async_create_update_table(self):
+        try:
+
+            stmt = select(TableMeta).where(TableMeta.name == self.name, TableMeta.dbconn_id == self.dbconn_id)
+            result = await site.db.async_scalars_all(stmt)
+            if len(result) > 0:
+                #update ingore pagedef
+                olddict = result[0].dict()
+                updatedict = self.valuedict.copy()
+                updatedict['pagedefine'] = olddict['pagedefine']
+                self.valuedict['pagedefine'] = olddict['pagedefine']
+                stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
+                result = await site.db.async_execute(stmt)
+                self.valuedict['id'] = olddict['id']
+                return self.valuedict['id']
+            else:
+                #insert
+                insertdict = self.valuedict.copy()
+                if 'id' in insertdict:
+                    del insertdict['id']
+                stmt = insert(TableMeta).values(insertdict)
+                result = await site.db.async_execute(stmt)
+                return result.lastrowid
+        except Exception as exp:
+            log.error('Exception at ApiTable.async_create_update_table() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+            return None
+
+    def delete_table(self):
+        try:
+            result = asyncio.run(self.async_delete_table())
+            return result
+        except Exception as exp:
+            log.error('Exception at ApiTable.delete_table() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+
+    async def async_delete_table(self):
+        try:
+            stmt = delete(TableMeta).where(TableMeta.id == self.id)
+            result = await site.db.async_execute(stmt)
+            return result.rowcount
+        except Exception as exp:
+            log.error('Exception at ApiTable.async_delete_table() %s ' % exp)
+            if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+            return None
 
 
 if __name__ == '__main__':

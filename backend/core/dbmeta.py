@@ -17,10 +17,11 @@ from sqlalchemy import inspect, Table
 
 from apiconfig.config import config
 from sqlalchemy.schema import MetaData,CreateTable
-
+import simplejson as json
 from apiconfig.dsconfig import dsconfig
 from core.apiengine import apiengine
 from core.apitable import ApiTable
+from core.tableschema import TableSchema
 from util import toolkit
 from util.log import log as log
 
@@ -60,7 +61,7 @@ class DBMeta(metaclass=Cached):
             else:
                 log.debug('Schema does not exists, generate it from database ...')
                 self.gen_schema()
-        #self.load_schema()
+        self.load_schema()
         #self.gen_dbdirgramcanvas()
         #self.gen_ddl()
 
@@ -174,7 +175,7 @@ class DBMeta(metaclass=Cached):
                         jtbl['name'] = table_name
                         jtbl['dbconn_id'] = dsconfig.Database_Config.id
                         jtbl['table_schema'] = dsconfig.Database_Config.db_schema
-                        jtbl['table_Type'] = 'table'
+                        jtbl['table_type'] = 'table'
                         pk = inspector.get_pk_constraint(table_name)
                         if self._useschema:
                             pk = inspector.get_pk_constraint(table_name, schema=self._schema)
@@ -183,8 +184,7 @@ class DBMeta(metaclass=Cached):
                             jtbl['logicprimarykeys'] = pk['constrained_columns']
                         else:
                             jtbl['primarykeys'] = []
-                            #lpk = self.get_table_logicprimarykeys(table_name)
-                            lpk = None
+                            lpk = self.get_table_logicprimarykeys(table_name)
                             jtbl['logicprimarykeys'] = [] if lpk is None else lpk
                         jtbl['indexes'] = inspector.get_indexes(table_name)
                         if self._useschema:
@@ -205,10 +205,10 @@ class DBMeta(metaclass=Cached):
                             cdict['pythonType'] = cptypedict[cdict['name']]
                             jtbl['columns'][cdict['name']] = cdict
                             jtbl['pagedefine'][cdict['name']] = cdict
-                    log.debug('table schema is : %s' % jtbl)
+                    log.debug('Extracting table schema for : %s ……' % jtbl['name'])
                     japitable = ApiTable(jtbl['dbconn_id'], jtbl['name'])
                     japitable.loadfrom_json(jtbl)
-                    japitable.create_table()
+                    japitable.create_update_table()
                 # gen schema for views
                 view_names = inspector.get_view_names()
                 if self._useschema:
@@ -233,7 +233,7 @@ class DBMeta(metaclass=Cached):
                         vtbl['name'] = view_name
                         vtbl['dbconn_id'] = dsconfig.Database_Config.id
                         vtbl['table_schema'] = dsconfig.Database_Config.db_schema
-                        vtbl['table_Type'] = 'view'
+                        vtbl['table_type'] = 'view'
                         pk = inspector.get_pk_constraint(view_name)
                         if self._useschema:
                             pk = inspector.get_pk_constraint(view_name, schema=self._schema)
@@ -242,7 +242,7 @@ class DBMeta(metaclass=Cached):
                             vtbl['logicprimarykeys'] = pk['constrained_columns']
                         else:
                             vtbl['primarykeys'] = []
-                            #lpk = self.get_table_logicprimarykeys(view_name)
+                            lpk = self.get_table_logicprimarykeys(view_name)
                             vtbl['logicprimarykeys'] = [] if lpk is None else lpk
                         vtbl['indexes'] = inspector.get_indexes(view_name)
                         if self._useschema:
@@ -263,13 +263,253 @@ class DBMeta(metaclass=Cached):
                             vdict['pythonType'] = cptypedict[vdict['name']]
                             vtbl['columns'][vdict['name']] = vdict
                             vtbl['pagedefine'][vdict['name']] = vdict
-                    log.debug('view schema is : %s' % vtbl)
+                    log.debug('Extracting view schema for : %s ……' % vtbl['name'])
                     vapitable = ApiTable(vtbl['dbconn_id'], vtbl['name'])
                     vapitable.loadfrom_json(vtbl)
-                    vapitable.create_table()
+                    vapitable.create_update_table()
         except Exception as exp:
             log.error('Exception at dbmeta.gen_schema() %s ' % exp)
             if dsconfig.Application_Config.app_exception_detail:
+                traceback.print_exc()
+
+    def load_schema(self):
+        log.debug('Loading schema from %s ……' % config('app_profile', default='default-datasource'))
+        apitable = ApiTable(dsconfig.Database_Config.id, dsconfig.Database_Config.name)
+        metas = apitable.get_all_tables()
+        self._tables = []
+        for meta in metas:
+            table = TableSchema(meta.id, meta.name, meta.table_type)
+            table.dbconn_id = meta.dbconn_id
+            table.table_schema = meta.table_schema
+            table.primarykeys = meta.primarykeys
+            table.logicprimarykeys = meta.logicprimarykeys
+            table.indexes = meta.indexes
+            table.columns = meta.columns
+            table.pagedefine = meta.pagedefine
+            self._tables.append(table)
+            if table.table_type == 'table':
+                self._tableCount = self._tableCount + 1
+            if table.table_type == 'view':
+                self._viewCount = self._viewCount + 1
+        log.debug('Schema load with [ %s ] tables and [ %s ] views' % (self._tableCount, self._viewCount))
+
+
+    def gettable(self, value):
+        if len(self._tables) > 0:
+            for table in self._tables:
+                if table.name == value:
+                    return table
+        else:
+            return None
+
+    def get_table_logicprimarykeys(self, table_name):
+        apitable = ApiTable(dsconfig.Database_Config.id, table_name)
+        tablemetas = apitable.query_table_byName()
+        if tablemetas is not None:
+            return tablemetas[0].logicprimarykeys
+        else:
+            return None
+
+    def table_has_null_type_column(self, table_name):
+        rtn = False
+        table = self.gettable(table_name)
+        if table is not None:
+            for column in table.columns.values():
+                if column['type'] == 'NULL':
+                    rtn = True
+                    break
+        else:
+            rtn = True
+        return rtn
+
+    def get_table_pk_type(self,tablename,pkname):
+        pk_type = 'VARCHAR'
+        table = self.gettable(tablename)
+        pk_type = table.getColumnType(pkname)
+        return pk_type
+
+    def get_table_pk_qmneed(self, tablename, pkname):
+        pk_qmneed = False
+        pk_type = self.get_table_pk_type(tablename, pkname)
+        if pk_type in ['CHAR', 'VARCHAR', 'TEXT', 'DATE', 'DATETIME', 'TIMESTAMP', 'YEAR', 'TIME']:
+            pk_qmneed = True
+        return pk_qmneed
+
+    def get_tables(self):
+        tblist = []
+        for tb in self._tables:
+            if tb.type == 'table':
+                tblist.append(tb.name)
+        return tblist
+
+    def get_views(self):
+        viewlist = []
+        for tb in self._tables:
+            if tb.type == 'view':
+                viewlist.append(tb.name)
+        return viewlist
+
+    def response_schema(self):
+        tblist = []
+        for tb in self._tables:
+            tblist.append(tb.name)
+        return tblist
+
+    def gen_dbdirgram(self):
+        try:
+            basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+            apppath = os.path.abspath(os.path.join(basepath, os.pardir))
+            configpath = os.path.abspath(os.path.join(apppath, 'config'))
+            canvasfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram-canvas.json"))
+            diagramfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram.json"))
+            dbdiagram = {}
+            canvas = {}
+            with open(canvasfilepath, 'r') as canvasfile:
+                canvas = json.loads(canvasfile.read())
+            canvas['databaseName'] = dsconfig.Database_Config.name
+            dbdiagram['canvas'] = canvas
+            tables = self.get_tables()
+            tbllist = []
+            for tbl in tables:
+                dgtable = self.gettable(tbl)
+                ndgtable = {}
+                ndgtable['name'] = dgtable.name
+                ndgtable['comment'] = ''
+                ndgtable['id'] = str(uuid.uuid1())
+                ndgtable['ui'] = {'active': True, 'left': 50, 'top': 50, 'zIndex': 1, 'widthName': 60,
+                                  'widthComment': 60}
+                ndgcolume = {}
+                pks = dgtable.primarykeys
+                clmlist = []
+                for clm in dgtable.columns:
+                    ndgcolume = {}
+                    ndgcolume['id'] = str(uuid.uuid1())
+                    ndgcolume['name'] = clm['name']
+                    # ndgcolume['comment'] = '' if clm['comment'] == 'None' else clm['comment']
+                    ndgcolume['dataType'] = clm['type']
+                    ndgcolume['default'] = '' if clm['default'] == 'None' else clm['default']
+                    ndgcolume['option'] = {"autoIncrement": False, "primaryKey": False, "unique": False,
+                                           "notNull": False}
+                    ndgcolume['ui'] = {"active": False, "pk": False, "fk": False, "pfk": False, "widthName": 60,
+                                       "widthComment": 60, "widthDataType": 60, "widthDefault": 60}
+                    if clm.__contains__('nullable'):
+                        ndgcolume['option']['notNull'] = 'true' if clm['nullable'] == 'False' else 'false'
+                    if clm.__contains__('autoincrement'):
+                        ndgcolume['option']['autoIncrement'] = clm['autoincrement']
+                    if clm['name'] in pks:
+                        ndgcolume['option']['primaryKey'] = True
+                        ndgcolume['ui']['pk'] = True
+                    clmlist.append(ndgcolume)
+                ndgtable['columns'] = clmlist
+                tbllist.append(ndgtable)
+            dbdiagramtable = {}
+            dbdiagramtable['tables'] = tbllist
+            dbdiagram['table'] = dbdiagramtable
+            # log.debug(dbdiagram)
+            with open(diagramfilepath, 'w', encoding='utf-8') as diagramfile:
+                json.dump(dbdiagram, diagramfile, separators=(',', ':'),
+                          sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
+        except Exception as exp:
+            log.error('Exception at dbmeta.gen_dbdirgram() %s ' % exp)
+            if config('app_exception_detail', cast=bool, default=True):
+                traceback.print_exc()
+
+    def gen_dbdirgramcanvas(self):
+        try:
+            basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+            apppath = os.path.abspath(os.path.join(basepath, os.pardir))
+            configpath = os.path.abspath(os.path.join(apppath, 'config'))
+            canvasfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram-canvas.json"))
+            diagramfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram.json"))
+            dbdiagram = {}
+            canvas = {}
+            with open(canvasfilepath, 'r') as canvasfile:
+                canvas = json.loads(canvasfile.read())
+            canvas['databaseName'] = configindb.Database_Config['db_name']
+            dbdiagram['canvas'] = canvas
+            # log.debug(dbdiagram)
+            with open(diagramfilepath, 'w', encoding='utf-8') as diagramfile:
+                json.dump(dbdiagram, diagramfile, separators=(',', ':'),
+                          sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
+        except Exception as exp:
+            log.error('Exception at dbmeta.gen_dbdirgramcanvas() %s ' % exp)
+            if config('app_exception_detail', cast=bool, default=True):
+                traceback.print_exc()
+
+    def gen_ddl(self):
+        basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+        apppath = os.path.abspath(os.path.join(basepath, os.pardir))
+        configpath = os.path.abspath(os.path.join(apppath, 'config'))
+        ddlfilepath = os.path.abspath(os.path.join(configpath, "dbddl.sql"))
+        engine = dbengine.DBEngine().connect()
+        inspector = inspect(engine)
+        metadata = self.metadata
+        ddlstr = ''
+        try:
+            if metadata is not None:
+                log.debug("Generate DLL from : [ %s ] with db schema "
+                          "[ %s ]" % (configindb.Database_Config['db_name'], self._schema))
+                table_list_set = set(toolkit.to_list(configindb.Schema_Config['schema_fetch_tables']))
+                table_names = inspector.get_table_names()
+                if self.use_schema:
+                    table_names = inspector.get_table_names(schema=self._schema)
+                for table_name in table_names:
+                    persist_table = False
+                    if configindb.Schema_Config['schema_fetch_all_table']:
+                        persist_table = True
+                    else:
+                        if table_name in table_list_set:
+                            persist_table = True
+                    if self.table_has_null_type_column(table_name):
+                        persist_table = False
+                    if persist_table:
+                        user_table = Table(table_name, metadata, autoload_with=engine)
+                        tblcrtstr = str(CreateTable(user_table).compile(engine))
+                        tblcrtstr = tblcrtstr.replace(' ' + self._schema + '.', ' ')
+                        tblcrtstr = tblcrtstr.replace(' ' + table_name + ' ', ' `' + table_name + '` ')
+                        table_columns = inspector.get_columns(table_name)
+                        if self.use_schema:
+                            table_columns = inspector.get_columns(table_name, schema=self._schema)
+                        for column in table_columns:
+                            tblcrtstr = tblcrtstr.replace('\t' + column['name'] + ' ', '\t`' + column['name'] + '` ')
+                            tblcrtstr = tblcrtstr.replace('(' + column['name'] + ')', ' `(' + column['name'] + '`) ')
+                        # log.debug(tblcrtstr)
+                        ddlstr = ddlstr + tblcrtstr
+                view_names = inspector.get_view_names()
+                if self.use_schema:
+                    view_names = inspector.get_view_names(schema=self._schema)
+                for view_name in view_names:
+                    persist_view = False
+                    if configindb.Schema_Config['schema_fetch_all_table']:
+                        persist_view = True
+                    else:
+                        if view_name in table_list_set:
+                            persist_view = True
+                    if persist_view:
+                        user_view = Table(view_name, metadata, autoload_with=engine)
+                        viewcrtstr = str(CreateTable(user_view).compile(engine))
+                        viewcrtstr = viewcrtstr.replace(' ' + self._schema + '.', ' ')
+                        viewcrtstr = viewcrtstr.replace(' ' + view_name + ' ', ' `' + view_name + '` ')
+                        view_columns = inspector.get_columns(view_name)
+                        if self.use_schema:
+                            view_columns = inspector.get_columns(view_name, schema=self._schema)
+                        for vcolumn in view_columns:
+                            viewcrtstr = viewcrtstr.replace('\t' + vcolumn['name'] + ' ',
+                                                            '\t`' + vcolumn['name'] + '` ')
+                            viewcrtstr = viewcrtstr.replace('(' + vcolumn['name'] + ')',
+                                                            ' `(' + vcolumn['name'] + '`) ')
+                        # log.debug(viewcrtstr)
+                        ddlstr = ddlstr + viewcrtstr
+                # log.debug(ddlstr)
+                with open(ddlfilepath, 'w', encoding='utf-8') as ddlfile:
+                    ddlfile.write(ddlstr)
+                    ddlfile.close()
+            else:
+                log.error('Can not get metadata at gen_ddl() ... ')
+                raise Exception('Can not get metadata at gen_ddl()')
+        except Exception as exp:
+            log.error('Exception at dbmeta.gen_ddl() %s ' % exp)
+            if config('app_exception_detail', cast=bool, default=True):
                 traceback.print_exc()
 
 if __name__ == '__main__':
