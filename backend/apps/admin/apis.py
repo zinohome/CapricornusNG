@@ -5,10 +5,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
 from apiconfig.config import config
-from apiconfig.dsconfig import DSConfig
+from core.adminsite import site, auth
 from apps.admin.models import DBURIModel, DBConnection
-from core.adminsite import auth
-from core.apiengine import APIEngine
 from core.dbmeta import DBMeta
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
@@ -48,12 +46,12 @@ async def db_connection_test(dbconnection: DBConnection) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:
-        dsconfig = DSConfig(config('app_profile', default='default-datasource'))
-        await dsconfig.readconfig()
+        #dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+        #await dsconfig.readconfig()
         #dsconfig = await sync_to_async(func=DSConfig)(config('app_profile', default='default-datasource'))
-        log.debug(dsconfig.Database_Config)
-        apiengine = await sync_to_async(func=APIEngine)(dsconfig, config('app_profile', default='default-datasource'))
-        dbmeta = await sync_to_async(func=DBMeta)(dsconfig, apiengine, config('app_profile', default='default-datasource'))
+        #log.debug(dsconfig.Database_Config)
+        #apiengine = await sync_to_async(func=APIEngine)(dsconfig)
+        dbmeta = await sync_to_async(func=DBMeta)(site.dsconfig, site.apiengine)
         log.debug('[Step 0/8] Meta synchronize initialized')
         await sync_to_async(func=dbmeta.load_metadata)()
         log.debug('[Step 1/8] Metadata loaded')

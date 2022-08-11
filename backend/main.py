@@ -2,8 +2,10 @@ from starlette.responses import RedirectResponse
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 
+from apiconfig.config import config
 from core.adminsite import site
 from core.settings import settings
+from util.log import log as log
 
 app = FastAPI(debug=settings.debug)
 
@@ -23,6 +25,12 @@ async def startup():
     await auth.create_role_user(role_key='admin')
     await auth.create_role_user(role_key='vip')
     await auth.create_role_user(role_key='test')
+    await site.get_dsconfig()
+
+    #site.dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    #await site.dsconfig.readconfig()
+    #log.debug(site.dsconfig.Database_Config)
+    #site.apiengine = APIEngine(site.dsconfig)
 
 
     #from core.adminsite import scheduler

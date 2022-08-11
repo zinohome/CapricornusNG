@@ -23,8 +23,7 @@ from apiconfig.config import config
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
 
-from apiconfig.dsconfig import DSConfig
-from core.apiengine import APIEngine
+from core.adminsite import DSConfig, APIEngine
 from core.apitable import ApiTable
 from core.tableschema import TableSchema
 from util import toolkit
@@ -47,10 +46,10 @@ class Cached(type):
             return obj
 
 class DBMeta(metaclass=Cached):
-    def __init__(self, dsconfig, apiengine, name=config('app_profile', default='default-datasource')):
+    def __init__(self, dsconfig, apiengine):
         self.dsconfig = dsconfig
         self.apiengine = apiengine
-        self.name = name
+        self.name = dsconfig.Database_Config.name
         self._useschema = self.dsconfig.Database_Config.db_useschema
         self._schema = self.dsconfig.Database_Config.db_schema
         self._tableCount = 0
@@ -527,17 +526,16 @@ class DBMeta(metaclass=Cached):
                 traceback.print_exc()
 
 if __name__ == '__main__':
+    '''
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
     async_to_sync(dsconfig.readconfig)()
-    apiengine = APIEngine(dsconfig, config('app_profile', default='default-datasource'))
-    dbmeta = DBMeta(dsconfig, apiengine, config('app_profile', default='default-datasource'))
+    apiengine = APIEngine(dsconfig)
+    dbmeta = DBMeta(dsconfig, apiengine)
     dbmeta.load_metadata()
     dbmeta.gen_schema()
     dbmeta.load_schema()
     dbmeta.gen_dbdirgramcanvas()
     dbmeta.gen_ddl()
-
-    '''
     tbl = dbmeta.gettable('Customers')
     log.debug(tbl.json)
     log.debug(dbmeta.get_table_primary_keys('Customers'))
