@@ -140,7 +140,7 @@ class TableSchema(object):
 
     def getColumnType(self, Columename):
         rType = 'None'
-        for column in self.columns:
+        for column in self.columns.values():
             if column['name'] == Columename:
                 rType = column['type']
                 rType = rType[:rType.find("(")] if rType.find("(") > -1 else rType

@@ -153,6 +153,24 @@ def validQueryJson(jsonstr):
     return True
     #TODO valid jsonstr from query parameter
 
+def sync_uri(uri):
+    db_sub, dialect_sub, drv_sub = uri.split(':')[0].split('+')[0].strip(), uri.split(':')[0].split('+')[1].strip(), uri.split(':')[1].strip()
+    sync_dialect_sub = ''
+    if db_sub == 'sqlite':
+        sync_dialect_sub = 'pysqlite'
+    elif db_sub == 'mysql':
+        sync_dialect_sub = 'pymysql'
+    elif db_sub == 'oracle':
+        sync_dialect_sub = 'cx_oracle'
+    elif db_sub == 'postgresql':
+        sync_dialect_sub = 'psycopg2'
+    else:
+        sync_dialect_sub = None
+    if sync_dialect_sub is None:
+        return None
+    else:
+        syncuri = f'{db_sub}+{sync_dialect_sub}:{drv_sub}'
+    return syncuri
 
 if __name__ == '__main__':
     str1 = "{'name': 'productDescription', 'type': TEXT(), 'default': None, 'comment': None, 'nullable': False}"

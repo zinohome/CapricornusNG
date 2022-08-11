@@ -1,13 +1,27 @@
+#  #
+#  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
+#  #  -- metastore & pagedef
+#  @Time    : 2021
+#  @Author  : Zhang Jun
+#  @Email   : ibmzhangjun@139.com
+#  @Software: Capricornus
+import asyncio
+
+from asgiref.sync import async_to_sync
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 
 from apiconfig.config import config
 from core.adminsite import site
+from core.dsconfig import DSConfig
 from core.settings import settings
 from util.log import log as log
 
 app = FastAPI(debug=settings.debug)
+dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+dsconfig.readconfig()
+log.debug('Database_Config: %s' % dsconfig.Database_Config)
 
 # 安装应用
 from apps import admin
@@ -25,13 +39,6 @@ async def startup():
     await auth.create_role_user(role_key='admin')
     await auth.create_role_user(role_key='vip')
     await auth.create_role_user(role_key='test')
-    await site.get_dsconfig()
-
-    #site.dsconfig = DSConfig(config('app_profile', default='default-datasource'))
-    #await site.dsconfig.readconfig()
-    #log.debug(site.dsconfig.Database_Config)
-    #site.apiengine = APIEngine(site.dsconfig)
-
 
     #from core.adminsite import scheduler
     #scheduler.start()

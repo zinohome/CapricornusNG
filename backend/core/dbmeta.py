@@ -9,6 +9,7 @@
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
 import asyncio
+import base64
 import os
 import pickle
 import traceback
@@ -23,8 +24,9 @@ from apiconfig.config import config
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
 
-from core.adminsite import DSConfig, APIEngine
+from core.apiengine import APIEngine
 from core.apitable import ApiTable
+from core.dsconfig import DSConfig
 from core.tableschema import TableSchema
 from util import toolkit
 from util.log import log as log
@@ -311,6 +313,14 @@ class DBMeta(metaclass=Cached):
         else:
             return None
 
+    def get_table_primary_keys(self, value):
+        table = self.gettable(value)
+        if table is not None:
+            pks = table.primarykeys
+            return pks
+        else:
+            return None
+
     def get_table_logicprimarykeys(self, table_name):
         apitable = ApiTable(self.dsconfig, table_name)
         tablemetas = apitable.query_table_byName()
@@ -347,14 +357,14 @@ class DBMeta(metaclass=Cached):
     def get_tables(self):
         tblist = []
         for tb in self._tables:
-            if tb.type == 'table':
+            if tb.table_type == 'table':
                 tblist.append(tb.name)
         return tblist
 
     def get_views(self):
         viewlist = []
         for tb in self._tables:
-            if tb.type == 'view':
+            if tb.table_type == 'view':
                 viewlist.append(tb.name)
         return viewlist
 
@@ -525,10 +535,35 @@ class DBMeta(metaclass=Cached):
             if self.dsconfig.Application_Config.app_exception_detail:
                 traceback.print_exc()
 
+    def response_dbdiagram(self, filename, canvasonly=False):
+        basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+        apppath = os.path.abspath(os.path.join(basepath, os.pardir))
+        configpath = os.path.abspath(os.path.join(apppath, 'config'))
+        diagramfilepath = os.path.abspath(os.path.join(configpath, filename))
+        rjson = {"name":filename,
+                 "type": "file",
+                 "content": ""}
+        with open(diagramfilepath, 'r') as diagramfile:
+            rjson['content'] = base64.b64encode(diagramfile.read().encode('utf-8'))
+        return rjson
+
+    def response_table_schema(self, value):
+        tb = self.gettable(value)
+        if tb is not None:
+            return tb.json
+        else:
+            return {}
+
+    def check_table_schema(self, value):
+        tb = self.gettable(value)
+        if tb is not None:
+            return True
+        else:
+            return False
+
+
 if __name__ == '__main__':
-    '''
     dsconfig = DSConfig(config('app_profile', default='default-datasource'))
-    async_to_sync(dsconfig.readconfig)()
     apiengine = APIEngine(dsconfig)
     dbmeta = DBMeta(dsconfig, apiengine)
     dbmeta.load_metadata()
@@ -545,8 +580,10 @@ if __name__ == '__main__':
     log.debug(dbmeta.get_views())
     log.debug(dbmeta.response_schema())
     log.debug(dbmeta.check_table_schema('Brands'))
-    log.debug(dbmeta.response_table_pagdef('Brands'))
-'''
+
+
+    #log.debug(dbmeta.response_table_pagdef('Brands'))
+
     #dbmeta.gen_models()
     #dbmeta.gen_udfmodels()
     #dbmeta.gen_services()

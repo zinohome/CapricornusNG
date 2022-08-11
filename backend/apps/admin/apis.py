@@ -42,15 +42,10 @@ async def db_connection_test(dburi: DBURIModel) -> str:
          summary="Synchronize database schema.",
          description="Synchronize database schema",
          include_in_schema=True)
-async def db_connection_test(dbconnection: DBConnection) -> str:
+async def db_sync_schema(dbconnection: DBConnection) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:
-        #dsconfig = DSConfig(config('app_profile', default='default-datasource'))
-        #await dsconfig.readconfig()
-        #dsconfig = await sync_to_async(func=DSConfig)(config('app_profile', default='default-datasource'))
-        #log.debug(dsconfig.Database_Config)
-        #apiengine = await sync_to_async(func=APIEngine)(dsconfig)
         dbmeta = await sync_to_async(func=DBMeta)(site.dsconfig, site.apiengine)
         log.debug('[Step 0/8] Meta synchronize initialized')
         await sync_to_async(func=dbmeta.load_metadata)()

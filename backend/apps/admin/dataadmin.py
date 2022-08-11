@@ -18,17 +18,17 @@ try:
 except ImportError:
     import json
 from core.adminsite import site
-from starlette.requests import Request
 from util.log import log as log
 
 @site.register_admin
 class DataApiApp(admin.AdminApp):
     page_schema = amis.PageSchema(label='Tables', icon='fa fa-tools', sort=1)
-    router_prefix = '/dataexplor'
+    router_prefix = '/admin'
 
     def __init__(self, app: "AdminApp"):
         super().__init__(app)
         self.register_admin(DataHome)
+        log.debug('=====================adminstarrt-')
 
 
 class DataHome(admin.PageAdmin):
