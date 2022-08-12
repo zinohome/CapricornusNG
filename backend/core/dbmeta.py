@@ -378,7 +378,7 @@ class DBMeta(metaclass=Cached):
         try:
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
-            configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
+            configpath = os.path.abspath(os.path.join(apppath, 'appconfig'))
             canvasfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram-canvas.json"))
             diagramfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram.json"))
             dbdiagram = {}
@@ -439,7 +439,7 @@ class DBMeta(metaclass=Cached):
                       "[ %s ]" % (self.dsconfig.Database_Config.name, self._schema))
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
-            configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
+            configpath = os.path.abspath(os.path.join(apppath, 'appconfig'))
             canvasfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram-canvas.json"))
             diagramfilepath = os.path.abspath(os.path.join(configpath, "dbdiagram.json"))
             dbdiagram = {}
@@ -460,7 +460,7 @@ class DBMeta(metaclass=Cached):
     def gen_ddl(self):
         basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
         apppath = os.path.abspath(os.path.join(basepath, os.pardir))
-        configpath = os.path.abspath(os.path.join(apppath, 'apiconfig'))
+        configpath = os.path.abspath(os.path.join(apppath, 'appconfig'))
         ddlfilepath = os.path.abspath(os.path.join(configpath, "dbddl.sql"))
         engine = self.apiengine.connect()
         inspector = inspect(engine)
