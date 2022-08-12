@@ -9,10 +9,11 @@ from asgiref.sync import sync_to_async
 from fastapi_amis_admin import amis,admin
 from fastapi_amis_admin.admin import AdminApp
 from fastapi_amis_admin.amis import Page, PageSchema
+from sqlalchemy.ext.asyncio import AsyncEngine
 
+from apps.admin.datamodels import Car_Parts
 from core.settings import settings
-from .datapages import *
-from .datamodels import *
+from main import dsconfig, apiengine
 try:
     import ujson as json
 except ImportError:
@@ -21,17 +22,19 @@ from core.adminsite import site
 from util.log import log as log
 
 @site.register_admin
-class DataApiApp(admin.AdminApp):
+class DataApp(admin.AdminApp):
     page_schema = amis.PageSchema(label='Tables', icon='fa fa-table', sort=1)
     router_prefix = '/data'
+    engine = apiengine.async_connect()
 
     def __init__(self, app: "AdminApp"):
         super().__init__(app)
-        self.register_admin(DataHome)
+        self.register_admin(Car_PartsAdmin)
 
-
-class DataHome(admin.PageAdmin):
+class Car_PartsAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Tables', icon='fa fa-th')
-    # 通过page类属性直接配置页面信息;
-    page = Page(title='标题', body='Hello World!')
+    page_schema = PageSchema(label='Car_Parts', icon='fa fa-folder')
+    model = Car_Parts
+    pk_name = 'part_id'
+    search_fields = [Car_Parts.part_name]
+

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.sql.expression import Select
 
+
 try:
     import ujson as json
 except ImportError:
@@ -21,7 +22,7 @@ from fastapi_amis_admin.utils.translation import i18n as _
 
 @site.register_admin
 class AdminApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label='Admin', icon='fa fa-tools', sort=2)
+    page_schema = amis.PageSchema(label='Admin', icon='fa fa-cogs', sort=2)
     router_prefix = '/admin'
 
     def __init__(self, app: "AdminApp"):
@@ -103,7 +104,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
 # DBConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Database Config', icon='fa fa-check-double')
+    page_schema = PageSchema(label='Database Config', icon='fa fa-sliders-h')
     model = DBConfig
     search_fields = [DBConfig.name]
 
@@ -147,7 +148,6 @@ class DBConfigAdmin(admin.ModelAdmin):
 # TableMeta Admin
 class TableMetaAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Table Meta', icon='fa fa-pencil-ruler')
+    page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
     model = TableMeta
     search_fields = [TableMeta.name]
-

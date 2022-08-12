@@ -11,6 +11,8 @@ from asgiref.sync import async_to_sync
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI
 from sqlmodel import SQLModel
+from starlette.staticfiles import StaticFiles
+
 from core.adminsite import site
 from core.apiengine import APIEngine
 from core.dsconfig import DSConfig
@@ -49,17 +51,20 @@ async def index():
     return RedirectResponse(url=site.router_path)
 
 
-# # 1.配置 CORSMiddleware
-# from starlette.middleware.cors import CORSMiddleware
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=settings.allow_origins,  # 允许访问的源
-#     allow_credentials=True,  # 支持 cookie
-#     allow_methods=["*"],  # 允许使用的请求方法
-#     allow_headers=["*"]  # 允许携带的 Headers
-# )
+# 1.配置 CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allow_origins,  # 允许访问的源
+    allow_credentials=True,  # 支持 cookie
+    allow_methods=["*"],  # 允许使用的请求方法
+    allow_headers=["*"]  # 允许携带的 Headers
+)
 
-# # 2.配置 Swagger UI CDN
+# 2. 配置静态资源目录
+app.mount("/static", StaticFiles(directory="apps/static"), name="static")
+
+# # 3.配置 Swagger UI CDN
 # from fastapi.openapi.docs import get_swagger_ui_html
 # @app.get("/docs", include_in_schema=False)
 # async def custom_swagger_ui_html():

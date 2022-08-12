@@ -15,8 +15,10 @@ class Settings(AmisSettings):
     secret_key: str = ''
     version: str = '0.1.1'
     site_title: str = 'CapricornusNG'
-    site_icon: str = 'https://baidu.gitee.io/amis/static/favicon_b3b0647.png'
+    site_icon: str = '/static/favicon.ico'
     language: str = 'zh_CN'
+    amis_cdn: str = '/static/'
+    amis_pkg: str = 'amis@1.10.2'
     allow_origins: List[str] = None
 
 
