@@ -8,7 +8,7 @@
 from asgiref.sync import sync_to_async
 from fastapi_amis_admin import amis,admin
 from fastapi_amis_admin.admin import AdminApp
-from fastapi_amis_admin.amis import Page
+from fastapi_amis_admin.amis import Page, PageSchema
 
 from core.settings import settings
 from .datapages import *
@@ -22,7 +22,7 @@ from util.log import log as log
 
 @site.register_admin
 class DataApiApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label='Tables', icon='fa fa-tools', sort=1)
+    page_schema = amis.PageSchema(label='Tables', icon='fa fa-table', sort=1)
     router_prefix = '/data'
 
     def __init__(self, app: "AdminApp"):
@@ -32,6 +32,6 @@ class DataApiApp(admin.AdminApp):
 
 class DataHome(admin.PageAdmin):
     group_schema = None
-    page_schema = 'Hello World Page'
+    page_schema = PageSchema(label='Tables', icon='fa fa-th')
     # 通过page类属性直接配置页面信息;
     page = Page(title='标题', body='Hello World!')

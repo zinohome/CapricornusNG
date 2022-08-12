@@ -181,9 +181,3 @@ class TableMeta(BaseSQLModel, table=True):
                                                    amis_form_item=amis.Editor())
     dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')
     dbconnection: Optional[DBConnection] = Relationship(back_populates="tablemetas")
-
-class Category(BaseSQLModel, table=True):
-    id: int = models.Field(default=None, primary_key=True, nullable=False)
-    name: str = models.Field(title='CategoryName', sa_column=Column(sqlmodel.String(100), unique=True, index=True, nullable=False))
-    description: str = models.Field(default='', title='Description', amis_form_item='textarea')
-    status: bool = models.Field(None, title='status')

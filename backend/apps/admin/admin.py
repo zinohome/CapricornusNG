@@ -14,7 +14,7 @@ except ImportError:
 from core.adminsite import site
 from starlette.requests import Request
 
-from .models import Category, DBConnection, DBConfig, TableMeta
+from .models import DBConnection, DBConfig, TableMeta
 from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
@@ -26,7 +26,7 @@ class AdminApp(admin.AdminApp):
 
     def __init__(self, app: "AdminApp"):
         super().__init__(app)
-        self.register_admin(DBConnectionAdmin, DBConfigAdmin, TableMetaAdmin, CategoryAdmin)
+        self.register_admin(DBConnectionAdmin, DBConfigAdmin, TableMetaAdmin)
 
 # Register your models here.
 
@@ -103,7 +103,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
 # DBConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Database Config', icon='fa fa-wrench')
+    page_schema = PageSchema(label='Database Config', icon='fa fa-check-double')
     model = DBConfig
     search_fields = [DBConfig.name]
 
@@ -147,12 +147,7 @@ class DBConfigAdmin(admin.ModelAdmin):
 # TableMeta Admin
 class TableMetaAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Table Meta', icon='fa fa-wrench')
+    page_schema = PageSchema(label='Table Meta', icon='fa fa-pencil-ruler')
     model = TableMeta
     search_fields = [TableMeta.name]
 
-class CategoryAdmin(admin.ModelAdmin):
-    group_schema = None
-    page_schema = PageSchema(label='分类管理', icon='fa fa-tasks')
-    model = Category
-    search_fields = [Category.name]
