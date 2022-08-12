@@ -4,7 +4,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
-from apiconfig.config import config
+from core.settings import settings
 from core.adminsite import site, auth
 from apps.admin.models import DBURIModel, DBConnection
 from core.dbmeta import DBMeta

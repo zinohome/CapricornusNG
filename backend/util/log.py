@@ -10,17 +10,17 @@
 #  @Software: Capricornus
 
 import os
+from core.settings import settings
 from loguru import logger as log
-from apiconfig.config import config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, 'log')
-LOG_PATH = os.path.join(LOG_DIR, config('app_log_filename', default='capricornus.log'))
+LOG_PATH = os.path.join(LOG_DIR, settings.app_log_filename)
 log.add(LOG_PATH,
             format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
             rotation="100 MB",
             retention="14 days",
-            level=config('app_log_level', default='INFO'),
+            level=settings.app_log_level,
             enqueue=True)
 
 if __name__ == '__main__':

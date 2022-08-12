@@ -12,7 +12,7 @@ import weakref
 from sqlalchemy import select, insert, update, delete
 import simplejson as json
 
-from apiconfig.config import config
+from core.settings import settings
 from apps.admin.models import TableMeta
 from util.log import log as log
 
@@ -85,7 +85,7 @@ class ApiTable(metaclass=Cached):
                 return False
         except Exception as exp:
             log.error('Exception at ApiTable.existed_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return False
 
@@ -101,7 +101,7 @@ class ApiTable(metaclass=Cached):
                 return False
         except Exception as exp:
             log.error('Exception at ApiTable.existed_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return False
 
@@ -115,7 +115,7 @@ class ApiTable(metaclass=Cached):
                 return None
         except Exception as exp:
             log.error('Exception at ApiTable.query_table_byName() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     async def async_query_table_byName(self):
@@ -128,7 +128,7 @@ class ApiTable(metaclass=Cached):
                 return None
         except Exception as exp:
             log.error('Exception at ApiTable.async_query_table_byName() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return None
 
@@ -139,7 +139,7 @@ class ApiTable(metaclass=Cached):
             return result
         except Exception as exp:
             log.error('Exception at ApiTable.get_all_tables() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     async def async_get_all_tables(self):
@@ -152,7 +152,7 @@ class ApiTable(metaclass=Cached):
                 return None
         except Exception as exp:
             log.error('Exception at ApiTable.async_get_all_tables() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return None
 
@@ -163,7 +163,7 @@ class ApiTable(metaclass=Cached):
             return result
         except Exception as exp:
             log.error('Exception at ApiTable.getall_table_Name() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     async def async_getall_table_Name(self):
@@ -179,7 +179,7 @@ class ApiTable(metaclass=Cached):
                 return None
         except Exception as exp:
             log.error('Exception at ApiTable.async_getall_table_Name() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return None
 
@@ -193,7 +193,7 @@ class ApiTable(metaclass=Cached):
             return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.create_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     async def async_create_table(self):
@@ -206,7 +206,7 @@ class ApiTable(metaclass=Cached):
             return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.async_create_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return None
 
@@ -234,7 +234,7 @@ class ApiTable(metaclass=Cached):
                 return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.create_update_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     async def async_create_update_table(self):
@@ -261,7 +261,7 @@ class ApiTable(metaclass=Cached):
                 return result.lastrowid
         except Exception as exp:
             log.error('Exception at ApiTable.async_create_update_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return None
 
@@ -272,7 +272,7 @@ class ApiTable(metaclass=Cached):
             return result.rowcount
         except Exception as exp:
             log.error('Exception at ApiTable.delete_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     async def async_delete_table(self):
@@ -282,7 +282,7 @@ class ApiTable(metaclass=Cached):
             return result.rowcount
         except Exception as exp:
             log.error('Exception at ApiTable.async_delete_table() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
             return None
 

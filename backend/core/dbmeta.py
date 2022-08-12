@@ -20,7 +20,7 @@ import uvloop
 from asgiref.sync import async_to_sync
 from sqlalchemy import inspect, Table
 
-from apiconfig.config import config
+from core.settings import settings
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
 
@@ -280,11 +280,11 @@ class DBMeta(metaclass=Cached):
                     vapitable.create_update_table()
         except Exception as exp:
             log.error('Exception at dbmeta.gen_schema() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     def load_schema(self):
-        log.debug('Loading schema from %s ……' % config('app_profile', default='default-datasource'))
+        log.debug('Loading schema from %s ……' % settings.app_profile)
         apitable = ApiTable(self.dsconfig, 'None')
         metas = apitable.get_all_tables()
         self._tables = []
@@ -430,7 +430,7 @@ class DBMeta(metaclass=Cached):
                           sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_dbdirgram() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     def gen_dbdirgramcanvas(self):
@@ -454,7 +454,7 @@ class DBMeta(metaclass=Cached):
                           sort_keys=False, indent=4, ensure_ascii=False, encoding='utf-8')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_dbdirgramcanvas() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     def gen_ddl(self):
@@ -532,7 +532,7 @@ class DBMeta(metaclass=Cached):
                 raise Exception('Can not get metadata at gen_ddl()')
         except Exception as exp:
             log.error('Exception at dbmeta.gen_ddl() %s ' % exp)
-            if self.dsconfig.Application_Config.app_exception_detail:
+            if settings.app_exception_detail:
                 traceback.print_exc()
 
     def response_dbdiagram(self, filename, canvasonly=False):
@@ -564,7 +564,7 @@ class DBMeta(metaclass=Cached):
 
 if __name__ == '__main__':
     '''
-    dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    dsconfig = DSConfig(settings.app_profile)
     apiengine = APIEngine(dsconfig)
     dbmeta = DBMeta(dsconfig, apiengine)
     dbmeta.load_metadata()

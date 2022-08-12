@@ -13,9 +13,8 @@ import simplejson as json
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy_database import Database, AsyncDatabase
 
-from apiconfig.config import config
+from core.settings import settings
 from apps.admin.models import TableMeta, DBConnection, DBConfig
-from core import settings
 from util import toolkit
 from util.log import log as log
 
@@ -34,7 +33,7 @@ class Cached(type):
             return obj
 
 class DSConfig(metaclass=Cached):
-    def __init__(self, name=config('app_profile', default='default-datasource')):
+    def __init__(self, name=settings.app_profile):
         self.name = name
         self.db_schema_existed = False
         self.Application_Config = None
@@ -104,7 +103,7 @@ class DSConfig(metaclass=Cached):
 
 if __name__ == '__main__':
     '''
-    dsconfig = DSConfig(config('app_profile', default='default-datasource'))
+    dsconfig = DSConfig(settings.app_profile)
     #log.debug(dsconfig.Query_Config)
     log.debug('Database_Config: %s' % dsconfig.Database_Config)
     log.debug('Application_Config: %s' % dsconfig.Application_Config)

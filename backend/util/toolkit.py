@@ -16,7 +16,7 @@ from urllib import parse
 import simplejson as json
 import sqlalchemy.types as satypes
 from sqlalchemy.engine.url import URL
-from apiconfig.config import config
+from core.settings import settings
 from util.log import log as log
 from datetime import datetime
 

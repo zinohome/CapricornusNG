@@ -10,7 +10,7 @@ from fastapi_amis_admin import amis,admin
 from fastapi_amis_admin.admin import AdminApp
 from fastapi_amis_admin.amis import Page
 
-from apiconfig.config import config
+from core.settings import settings
 from .datapages import *
 from .datamodels import *
 try:
