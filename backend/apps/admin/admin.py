@@ -24,9 +24,37 @@ from fastapi_amis_admin.utils.translation import i18n as _
 from apps.dadmins.car_partsadmin import Car_partsAdmin
 from main import dsconfig, apiengine, dbmeta
 
+# DataApp
+@site.register_admin
+class DataApp(admin.AdminApp):
+    page_schema = amis.PageSchema(label=_('Tables'), icon='fa fa-table', sort=99)
+    router_prefix = '/data'
+    engine = apiengine.async_connect()
+
+    def __init__(self, app: "AdminApp"):
+        super().__init__(app)
+        alltables = dbmeta.get_tables() + dbmeta.get_views()
+        if len(alltables)>0:
+            for tbl in alltables:
+                dtable = dbmeta.gettable(tbl)
+                if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
+                    adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
+                    adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
+                    log.debug('Register admin model %s ……' % tbl.strip().capitalize())
+                    self.register_admin(adminclass)
+            self.register_admin(BlankDataPageAdmin)
+        else:
+            self.register_admin(BlankDataPageAdmin)
+# default DataPage
+class BlankDataPageAdmin(admin.PageAdmin):
+    page_schema = PageSchema(label='Data Explor', icon='fa fa-border-all')
+    # 通过page类属性直接配置页面信息;
+    page = Page(title='Data Explor', body='')
+
+# AdminApp
 @site.register_admin
 class AdminApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label='Admin', icon='fa fa-cogs', sort=2)
+    page_schema = amis.PageSchema(label=_('DataSource'), icon='fa fa-cogs', sort=98)
     router_prefix = '/admin'
 
     def __init__(self, app: "AdminApp"):
@@ -36,7 +64,6 @@ class AdminApp(admin.AdminApp):
 # Register your models here.
 
 # DBConnection Admin
-
 class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
@@ -154,26 +181,4 @@ class TableMetaAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
     model = TableMeta
     search_fields = [TableMeta.name]
-
-
-
-@site.register_admin
-class DataApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label='Tables', icon='fa fa-table', sort=1)
-    router_prefix = '/data'
-    engine = apiengine.async_connect()
-
-    def __init__(self, app: "AdminApp"):
-        super().__init__(app)
-        alltables = dbmeta.get_tables() + dbmeta.get_views()
-        if len(alltables)>0:
-            for tbl in alltables:
-                dtable = dbmeta.gettable(tbl)
-                if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
-                    adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
-                    adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
-                    log.debug('Register admin model %s ……' % tbl.strip().capitalize())
-                    self.register_admin(adminclass)
-        else:
-            self.register_admin(Car_partsAdmin)
 
