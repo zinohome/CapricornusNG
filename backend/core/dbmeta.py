@@ -18,6 +18,7 @@ import weakref
 
 import uvloop
 from asgiref.sync import async_to_sync
+from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import inspect, Table
 
 from core.settings import settings
@@ -535,6 +536,106 @@ class DBMeta(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    def gen_models(self):
+        basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+        apppath = os.path.abspath(os.path.join(basepath, os.pardir))
+        tmplpath = os.path.abspath(os.path.join(apppath, 'tmpl'))
+        modelspath = os.path.abspath(os.path.join(apppath, 'apps/dmodels'))
+        try:
+            tbls = self.get_tables()
+            for tbl in tbls:
+                dtable = self.gettable(tbl)
+                log.debug("Generate model for table: %s" % dtable.name)
+                env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
+                template = env.get_template('sqlmodel_tmpl.py')
+                for column_name, column_define in dtable.columns.items():
+                    if (column_name in dtable.pagedefine) and ('title' in dtable.pagedefine[column_name]):
+                        column_define['title'] = dtable.pagedefine[column_name]['title']
+                    else:
+                        column_define['title'] = dtable.pagedefine[column_name]['name']
+                gencode = template.render(dtable.json)
+                # log.debug(gencode)
+                modelsfilepath = os.path.abspath(os.path.join(modelspath, tbl.lower() + ".py"))
+                with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
+                    gencodefile.write(gencode)
+                    gencodefile.close()
+        except Exception as exp:
+            log.error('Exception at gen_models() %s ' % exp)
+            if settings.app_exception_detail:
+                traceback.print_exc()
+        try:
+            views = self.get_views()
+            for view in views:
+                dview = self.gettable(view)
+                log.debug("Generate model for view: %s" % dview.name)
+                env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
+                template = env.get_template('sqlmodel_tmpl.py')
+                for column_name, column_define in dview.columns.items():
+                    if (column_name in dview.pagedefine) and ('title' in dview.pagedefine[column_name]):
+                        column_define['title'] = dview.pagedefine[column_name]['title']
+                    else:
+                        column_define['title'] = dview.pagedefine[column_name]['name']
+                gencode = template.render(dview.json)
+                # log.debug(gencode)
+                modelsfilepath = os.path.abspath(os.path.join(modelspath, view.lower() + ".py"))
+                with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
+                    gencodefile.write(gencode)
+                    gencodefile.close()
+        except Exception as exp:
+            log.error('Exception at gen_models() %s ' % exp)
+            if settings.app_exception_detail:
+                traceback.print_exc()
+
+    def gen_admins(self):
+        basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+        apppath = os.path.abspath(os.path.join(basepath, os.pardir))
+        tmplpath = os.path.abspath(os.path.join(apppath, 'tmpl'))
+        servicespath = os.path.abspath(os.path.join(apppath, 'apps/dadmins'))
+        try:
+            tbls = self.get_tables()
+            for tbl in tbls:
+                dtable = self.gettable(tbl)
+                log.debug("Generate service for table: %s" % dtable.name)
+                env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
+                template = env.get_template('modeladmin_tmpl.py')
+                for column_name, column_define in dtable.columns.items():
+                    if (column_name in dtable.pagedefine) and ('title' in dtable.pagedefine[column_name]):
+                        column_define['title'] = dtable.pagedefine[column_name]['title']
+                    else:
+                        column_define['title'] = dtable.pagedefine[column_name]['name']
+                gencode = template.render(dtable.json)
+                #log.debug(gencode)
+                modelsfilepath = os.path.abspath(os.path.join(servicespath, tbl.lower() + "admin.py"))
+                with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
+                    gencodefile.write(gencode)
+                    gencodefile.close()
+        except Exception as exp:
+            log.error('Exception at gen_admins() %s ' % exp)
+            if settings.app_exception_detail:
+                traceback.print_exc()
+        try:
+            views = self.get_views()
+            for view in views:
+                dview = self.gettable(view)
+                log.debug("Generate service for table: %s" % dview.name)
+                env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
+                template = env.get_template('modeladmin_tmpl.py')
+                for column_name, column_define in dview.columns.items():
+                    if (column_name in dview.pagedefine) and ('title' in dview.pagedefine[column_name]):
+                        column_define['title'] = dview.pagedefine[column_name]['title']
+                    else:
+                        column_define['title'] = dview.pagedefine[column_name]['name']
+                gencode = template.render(dview.json)
+                #log.debug(gencode)
+                modelsfilepath = os.path.abspath(os.path.join(servicespath, dview.lower() + "admin.py"))
+                with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
+                    gencodefile.write(gencode)
+                    gencodefile.close()
+        except Exception as exp:
+            log.error('Exception at gen_admins() %s ' % exp)
+            if settings.app_exception_detail:
+                traceback.print_exc()
+
     def response_dbdiagram(self, filename, canvasonly=False):
         basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
         apppath = os.path.abspath(os.path.join(basepath, os.pardir))
@@ -563,7 +664,7 @@ class DBMeta(metaclass=Cached):
 
 
 if __name__ == '__main__':
-    '''
+
     dsconfig = DSConfig(settings.app_profile)
     apiengine = APIEngine(dsconfig)
     dbmeta = DBMeta(dsconfig, apiengine)
@@ -572,6 +673,9 @@ if __name__ == '__main__':
     dbmeta.load_schema()
     dbmeta.gen_dbdirgramcanvas()
     dbmeta.gen_ddl()
+    dbmeta.gen_models()
+    dbmeta.gen_admins()
+    '''
     tbl = dbmeta.gettable('Customers')
     log.debug(tbl.json)
     log.debug(dbmeta.get_table_primary_keys('Customers'))
