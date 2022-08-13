@@ -14,7 +14,6 @@ from fastapi_amis_admin.utils.translation import i18n as _
 
 router = APIRouter(prefix='/admin', tags=['admin'])
 
-
 @router.get('/hello', include_in_schema=False)
 async def hello(name: str = '') -> str:
     return f'hello {name}'
