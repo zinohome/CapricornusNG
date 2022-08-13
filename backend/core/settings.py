@@ -18,7 +18,6 @@ class Settings(AmisSettings):
     site_icon: str = '/static/favicon.ico'
     language: str = 'zh_CN'
     amis_cdn: str = '/static/'
-    amis_pkg: str = 'amis@1.10.2'
     allow_origins: List[str] = None
 
 

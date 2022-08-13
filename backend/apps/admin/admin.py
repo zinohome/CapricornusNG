@@ -1,3 +1,4 @@
+import importlib
 from typing import Dict, Any, Optional, List
 
 from fastapi_amis_admin import amis,admin
@@ -19,6 +20,9 @@ from .models import DBConnection, DBConfig, TableMeta
 from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
+
+from apps.dadmins.car_partsadmin import Car_partsAdmin
+from main import dsconfig, apiengine, dbmeta
 
 @site.register_admin
 class AdminApp(admin.AdminApp):
@@ -63,7 +67,6 @@ class DBConnectionAdmin(admin.ModelAdmin):
                         },
                 'cache':1000
                     }
-
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
@@ -151,3 +154,26 @@ class TableMetaAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
     model = TableMeta
     search_fields = [TableMeta.name]
+
+
+
+@site.register_admin
+class DataApp(admin.AdminApp):
+    page_schema = amis.PageSchema(label='Tables', icon='fa fa-table', sort=1)
+    router_prefix = '/data'
+    engine = apiengine.async_connect()
+
+    def __init__(self, app: "AdminApp"):
+        super().__init__(app)
+        alltables = dbmeta.get_tables() + dbmeta.get_views()
+        if len(alltables)>0:
+            for tbl in alltables:
+                dtable = dbmeta.gettable(tbl)
+                if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
+                    adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
+                    adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
+                    log.debug('Register admin model %s ……' % tbl.strip().capitalize())
+                    self.register_admin(adminclass)
+        else:
+            self.register_admin(Car_partsAdmin)
+

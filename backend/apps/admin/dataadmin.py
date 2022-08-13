@@ -33,10 +33,10 @@ class DataApp(admin.AdminApp):
         if len(alltables)>0:
             for tbl in alltables:
                 dtable = dbmeta.gettable(tbl)
-                log.debug(dtable.primarykeys)
                 if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
                     adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
                     adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
+                    log.debug('Register admin model %s ……' % tbl.strip().capitalize())
                     self.register_admin(adminclass)
         else:
             self.register_admin(Car_partsAdmin)
