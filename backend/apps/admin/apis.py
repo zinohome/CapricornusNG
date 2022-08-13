@@ -59,7 +59,9 @@ async def db_sync_schema(dbconnection: DBConnection) -> str:
         log.debug('[Step 4/8] DB Dirgramcanvas generated')
         await sync_to_async(func=dbmeta.gen_ddl)()
         log.debug('[Step 5/8] DDL generated')
+        await sync_to_async(func=dbmeta.gen_models)()
         log.debug('[Step 6/8] DataModels generated')
+        await sync_to_async(func=dbmeta.gen_admins)()
         log.debug('[Step 7/8] DataPages generated')
         log.debug('[Step 8/8] Service reloaded')
         return {"status":0,"msg":_("DataBase synchronized")}

@@ -15,6 +15,7 @@ from starlette.staticfiles import StaticFiles
 
 from core.adminsite import site
 from core.apiengine import APIEngine
+from core.dbmeta import DBMeta
 from core.dsconfig import DSConfig
 from core.settings import settings
 from util.log import log as log
@@ -23,6 +24,14 @@ app = FastAPI(debug=settings.debug)
 dsconfig = DSConfig(settings.app_profile)
 apiengine = APIEngine(dsconfig)
 
+# 自动生成model和admin
+dbmeta = DBMeta(dsconfig, apiengine)
+if dsconfig.Application_Config.app_force_generate_meta:
+    dbmeta.load_metadata()
+    dbmeta.gen_schema()
+dbmeta.load_schema()
+dbmeta.gen_models()
+dbmeta.gen_admins()
 
 # 安装应用
 from apps import admin

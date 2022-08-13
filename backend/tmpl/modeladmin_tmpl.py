@@ -21,10 +21,11 @@ class {{ name|trim|capitalize }}Admin(admin.ModelAdmin):
     page_schema = PageSchema(label='{{ name|trim }}', icon='fa fa-border-none')
     {% endif %}
     model = {{ name|trim|capitalize }}
-    pk_name = '{{ logicprimarykeys }}'
     {% set lklist = logicprimarykeys.split(',') %}
-    {% set lkstr=name.strip().capitalize()+'.'+(', '+name.strip().capitalize()+'.').join(lklist) %}
-    search_fields = [{{ lkstr }}]
+    {% set lkstr=lklist[0] %}
+    {% set lkliststr=name.strip().capitalize()+'.'+(', '+name.strip().capitalize()+'.').join(lklist) %}
+    pk_name = '{{ lkstr }}'
+    search_fields = [{{ lkliststr }}]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

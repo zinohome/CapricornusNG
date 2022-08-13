@@ -17,7 +17,7 @@ class Dealer_brandAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Dealer_Brand', icon='fa fa-border-all')
     model = Dealer_brand
-    pk_name = 'dealer_id,brand_id'
+    pk_name = 'dealer_id'
     search_fields = [Dealer_brand.dealer_id, Dealer_brand.brand_id]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
