@@ -34,7 +34,9 @@ from util.log import log as log
 
 # cache file define
 cache_path = os.path.join(os.path.expanduser("~"), ".capricornus_cache")
-
+InternalObjEnum = {
+        'sqlite':['sqlite_master','sqlite_sequence','sqlite_stat1','sqlite_stat3','sqlite_stat4','sqlite_dbdata']
+                       }
 class Cached(type):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -168,11 +170,12 @@ class DBMeta(metaclass=Cached):
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
-                        persist_table = True
-                    else:
-                        if table_name in table_list_set:
+                    if not table_name in InternalObjEnum[toolkit.get_db_from_uri(dsconfig.Database_Config.db_uri)]:
+                        if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_table = True
+                        else:
+                            if table_name in table_list_set:
+                                persist_table = True
                     if persist_table:
                         user_table = Table(table_name, metadata, autoload_with=engine)
                         cptypedict = {}
@@ -217,21 +220,22 @@ class DBMeta(metaclass=Cached):
                             cdict['pythonType'] = cptypedict[cdict['name']]
                             jtbl['columns'][cdict['name']] = cdict
                             jtbl['pagedefine'][cdict['name']] = cdict
-                    log.debug('Extracting table schema for : %s ……' % jtbl['name'])
-                    japitable = ApiTable(self.dsconfig, jtbl['name'])
-                    japitable.loadfrom_json(jtbl)
-                    japitable.create_update_table()
+                        log.debug('Extracting table schema for : %s ……' % jtbl['name'])
+                        japitable = ApiTable(self.dsconfig, jtbl['name'])
+                        japitable.loadfrom_json(jtbl)
+                        japitable.create_update_table()
                 # gen schema for views
                 view_names = inspector.get_view_names()
                 if self._useschema:
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
-                        persist_view = True
-                    else:
-                        if view_name in table_list_set:
+                    if not view_name in InternalObjEnum[toolkit.get_db_from_uri(dsconfig.Database_Config.db_uri)]:
+                        if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_view = True
+                        else:
+                            if (view_name in table_list_set) and (not view_name in InternalObjEnum[toolkit.get_db_from_uri(dsconfig.Database_Config.db_uri)]):
+                                persist_view = True
                     if persist_view:
                         user_view = Table(view_name, metadata, autoload_with=engine)
                         for c in user_table.columns:
@@ -275,10 +279,10 @@ class DBMeta(metaclass=Cached):
                             vdict['pythonType'] = cptypedict[vdict['name']]
                             vtbl['columns'][vdict['name']] = vdict
                             vtbl['pagedefine'][vdict['name']] = vdict
-                    log.debug('Extracting view schema for : %s ……' % vtbl['name'])
-                    vapitable = ApiTable(self.dsconfig, vtbl['name'])
-                    vapitable.loadfrom_json(vtbl)
-                    vapitable.create_update_table()
+                        log.debug('Extracting view schema for : %s ……' % vtbl['name'])
+                        vapitable = ApiTable(self.dsconfig, vtbl['name'])
+                        vapitable.loadfrom_json(vtbl)
+                        vapitable.create_update_table()
         except Exception as exp:
             log.error('Exception at dbmeta.gen_schema() %s ' % exp)
             if settings.app_exception_detail:
@@ -477,11 +481,12 @@ class DBMeta(metaclass=Cached):
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
-                        persist_table = True
-                    else:
-                        if table_name in table_list_set:
+                    if not table_name in InternalObjEnum[toolkit.get_db_from_uri(dsconfig.Database_Config.db_uri)]:
+                        if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_table = True
+                        else:
+                            if table_name in table_list_set:
+                                persist_table = True
                     if self.table_has_null_type_column(table_name):
                         persist_table = False
                     if persist_table:
@@ -503,11 +508,12 @@ class DBMeta(metaclass=Cached):
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if self.dsconfig.Schema_Config.schema_fetch_all_table:
-                        persist_view = True
-                    else:
-                        if view_name in table_list_set:
+                    if not view_name in InternalObjEnum[toolkit.get_db_from_uri(dsconfig.Database_Config.db_uri)]:
+                        if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_view = True
+                        else:
+                            if (view_name in table_list_set) and (not view_name in InternalObjEnum[toolkit.get_db_from_uri(dsconfig.Database_Config.db_uri)]):
+                                persist_view = True
                     if persist_view:
                         user_view = Table(view_name, metadata, autoload_with=engine)
                         viewcrtstr = str(CreateTable(user_view).compile(engine))

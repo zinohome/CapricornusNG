@@ -17,8 +17,8 @@ class Sqlite_sequenceAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='sqlite_sequence', icon='fa fa-border-all')
     model = Sqlite_sequence
-    pk_name = 'name'
-    search_fields = [Sqlite_sequence.name]
+    pk_name = ''
+    search_fields = [Sqlite_sequence.]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

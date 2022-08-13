@@ -172,6 +172,10 @@ def sync_uri(uri):
         syncuri = f'{db_sub}+{sync_dialect_sub}:{drv_sub}'
     return syncuri
 
+def get_db_from_uri(uri):
+    db_sub = uri.split(':')[0].split('+')[0].strip()
+    return db_sub
+
 if __name__ == '__main__':
     str1 = "{'name': 'productDescription', 'type': TEXT(), 'default': None, 'comment': None, 'nullable': False}"
     print(to_json(str1))

@@ -34,7 +34,7 @@ class DataApp(admin.AdminApp):
             for tbl in alltables:
                 dtable = dbmeta.gettable(tbl)
                 log.debug(dtable.primarykeys)
-                if len(dtable.primarykeys.strip()) > 0:
+                if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
                     adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
                     adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
                     self.register_admin(adminclass)
