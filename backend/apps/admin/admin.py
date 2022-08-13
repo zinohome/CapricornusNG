@@ -42,7 +42,6 @@ class DataApp(admin.AdminApp):
                     adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
                     log.debug('Register admin model %s ……' % tbl.strip().capitalize())
                     self.register_admin(adminclass)
-            self.register_admin(BlankDataPageAdmin)
         else:
             self.register_admin(BlankDataPageAdmin)
 # default DataPage
