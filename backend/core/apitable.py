@@ -41,7 +41,6 @@ class ApiTable(metaclass=Cached):
         self.logicprimarykeys = None
         self.indexes = None
         self.columns = None
-        self.pagedefine = None
         self.valuedict = None
 
     def loadfrom_json(self,jsonobj):
@@ -69,8 +68,6 @@ class ApiTable(metaclass=Cached):
             self.indexes = jsonobj['indexes']
         if 'columns' in jsonobj:
             self.columns = jsonobj['columns']
-        if 'pagedefine' in jsonobj:
-            self.pagedefine = jsonobj['pagedefine']
         self.valuedict = jsonobj
 
     def existed_table(self):
@@ -218,8 +215,6 @@ class ApiTable(metaclass=Cached):
                 # update ingore pagedef
                 olddict = result[0].dict()
                 updatedict = self.valuedict.copy()
-                updatedict['pagedefine'] = olddict['pagedefine']
-                self.valuedict['pagedefine'] = olddict['pagedefine']
                 stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
                 result = self.dsconfig.db.execute(stmt)
                 self.valuedict['id'] = olddict['id']
@@ -245,8 +240,6 @@ class ApiTable(metaclass=Cached):
                 #update ingore pagedef
                 olddict = result[0].dict()
                 updatedict = self.valuedict.copy()
-                updatedict['pagedefine'] = olddict['pagedefine']
-                self.valuedict['pagedefine'] = olddict['pagedefine']
                 stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
                 self.valuedict['id'] = olddict['id']

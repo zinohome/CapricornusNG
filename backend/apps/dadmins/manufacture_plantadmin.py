@@ -18,7 +18,6 @@ class Manufacture_plantAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Manufacture_Plant', icon='fa fa-border-all')
     model = Manufacture_plant
     pk_name = 'manufacture_plant_id'
-    search_fields = [Manufacture_plant.manufacture_plant_id]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

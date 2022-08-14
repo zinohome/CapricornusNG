@@ -18,7 +18,6 @@ class Car_optionsAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Car_Options', icon='fa fa-border-all')
     model = Car_options
     pk_name = 'option_set_id'
-    search_fields = [Car_options.option_set_id]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

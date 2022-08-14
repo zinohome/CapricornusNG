@@ -18,7 +18,6 @@ class Customer_ownershipAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Customer_Ownership', icon='fa fa-border-all')
     model = Customer_ownership
     pk_name = 'customer_id'
-    search_fields = [Customer_ownership.customer_id, Customer_ownership.vin]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

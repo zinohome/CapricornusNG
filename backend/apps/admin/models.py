@@ -160,10 +160,6 @@ class TableMeta(BaseSQLModel, table=True):
                                                    sa_column=Column(JSON),
                                                    title='Columns',
                                                    amis_form_item=amis.Editor())
-    pagedefine: Optional[dict] = models.Field(index=False, default=json.loads(default_column_page_defile),
-                                                   sa_column=Column(JSON),
-                                                   title='PageDefine',
-                                                   amis_form_item=amis.Editor())
     dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')
     dbconnection: Optional[DBConnection] = Relationship(back_populates="tablemetas")
 

@@ -98,6 +98,10 @@ class DBMeta(metaclass=Cached):
         return self._tables
 
     @property
+    def pages(self):
+        return self._pages
+
+    @property
     def viewcount(self):
         return self._viewCount
 
@@ -208,7 +212,6 @@ class DBMeta(metaclass=Cached):
                         if self._useschema:
                             jtbl['indexes'] = inspector.get_indexes(table_name, schema=self._schema)
                         jtbl['columns'] = {}
-                        jtbl['pagedefine'] = {}
                         table_columns = inspector.get_columns(table_name)
                         if self._useschema:
                             table_columns = inspector.get_columns(table_name, schema=self._schema)
@@ -222,7 +225,6 @@ class DBMeta(metaclass=Cached):
                                 cdict['primary_key'] = 0
                             cdict['pythonType'] = cptypedict[cdict['name']]
                             jtbl['columns'][cdict['name']] = cdict
-                            jtbl['pagedefine'][cdict['name']] = cdict
                         log.debug('Extracting table schema for : %s ……' % jtbl['name'])
                         japitable = ApiTable(self.dsconfig, jtbl['name'])
                         japitable.loadfrom_json(jtbl)
@@ -231,7 +233,6 @@ class DBMeta(metaclass=Cached):
                         ptbl['label'] = ptbl['name']
                         ptbl['list_display'] = ''
                         ptbl['search_fields'] = ''
-                        del ptbl['pagedefine']
                         for item in ptbl['columns'].values():
                             ptbl['columns'][item['name']]['title'] = item['name']
                             ptbl['columns'][item['name']]['amis_form_item'] = ''
@@ -279,7 +280,6 @@ class DBMeta(metaclass=Cached):
                         if self._useschema:
                             vtbl['indexes'] = inspector.get_indexes(view_name, schema=self._schema)
                         vtbl['columns'] = {}
-                        vtbl['pagedefine'] = {}
                         view_columns = inspector.get_columns(view_name)
                         if self._useschema:
                             view_columns = inspector.get_columns(view_name, schema=self._schema)
@@ -293,7 +293,6 @@ class DBMeta(metaclass=Cached):
                                 vdict['primary_key'] = 0
                             vdict['pythonType'] = cptypedict[vdict['name']]
                             vtbl['columns'][vdict['name']] = vdict
-                            vtbl['pagedefine'][vdict['name']] = vdict
                         log.debug('Extracting view schema for : %s ……' % vtbl['name'])
                         vapitable = ApiTable(self.dsconfig, vtbl['name'])
                         vapitable.loadfrom_json(vtbl)
@@ -302,7 +301,6 @@ class DBMeta(metaclass=Cached):
                         ptbl['label'] = ptbl['name']
                         ptbl['list_display'] = ''
                         ptbl['search_fields'] = ''
-                        del ptbl['pagedefine']
                         for item in ptbl['columns'].values():
                             ptbl['columns'][item['name']]['title'] = item['name']
                             ptbl['columns'][item['name']]['amis_form_item'] = ''
@@ -331,7 +329,6 @@ class DBMeta(metaclass=Cached):
             table.logicprimarykeys = meta.logicprimarykeys
             table.indexes = meta.indexes
             table.columns = meta.columns
-            table.pagedefine = meta.pagedefine
             self._tables.append(table)
             if table.table_type == 'table':
                 self._tableCount = self._tableCount + 1
@@ -360,6 +357,14 @@ class DBMeta(metaclass=Cached):
         else:
             return None
 
+    def getpage(self, value):
+        if len(self._pages) > 0:
+            for page in self._pages:
+                if page.name == value:
+                    return page
+        else:
+            return None
+
     def get_table_primary_keys(self, value):
         table = self.gettable(value)
         if table is not None:
@@ -369,8 +374,8 @@ class DBMeta(metaclass=Cached):
             return None
 
     def get_table_logicprimarykeys(self, table_name):
-        apitable = ApiTable(self.dsconfig, table_name)
-        tablemetas = apitable.query_table_byName()
+        apipage = ApiPage(self.dsconfig, table_name)
+        tablemetas = apipage.query_table_byName()
         if tablemetas is not None:
             return tablemetas[0].logicprimarykeys
         else:
@@ -414,6 +419,12 @@ class DBMeta(metaclass=Cached):
             if tb.table_type == 'view':
                 viewlist.append(tb.name)
         return viewlist
+
+    def get_table_pages(self):
+        tplist = []
+        for pg in self._pages:
+                tplist.append(pg.name)
+        return tplist
 
     def response_schema(self):
         tblist = []
@@ -590,42 +601,15 @@ class DBMeta(metaclass=Cached):
         tmplpath = os.path.abspath(os.path.join(apppath, 'tmpl'))
         modelspath = os.path.abspath(os.path.join(apppath, 'apps/dmodels'))
         try:
-            tbls = self.get_tables()
+            tbls = self.get_table_pages()
             for tbl in tbls:
-                dtable = self.gettable(tbl)
+                dtable = self.getpage(tbl)
                 log.debug("Generate model for table: %s" % dtable.name)
                 env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
                 template = env.get_template('sqlmodel_tmpl.py')
-                for column_name, column_define in dtable.columns.items():
-                    if (column_name in dtable.pagedefine) and ('title' in dtable.pagedefine[column_name]):
-                        column_define['title'] = dtable.pagedefine[column_name]['title']
-                    else:
-                        column_define['title'] = dtable.pagedefine[column_name]['name']
                 gencode = template.render(dtable.json)
-                # log.debug(gencode)
+                #log.debug(gencode)
                 modelsfilepath = os.path.abspath(os.path.join(modelspath, tbl.lower() + ".py"))
-                with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
-                    gencodefile.write(gencode)
-                    gencodefile.close()
-        except Exception as exp:
-            log.error('Exception at gen_models() %s ' % exp)
-            if settings.app_exception_detail:
-                traceback.print_exc()
-        try:
-            views = self.get_views()
-            for view in views:
-                dview = self.gettable(view)
-                log.debug("Generate model for view: %s" % dview.name)
-                env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
-                template = env.get_template('sqlmodel_tmpl.py')
-                for column_name, column_define in dview.columns.items():
-                    if (column_name in dview.pagedefine) and ('title' in dview.pagedefine[column_name]):
-                        column_define['title'] = dview.pagedefine[column_name]['title']
-                    else:
-                        column_define['title'] = dview.pagedefine[column_name]['name']
-                gencode = template.render(dview.json)
-                # log.debug(gencode)
-                modelsfilepath = os.path.abspath(os.path.join(modelspath, view.lower() + ".py"))
                 with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
                     gencodefile.write(gencode)
                     gencodefile.close()
@@ -640,42 +624,15 @@ class DBMeta(metaclass=Cached):
         tmplpath = os.path.abspath(os.path.join(apppath, 'tmpl'))
         servicespath = os.path.abspath(os.path.join(apppath, 'apps/dadmins'))
         try:
-            tbls = self.get_tables()
+            tbls = self.get_table_pages()
             for tbl in tbls:
-                dtable = self.gettable(tbl)
+                dtable = self.getpage(tbl)
                 log.debug("Generate service for table: %s" % dtable.name)
                 env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
                 template = env.get_template('modeladmin_tmpl.py')
-                for column_name, column_define in dtable.columns.items():
-                    if (column_name in dtable.pagedefine) and ('title' in dtable.pagedefine[column_name]):
-                        column_define['title'] = dtable.pagedefine[column_name]['title']
-                    else:
-                        column_define['title'] = dtable.pagedefine[column_name]['name']
                 gencode = template.render(dtable.json)
                 #log.debug(gencode)
                 modelsfilepath = os.path.abspath(os.path.join(servicespath, tbl.lower() + "admin.py"))
-                with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
-                    gencodefile.write(gencode)
-                    gencodefile.close()
-        except Exception as exp:
-            log.error('Exception at gen_admins() %s ' % exp)
-            if settings.app_exception_detail:
-                traceback.print_exc()
-        try:
-            views = self.get_views()
-            for view in views:
-                dview = self.gettable(view)
-                log.debug("Generate service for table: %s" % dview.name)
-                env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
-                template = env.get_template('modeladmin_tmpl.py')
-                for column_name, column_define in dview.columns.items():
-                    if (column_name in dview.pagedefine) and ('title' in dview.pagedefine[column_name]):
-                        column_define['title'] = dview.pagedefine[column_name]['title']
-                    else:
-                        column_define['title'] = dview.pagedefine[column_name]['name']
-                gencode = template.render(dview.json)
-                #log.debug(gencode)
-                modelsfilepath = os.path.abspath(os.path.join(servicespath, dview.lower() + "admin.py"))
                 with open(modelsfilepath, 'w', encoding='utf-8') as gencodefile:
                     gencodefile.write(gencode)
                     gencodefile.close()

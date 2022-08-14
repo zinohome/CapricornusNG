@@ -17,6 +17,6 @@ from apps.dmodels.basesqlmodel import BaseSQLModel
 
 class Dealers(BaseSQLModel, table=True):
     __tablename__ = 'Dealers'
-    dealer_name: str = models.Field(default='None', title='dealer_name', nullable=False)
-    dealer_address: Optional[str] = models.Field(default='None', title='dealer_address', nullable=True)
-    dealer_id: Optional[int] = models.Field(default='None', title='dealer_id', primary_key=True)
+    dealer_name: str = models.Field(default='None', title='dealer_name', nullable=False, amis_form_item='', amis_table_column='')
+    dealer_address: Optional[str] = models.Field(default='None', title='dealer_address', nullable=True, amis_form_item='', amis_table_column='')
+    dealer_id: Optional[int] = models.Field(default='None', title='dealer_id', primary_key=True, amis_form_item='', amis_table_column='')

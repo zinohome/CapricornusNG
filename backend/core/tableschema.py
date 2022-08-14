@@ -21,7 +21,6 @@ class TableSchema(object):
         self._logicprimarykeys = None
         self._indexes = None
         self._columns = None
-        self._pagedefine = None
 
     @property
     def id(self):
@@ -112,18 +111,6 @@ class TableSchema(object):
         self._columns = None
 
     @property
-    def pagedefine(self):
-        return self._pagedefine
-
-    @pagedefine.setter
-    def pagedefine(self, value):
-        self._pagedefine = value
-
-    @pagedefine.deleter
-    def pagedefine(self):
-        self._pagedefine = None
-
-    @property
     def json(self):
         return {
             '_id': self._id,
@@ -134,8 +121,7 @@ class TableSchema(object):
             'primarykeys': self._primarykeys,
             'logicprimarykeys': self._logicprimarykeys,
             'indexes': self._indexes,
-            'columns': self._columns,
-            'pagedefine': self._pagedefine
+            'columns': self._columns
         }
 
     def getColumnType(self, Columename):

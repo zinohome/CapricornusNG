@@ -18,7 +18,6 @@ class BrandsAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Brands', icon='fa fa-border-all')
     model = Brands
     pk_name = 'brand_id'
-    search_fields = [Brands.brand_id]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

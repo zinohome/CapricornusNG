@@ -18,7 +18,6 @@ class CustomersAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Customers', icon='fa fa-border-all')
     model = Customers
     pk_name = 'customer_id'
-    search_fields = [Customers.customer_id]
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

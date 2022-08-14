@@ -17,5 +17,5 @@ from apps.dmodels.basesqlmodel import BaseSQLModel
 
 class Brands(BaseSQLModel, table=True):
     __tablename__ = 'Brands'
-    brand_name: str = models.Field(default='None', title='brand_name', nullable=False)
-    brand_id: Optional[int] = models.Field(default='None', title='brand_id', primary_key=True)
+    brand_name: str = models.Field(default='None', title='brand_name', nullable=False, amis_form_item='', amis_table_column='')
+    brand_id: Optional[int] = models.Field(default='None', title='brand_id', primary_key=True, amis_form_item='', amis_table_column='')
