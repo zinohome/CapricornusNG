@@ -226,10 +226,11 @@ class DBMeta(metaclass=Cached):
                             cdict['pythonType'] = cptypedict[cdict['name']]
                             jtbl['columns'][cdict['name']] = cdict
                         log.debug('Extracting table schema for : %s ……' % jtbl['name'])
+                        ptbl = jtbl.copy()
+                        del jtbl['logicprimarykeys']
                         japitable = ApiTable(self.dsconfig, jtbl['name'])
                         japitable.loadfrom_json(jtbl)
                         japitable.create_update_table()
-                        ptbl = jtbl.copy()
                         ptbl['label'] = ptbl['name']
                         ptbl['list_display'] = ''
                         ptbl['search_fields'] = ''
@@ -294,10 +295,11 @@ class DBMeta(metaclass=Cached):
                             vdict['pythonType'] = cptypedict[vdict['name']]
                             vtbl['columns'][vdict['name']] = vdict
                         log.debug('Extracting view schema for : %s ……' % vtbl['name'])
+                        ptbl = vtbl.copy()
+                        del vtbl['logicprimarykeys']
                         vapitable = ApiTable(self.dsconfig, vtbl['name'])
                         vapitable.loadfrom_json(vtbl)
                         vapitable.create_update_table()
-                        ptbl = jtbl.copy()
                         ptbl['label'] = ptbl['name']
                         ptbl['list_display'] = ''
                         ptbl['search_fields'] = ''
@@ -326,7 +328,6 @@ class DBMeta(metaclass=Cached):
             table.dbconn_id = meta.dbconn_id
             table.table_schema = meta.table_schema
             table.primarykeys = meta.primarykeys
-            table.logicprimarykeys = meta.logicprimarykeys
             table.indexes = meta.indexes
             table.columns = meta.columns
             self._tables.append(table)

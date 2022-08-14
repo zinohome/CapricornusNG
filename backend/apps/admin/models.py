@@ -20,7 +20,7 @@ from pydantic import BaseModel as requestBaseModel
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
-default_application_params = "{\"app_name\": \"Capricornus\", \"app_version\": \"v2.1.5\", \"app_description\": \"REST API for RDBMS\", \"app_prefix\": \"/api/v2\", \"app_cors_origins\": \"'*'\", \"app_service_model\": \"Standalone\", \"app_param_prefix\": \"up_b_\", \"app_force_generate_meta\": true, \"app_log_level\": \"INFO\", \"app_user_func\": true, \"app_exception_detail\": true, \"app_admin_use_https\": false, \"app_confirm_key\": \"Confirmed\", \"app_http_port\": 8880, \"app_https_port\": 8843, \"app_http_timeout\": 10, \"app_load_metadat_on_load\": true, \"app_clear_metadat_on_startup\": true, \"app_clear_metadat_on_shutdown\": true}"
+default_application_params = "{\"app_name\": \"Capricornus\", \"app_version\": \"v2.1.5\", \"app_description\": \"REST API for RDBMS\", \"app_prefix\": \"/api/v2\", \"app_cors_origins\": \"'*'\", \"app_service_model\": \"Standalone\", \"app_param_prefix\": \"up_b_\", \"app_force_generate_meta\": false, \"app_log_level\": \"INFO\", \"app_user_func\": true, \"app_exception_detail\": true, \"app_admin_use_https\": false, \"app_confirm_key\": \"Confirmed\", \"app_http_port\": 8880, \"app_https_port\": 8843, \"app_http_timeout\": 10, \"app_load_metadat_on_load\": true, \"app_clear_metadat_on_startup\": true, \"app_clear_metadat_on_shutdown\": true}"
 default_connection_params = "{\"con_pool_size\": 20, \"con_max_overflow\": 5, \"con_pool_use_lifo\": true, \"con_pool_pre_ping\": true, \"con_pool_recycle\": 3600}"
 default_schema_params = "{\"schema_cache_enabled\": true, \"schema_model_refresh\": true, \"schema_cache_filename\": \"capricornus_metadata\", \"schema_db_metafile\": \"metadata.json\", \"schema_db_logicpkfile\": \"logicpk.json\", \"schema_db_logicpkneedfile\": \"logicpk-need.json\", \"schema_fetch_all_table\": true, \"schema_fetch_tables\": \"table1, table2\"}"
 default_query_params = "{\"query_limit_upset\": 2000, \"query_default_limit\": 10, \"query_default_offset\": 0}"
@@ -151,8 +151,6 @@ class TableMeta(BaseSQLModel, table=True):
                                             amis_form_item=amis.InputText())
     table_type: TableType = models.Field(TableType.table, title='Type')
     primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
-                                                         amis_form_item=amis.InputText())
-    logicprimarykeys: Optional[str] = models.Field(default='', title='LogicPrimaryKey', max_length=256,
                                                          amis_form_item=amis.InputText())
     indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
                                                          amis_form_item=amis.InputText())

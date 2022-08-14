@@ -38,7 +38,6 @@ class ApiTable(metaclass=Cached):
         self.table_schema = None
         self.table_type = None
         self.primarykeys = None
-        self.logicprimarykeys = None
         self.indexes = None
         self.columns = None
         self.valuedict = None
@@ -58,10 +57,6 @@ class ApiTable(metaclass=Cached):
             if isinstance(jsonobj['primarykeys'],list):
                 jsonobj['primarykeys'] = ','.join(jsonobj['primarykeys'])
             self.primarykeys = jsonobj['primarykeys']
-        if 'logicprimarykeys' in jsonobj:
-            if isinstance(jsonobj['logicprimarykeys'],list):
-                jsonobj['logicprimarykeys'] = ','.join(jsonobj['logicprimarykeys'])
-            self.logicprimarykeys = jsonobj['logicprimarykeys']
         if 'indexes' in jsonobj:
             if isinstance(jsonobj['indexes'],list):
                 jsonobj['indexes'] = ','.join(jsonobj['indexes'])

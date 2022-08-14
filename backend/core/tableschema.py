@@ -18,7 +18,6 @@ class TableSchema(object):
         self._dbconn_id = None
         self._table_schema = None
         self._primarykeys = None
-        self._logicprimarykeys = None
         self._indexes = None
         self._columns = None
 
@@ -75,18 +74,6 @@ class TableSchema(object):
         self._primarykeys = None
 
     @property
-    def logicprimarykeys(self):
-        return self._logicprimarykeys
-
-    @logicprimarykeys.setter
-    def logicprimarykeys(self, value):
-        self._logicprimarykeys = value
-
-    @logicprimarykeys.deleter
-    def logicprimarykeys(self):
-        self._logicprimarykeys = None
-
-    @property
     def indexes(self):
         return self._indexes
 
@@ -119,7 +106,6 @@ class TableSchema(object):
             'table_type': self._table_type,
             'table_schema': self._table_schema,
             'primarykeys': self._primarykeys,
-            'logicprimarykeys': self._logicprimarykeys,
             'indexes': self._indexes,
             'columns': self._columns
         }
