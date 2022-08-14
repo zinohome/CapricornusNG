@@ -27,6 +27,7 @@ default_query_params = "{\"query_limit_upset\": 2000, \"query_default_limit\": 1
 default_admin_params = "{\"DEBUG\": true, \"SECRET_KEY\": \"bgt56yh@Passw0rd\", \"SESSION_COOKIE_HTTPONLY\": true, \"REMEMBER_COOKIE_HTTPONLY\": true, \"REMEMBER_COOKIE_DURATION\": 3600, \"admin_ignore_primary_key\": false}"
 default_security_params = "{\"security_key\": \"47051d5e3bafcfcba3c80d6d1119a7adf78d2967a8972b00af1ea231ca61f589\", \"security_algorithm\": \"HS256\", \"access_token_expire_minutes\": 30}"
 default_column_defile="{\"column_name\":{\"name\": \"column_name\", \"type\": \"INTEGER\", \"nullable\": \"False\", \"default\": \"None\", \"autoincrement\": \"auto\", \"primary_key\": 0, \"pythonType\": \"int\"}}"
+default_column_page_defile="{\"column_name\":{\"name\": \"column_name\", \"type\": \"INTEGER\", \"nullable\": \"False\", \"default\": \"None\", \"autoincrement\": \"auto\", \"primary_key\": 0, \"pythonType\": \"int\", \"title\": \"column_name\", \"amis_form_item\": \"\", \"amis_table_column\": \"\"}}"
 # Create your models here.
 class DBURIModel(requestBaseModel):
     db_uri: str
@@ -159,7 +160,7 @@ class TableMeta(BaseSQLModel, table=True):
                                                    sa_column=Column(JSON),
                                                    title='Columns',
                                                    amis_form_item=amis.Editor())
-    pagedefine: Optional[dict] = models.Field(index=False, default=json.loads(default_column_defile),
+    pagedefine: Optional[dict] = models.Field(index=False, default=json.loads(default_column_page_defile),
                                                    sa_column=Column(JSON),
                                                    title='PageDefine',
                                                    amis_form_item=amis.Editor())
@@ -187,7 +188,7 @@ class TablePage(BaseSQLModel, table=True):
                                           amis_form_item=amis.InputText())
     search_fields: Optional[str] = models.Field(default='', title='SearchFields', max_length=256,
                                           amis_form_item=amis.InputText())
-    columns: Optional[dict] = models.Field(index=False, default=json.loads(default_column_defile),
+    columns: Optional[dict] = models.Field(index=False, default=json.loads(default_column_page_defile),
                                                    sa_column=Column(JSON),
                                                    title='Columns',
                                                    amis_form_item=amis.Editor())
