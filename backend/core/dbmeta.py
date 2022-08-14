@@ -211,7 +211,7 @@ class DBMeta(metaclass=Cached):
                         jtbl['indexes'] = inspector.get_indexes(table_name)
                         if self._useschema:
                             jtbl['indexes'] = inspector.get_indexes(table_name, schema=self._schema)
-                        jtbl['columns'] = {}
+                        jtbl['columns'] = []
                         table_columns = inspector.get_columns(table_name)
                         if self._useschema:
                             table_columns = inspector.get_columns(table_name, schema=self._schema)
@@ -224,7 +224,7 @@ class DBMeta(metaclass=Cached):
                             else:
                                 cdict['primary_key'] = 0
                             cdict['pythonType'] = cptypedict[cdict['name']]
-                            jtbl['columns'][cdict['name']] = cdict
+                            jtbl['columns'].append(cdict)
                         log.debug('Extracting table schema for : %s ……' % jtbl['name'])
                         ptbl = jtbl.copy()
                         del jtbl['logicprimarykeys']
@@ -234,10 +234,10 @@ class DBMeta(metaclass=Cached):
                         ptbl['label'] = ptbl['name']
                         ptbl['list_display'] = ''
                         ptbl['search_fields'] = ''
-                        for item in ptbl['columns'].values():
-                            ptbl['columns'][item['name']]['title'] = item['name']
-                            ptbl['columns'][item['name']]['amis_form_item'] = ''
-                            ptbl['columns'][item['name']]['amis_table_column'] = ''
+                        for item in ptbl['columns']:
+                            item['title'] = item['name']
+                            item['amis_form_item'] = ''
+                            item['amis_table_column'] = ''
                         papipage = ApiPage(self.dsconfig, ptbl['name'])
                         papipage.loadfrom_json(ptbl)
                         papipage.create_update_table()
@@ -280,7 +280,7 @@ class DBMeta(metaclass=Cached):
                         vtbl['indexes'] = inspector.get_indexes(view_name)
                         if self._useschema:
                             vtbl['indexes'] = inspector.get_indexes(view_name, schema=self._schema)
-                        vtbl['columns'] = {}
+                        vtbl['columns'] = []
                         view_columns = inspector.get_columns(view_name)
                         if self._useschema:
                             view_columns = inspector.get_columns(view_name, schema=self._schema)
@@ -293,7 +293,7 @@ class DBMeta(metaclass=Cached):
                             else:
                                 vdict['primary_key'] = 0
                             vdict['pythonType'] = cptypedict[vdict['name']]
-                            vtbl['columns'][vdict['name']] = vdict
+                            vtbl['columns'].append(vdict)
                         log.debug('Extracting view schema for : %s ……' % vtbl['name'])
                         ptbl = vtbl.copy()
                         del vtbl['logicprimarykeys']
@@ -303,10 +303,10 @@ class DBMeta(metaclass=Cached):
                         ptbl['label'] = ptbl['name']
                         ptbl['list_display'] = ''
                         ptbl['search_fields'] = ''
-                        for item in ptbl['columns'].values():
-                            ptbl['columns'][item['name']]['title'] = item['name']
-                            ptbl['columns'][item['name']]['amis_form_item'] = ''
-                            ptbl['columns'][item['name']]['amis_table_column'] = ''
+                        for item in ptbl['columns']:
+                            item['title'] = item['name']
+                            item['amis_form_item'] = ''
+                            item['amis_table_column'] = ''
                         papipage = ApiPage(self.dsconfig, ptbl['name'])
                         papipage.loadfrom_json(ptbl)
                         papipage.create_update_table()
@@ -386,7 +386,7 @@ class DBMeta(metaclass=Cached):
         rtn = False
         table = self.gettable(table_name)
         if table is not None:
-            for column in table.columns.values():
+            for column in table.columns:
                 if column['type'] == 'NULL':
                     rtn = True
                     break

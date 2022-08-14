@@ -98,7 +98,6 @@ class DBConnectionAdmin(admin.ModelAdmin):
             if isinstance(action, amis.components.ActionType.Drawer):
                 if action.label == _('Bulk Create'):
                     action.hidden = True
-                    header_toolbar.remove(action)
         return header_toolbar
 
     async def get_create_action(self, request: Request, bulk: bool = False) -> Action:
@@ -141,7 +140,6 @@ class DBConfigAdmin(admin.ModelAdmin):
             if isinstance(action, amis.components.ActionType.Drawer):
                 if action.label == _('Bulk Create'):
                     action.hidden = True
-                    header_toolbar.remove(action)
         return header_toolbar
 
     async def get_create_form(self, request: Request, bulk: bool = False) -> Form:
@@ -149,7 +147,6 @@ class DBConfigAdmin(admin.ModelAdmin):
         if not bulk:
             formtab = amis.Tabs(tabsMode='line')
             formtab.tabs=[]
-            tbody = c_form.body.copy()
             for item in c_form.body:
                 tlabel = item.label
                 item.label=False
@@ -163,7 +160,6 @@ class DBConfigAdmin(admin.ModelAdmin):
         if not bulk:
             formtab = amis.Tabs(tabsMode='line')
             formtab.tabs=[]
-            tbody = u_form.body.copy()
             for item in u_form.body:
                 tlabel = item.label
                 item.label=False
@@ -179,10 +175,103 @@ class TableMetaAdmin(admin.ModelAdmin):
     model = TableMeta
     search_fields = [TableMeta.name]
 
+    async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
+        header_toolbar = await super().get_actions_on_header_toolbar(request)
+        for action in header_toolbar:
+            if isinstance(action, amis.components.ActionType.Drawer):
+                if action.label == _('Bulk Create') or action.label == _('Create') :
+                    action.hidden = True
+        return header_toolbar
+
+    async def get_create_form(self, request: Request, bulk: bool = False) -> Form:
+        c_form = await super().get_create_form(request, bulk)
+        if not bulk:
+            formtab = amis.Tabs(tabsMode='line')
+            formtab.tabs=[]
+            fieldlist = []
+            comboitem = None
+            for item in c_form.body:
+                if item.type == 'combo':
+                    comboitem = item
+                else:
+                    fieldlist.append(item)
+            basictabitem = amis.Tabs.Item(title=_('Basic Info'), tab=fieldlist)
+            combotabitem = amis.Tabs.Item(title=comboitem.label, tab=comboitem)
+            formtab.tabs.append(basictabitem)
+            formtab.tabs.append(combotabitem)
+            c_form.body=formtab
+        return c_form
+
+    async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
+        u_form = await super().get_update_form(request, bulk)
+        if not bulk:
+            formtab = amis.Tabs(tabsMode='line')
+            formtab.tabs=[]
+            fieldlist = []
+            comboitem = None
+            for item in u_form.body:
+                if item.type == 'combo':
+                    comboitem = item
+                else:
+                    fieldlist.append(item)
+            basictabitem = amis.Tabs.Item(title=_('Basic Info'), tab=fieldlist)
+            combotabitem = amis.Tabs.Item(title=comboitem.label, tab=comboitem)
+            formtab.tabs.append(basictabitem)
+            formtab.tabs.append(combotabitem)
+            u_form.body=formtab
+        return u_form
+
 # TablePage Admin
 class TablePageAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
     model = TablePage
     search_fields = [TablePage.name]
+
+    async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
+        header_toolbar = await super().get_actions_on_header_toolbar(request)
+        for action in header_toolbar:
+            if action.type == 'button':
+                log.debug(action)
+                if action.label == _('Bulk Create') or action.label == _('Create') :
+                    action.hidden = True
+        return header_toolbar
+
+    async def get_create_form(self, request: Request, bulk: bool = False) -> Form:
+        c_form = await super().get_create_form(request, bulk)
+        if not bulk:
+            formtab = amis.Tabs(tabsMode='line')
+            formtab.tabs=[]
+            fieldlist = []
+            comboitem = None
+            for item in c_form.body:
+                if item.type == 'combo':
+                    comboitem = item
+                else:
+                    fieldlist.append(item)
+            basictabitem = amis.Tabs.Item(title=_('Basic Info'), tab=fieldlist)
+            combotabitem = amis.Tabs.Item(title=comboitem.label, tab=comboitem)
+            formtab.tabs.append(basictabitem)
+            formtab.tabs.append(combotabitem)
+            c_form.body=formtab
+        return c_form
+
+    async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
+        u_form = await super().get_update_form(request, bulk)
+        if not bulk:
+            formtab = amis.Tabs(tabsMode='line')
+            formtab.tabs=[]
+            fieldlist = []
+            comboitem = None
+            for item in u_form.body:
+                if item.type == 'combo':
+                    comboitem = item
+                else:
+                    fieldlist.append(item)
+            basictabitem = amis.Tabs.Item(title=_('Basic Info'), tab=fieldlist)
+            combotabitem = amis.Tabs.Item(title=comboitem.label, tab=comboitem)
+            formtab.tabs.append(basictabitem)
+            formtab.tabs.append(combotabitem)
+            u_form.body=formtab
+        return u_form
 
