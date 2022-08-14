@@ -172,8 +172,12 @@ def sync_uri(uri):
         syncuri = f'{db_sub}+{sync_dialect_sub}:{drv_sub}'
     return syncuri
 
-def get_db_from_uri(uri):
+def get_db_type_from_uri(uri):
     db_sub = uri.split(':')[0].split('+')[0].strip()
+    return db_sub
+
+def get_db_dialect_from_uri(uri):
+    db_sub = uri.split(':')[0].split('+')[1].strip()
     return db_sub
 
 if __name__ == '__main__':

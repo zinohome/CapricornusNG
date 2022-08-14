@@ -170,7 +170,7 @@ class DBMeta(metaclass=Cached):
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if not table_name in InternalObjEnum[toolkit.get_db_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not table_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_table = True
                         else:
@@ -230,7 +230,7 @@ class DBMeta(metaclass=Cached):
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if not view_name in InternalObjEnum[toolkit.get_db_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not view_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_view = True
                         else:
@@ -481,7 +481,7 @@ class DBMeta(metaclass=Cached):
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if not table_name in InternalObjEnum[toolkit.get_db_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not table_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_table = True
                         else:
@@ -508,7 +508,7 @@ class DBMeta(metaclass=Cached):
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if not view_name in InternalObjEnum[toolkit.get_db_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not view_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_view = True
                         else:

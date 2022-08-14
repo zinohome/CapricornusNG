@@ -67,7 +67,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
     model = DBConnection
-    list_display = [DBConnection.id, DBConnection.db_Type, DBConnection.name, DBConnection.db_Dialect, DBConnection.db_useschema, DBConnection.db_schema, DBConfig.name]
+    list_display = [DBConnection.id, DBConnection.name, DBConnection.db_useschema, DBConnection.db_schema, DBConfig.name]
     search_fields = [DBConnection.name, DBConfig.name]
     test_connection_api = {
                 'url':'/admin/db_connection_test',
@@ -83,8 +83,6 @@ class DBConnectionAdmin(admin.ModelAdmin):
                 'data':{
                     'id':'${id}',
                     'name':'${name}',
-                    'db_Type':'${db_Type}',
-                    'db_Dialect':'${db_Dialect}',
                     'db_uri':'${db_uri}',
                     'db_useschema':'${db_useschema}',
                     'db_schema':'${db_schema}',

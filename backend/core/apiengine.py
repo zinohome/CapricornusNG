@@ -36,7 +36,7 @@ class APIEngine(metaclass=Cached):
         syncuri = toolkit.sync_uri(uri)
         if syncuri is None:
             raise RuntimeError("Can't create Engine, please check uri")
-        if self.dsconfig.Database_Config.db_Type.lower() == 'oracle':
+        if toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri).lower() == 'oracle':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
                                                 pool_size=self.dsconfig.Connection_Config.con_pool_size,
@@ -57,7 +57,7 @@ class APIEngine(metaclass=Cached):
                                                 exclude_tablespaces=toolkit.to_list(
                                                     self.dsconfig.Database_Config.db_exclude_tablespaces)
                                                 )
-        elif self.dsconfig.Database_Config.db_Type.lower() == 'sqlite':
+        elif toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri).lower() == 'sqlite':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
                                                 pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,

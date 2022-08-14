@@ -38,21 +38,6 @@ class BaseSQLModel(sqlmodel.SQLModel):
         orm_mode = True
         arbitrary_types_allowed = True
 
-
-# DBConnection Model
-class DataBaseType(TextChoices):
-    sqlite = 'sqlite', 'SQLite'
-    mysql = 'mysql', 'MySQL/MariaDB'
-    oracle = 'oracle', 'Oracle'
-    postgresql = 'postgresql', 'PostgreSQL'
-
-class DataBaseDialect(TextChoices):
-    aiosqlite = 'aiosqlite', 'aiosqlite'
-    aiomysql = 'aiomysql', 'aiomysql'
-    cx_oracle = 'cx_oracle_async', 'cx_oracle_async'
-    asyncpg = 'asyncpg', 'asyncpg'
-
-
 class DBConnection(BaseSQLModel, table=True):
     __tablename__ = 'capricornus_db_connection'
     name: str = models.Field(
@@ -60,8 +45,6 @@ class DBConnection(BaseSQLModel, table=True):
         max_length=100,
         sa_column=sqlmodel.Column(sqlmodel.String(100), unique=True, index=True, nullable=False)
     )
-    db_Type: DataBaseType = models.Field(DataBaseType.mysql, title='Type')
-    db_Dialect: DataBaseDialect = models.Field(DataBaseDialect.aiomysql, title='Dialect')
     db_uri: str = models.Field(title='URI', max_length=256,
                                sa_column=sqlmodel.Column(sqlmodel.String(256), unique=False, index=False, nullable=False),
                                amis_form_item=amis.InputText(placeholder='mysql+aiomysql://root:bgt56yhn@127.0.0.1:3306/capricornus?charset=utf8mb4'))

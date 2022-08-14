@@ -29,9 +29,11 @@ dbmeta = DBMeta(dsconfig, apiengine)
 if dsconfig.Application_Config.app_force_generate_meta:
     dbmeta.load_metadata()
     dbmeta.gen_schema()
-dbmeta.load_schema()
-dbmeta.gen_models()
-dbmeta.gen_admins()
+    dbmeta.load_schema()
+    dbmeta.gen_models()
+    dbmeta.gen_admins()
+else:
+    dbmeta.load_schema()
 
 # 安装应用
 from apps import admin
