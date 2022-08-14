@@ -145,24 +145,25 @@ class TableMeta(BaseSQLModel, table=True):
     __tablename__ = 'capricornus_table_meta'
     name: str = models.Field(
         title='Table Name',
-        sa_column=sqlmodel.Column(sqlmodel.String(100), unique=False, index=True, nullable=False)
+        sa_column=sqlmodel.Column(sqlmodel.String(100), unique=False, index=True, nullable=False),
+                amis_form_item = amis.InputText(disabled = True)
     )
     table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
-                                            amis_form_item=amis.InputText())
-    table_type: TableType = models.Field(TableType.table, title='Type')
+                                            amis_form_item=amis.InputText(disabled = True))
+    table_type: TableType = models.Field(TableType.table, title='Type',amis_form_item = amis.InputText(disabled = True))
     primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
-                                                         amis_form_item=amis.InputText())
+                                                         amis_form_item=amis.InputText(disabled = True))
     indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
-                                                         amis_form_item=amis.InputText())
+                                                         amis_form_item=amis.InputText(disabled = True))
     columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_defile),
                                            sa_column=Column(JSON), title='Columns',
                                                    amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='name', label='Name', unique='true', disabled=True),
-                                                                                                  amis.InputText(name='type', label='Type'),
-                                                                                                  amis.InputText(name='nullable', label='Nullable'),
-                                                                                                  amis.InputText(name='default', label='Default'),
-                                                                                                  amis.InputText(name='autoincrement', label='Autoincrement'),
-                                                                                                  amis.InputText(name='primary_key', label='Primarykey'),
-                                                                                                  amis.InputText(name='pythonType', label='PythonType')],
+                                                                                                  amis.InputText(name='type', label='Type', disabled=True),
+                                                                                                  amis.InputText(name='nullable', label='Nullable', disabled=True),
+                                                                                                  amis.InputText(name='default', label='Default', disabled=True),
+                                                                                                  amis.InputText(name='autoincrement', label='Autoincrement', disabled=True),
+                                                                                                  amis.InputText(name='primary_key', label='Primarykey', disabled=True),
+                                                                                                  amis.InputText(name='pythonType', label='PythonType', disabled=True)],
                                                                             canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${index|plus}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')

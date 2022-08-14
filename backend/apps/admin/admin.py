@@ -173,6 +173,7 @@ class TableMetaAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
     model = TableMeta
+    list_display = [DBConnection.name, TableMeta.id, TableMeta.name, TableMeta.table_type, TableMeta.primarykeys, TableMeta.columns]
     search_fields = [TableMeta.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
@@ -226,6 +227,7 @@ class TablePageAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
     model = TablePage
+    list_display = [DBConnection.name, TablePage.id, TablePage.name, TablePage.label, TablePage.primarykeys, TablePage.columns]
     search_fields = [TablePage.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
