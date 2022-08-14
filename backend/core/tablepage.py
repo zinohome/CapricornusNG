@@ -10,18 +10,20 @@
 #  @Software: Capricornus
 
 
-class TableSchema(object):
+class TablePageSchema(object):
     def __init__(self, id, table_name, table_type):
         self._id = id
         self._name = table_name
+        self._label = None
         self._table_type = table_type
         self._dbconn_id = None
         self._table_schema = None
         self._primarykeys = None
         self._logicprimarykeys = None
         self._indexes = None
+        self._list_display = None
+        self._search_fields = None
         self._columns = None
-        self._pagedefine = None
 
     @property
     def id(self):
@@ -46,6 +48,14 @@ class TableSchema(object):
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, value):
+        self._label = value
 
     @property
     def table_type(self):
@@ -100,6 +110,30 @@ class TableSchema(object):
         self._indexes = None
 
     @property
+    def list_display(self):
+        return self._list_display
+
+    @list_display.setter
+    def list_display(self, value):
+        self._list_display = value
+
+    @list_display.deleter
+    def list_display(self):
+        self._list_display = None
+
+    @property
+    def search_fields(self):
+        return self._search_fields
+
+    @search_fields.setter
+    def search_fields(self, value):
+        self._search_fields = value
+
+    @search_fields.deleter
+    def search_fields(self):
+        self._search_fields = None
+
+    @property
     def columns(self):
         return self._columns
 
@@ -112,30 +146,20 @@ class TableSchema(object):
         self._columns = None
 
     @property
-    def pagedefine(self):
-        return self._pagedefine
-
-    @pagedefine.setter
-    def pagedefine(self, value):
-        self._pagedefine = value
-
-    @pagedefine.deleter
-    def pagedefine(self):
-        self._pagedefine = None
-
-    @property
     def json(self):
         return {
             '_id': self._id,
             'dbconn_id': self._dbconn_id,
             'name': self._name,
+            'label': self._label,
             'table_type': self._table_type,
             'table_schema': self._table_schema,
             'primarykeys': self._primarykeys,
             'logicprimarykeys': self._logicprimarykeys,
             'indexes': self._indexes,
-            'columns': self._columns,
-            'pagedefine': self._pagedefine
+            'list_display': self._list_display,
+            'search_fields': self._search_fields,
+            'columns': self._columns
         }
 
     def getColumnType(self, Columename):

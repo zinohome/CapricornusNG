@@ -21,6 +21,7 @@ from asgiref.sync import async_to_sync
 from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import inspect, Table
 
+from core.apipage import ApiPage
 from core.settings import settings
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
@@ -28,6 +29,7 @@ import simplejson as json
 from core.apiengine import APIEngine
 from core.apitable import ApiTable
 from core.dsconfig import DSConfig
+from core.tablepage import TablePageSchema
 from core.tableschema import TableSchema
 from util import toolkit
 from util.log import log as log
@@ -58,7 +60,8 @@ class DBMeta(metaclass=Cached):
         self._useschema = self.dsconfig.Database_Config.db_useschema
         self._schema = self.dsconfig.Database_Config.db_schema
         self._tableCount = 0
-        self._tables = 'N/A'
+        self._tables = None
+        self._pages = None
         self._viewCount = 0
         self._metadata = None
 
@@ -224,6 +227,18 @@ class DBMeta(metaclass=Cached):
                         japitable = ApiTable(self.dsconfig, jtbl['name'])
                         japitable.loadfrom_json(jtbl)
                         japitable.create_update_table()
+                        ptbl = jtbl.copy()
+                        ptbl['label'] = ptbl['name']
+                        ptbl['list_display'] = ''
+                        ptbl['search_fields'] = ''
+                        del ptbl['pagedefine']
+                        for item in ptbl['columns'].values():
+                            ptbl['columns'][item['name']]['title'] = item['name']
+                            ptbl['columns'][item['name']]['amis_form_item'] = ''
+                            ptbl['columns'][item['name']]['amis_table_column'] = ''
+                        papipage = ApiPage(self.dsconfig, ptbl['name'])
+                        papipage.loadfrom_json(ptbl)
+                        papipage.create_update_table()
                 # gen schema for views
                 view_names = inspector.get_view_names()
                 if self._useschema:
@@ -283,6 +298,18 @@ class DBMeta(metaclass=Cached):
                         vapitable = ApiTable(self.dsconfig, vtbl['name'])
                         vapitable.loadfrom_json(vtbl)
                         vapitable.create_update_table()
+                        ptbl = jtbl.copy()
+                        ptbl['label'] = ptbl['name']
+                        ptbl['list_display'] = ''
+                        ptbl['search_fields'] = ''
+                        del ptbl['pagedefine']
+                        for item in ptbl['columns'].values():
+                            ptbl['columns'][item['name']]['title'] = item['name']
+                            ptbl['columns'][item['name']]['amis_form_item'] = ''
+                            ptbl['columns'][item['name']]['amis_table_column'] = ''
+                        papipage = ApiPage(self.dsconfig, ptbl['name'])
+                        papipage.loadfrom_json(ptbl)
+                        papipage.create_update_table()
         except Exception as exp:
             log.error('Exception at dbmeta.gen_schema() %s ' % exp)
             if settings.app_exception_detail:
@@ -292,7 +319,10 @@ class DBMeta(metaclass=Cached):
         log.debug('Loading schema from %s ……' % settings.app_profile)
         apitable = ApiTable(self.dsconfig, 'None')
         metas = apitable.get_all_tables()
+        apipage = ApiPage(self.dsconfig, 'None')
+        pages = apipage.get_all_tables()
         self._tables = []
+        self._pages = []
         for meta in metas:
             table = TableSchema(meta.id, meta.name, meta.table_type)
             table.dbconn_id = meta.dbconn_id
@@ -307,6 +337,18 @@ class DBMeta(metaclass=Cached):
                 self._tableCount = self._tableCount + 1
             if table.table_type == 'view':
                 self._viewCount = self._viewCount + 1
+        for page in pages:
+            tpage = TablePageSchema(page.id, page.name, page.table_type)
+            tpage.dbconn_id = page.dbconn_id
+            tpage.label = page.label
+            tpage.table_schema = page.table_schema
+            tpage.primarykeys = page.primarykeys
+            tpage.logicprimarykeys = page.logicprimarykeys
+            tpage.indexes = page.indexes
+            tpage.list_display = page.list_display
+            tpage.search_fields = page.search_fields
+            tpage.columns = page.columns
+            self._pages.append(tpage)
         log.debug('Schema load with [ %s ] tables and [ %s ] views' % (self._tableCount, self._viewCount))
 
 

@@ -54,6 +54,7 @@ class DBConnection(BaseSQLModel, table=True):
     db_conf_id: int = models.Field(title='Config', nullable=False, foreign_key="capricornus_db_config.id")
     dbconfig: Optional["DBConfig"] = Relationship(back_populates="dbconnection")
     tablemetas: List["TableMeta"] = Relationship(back_populates="dbconnection")
+    tablepages: List["TablePage"] = Relationship(back_populates="dbconnection")
 
 # DBConfig Model
 class DBConfig(BaseSQLModel, table=True):
@@ -164,3 +165,31 @@ class TableMeta(BaseSQLModel, table=True):
                                                    amis_form_item=amis.Editor())
     dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')
     dbconnection: Optional[DBConnection] = Relationship(back_populates="tablemetas")
+
+class TablePage(BaseSQLModel, table=True):
+    __tablename__ = 'capricornus_table_page'
+    name: str = models.Field(
+        title='Table Name',
+        sa_column=sqlmodel.Column(sqlmodel.String(100), unique=False, index=True, nullable=False)
+    )
+    label: Optional[str] = models.Field(default='', title='Label', max_length=256,
+                                            amis_form_item=amis.InputText())
+    table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
+                                            amis_form_item=amis.InputText())
+    table_type: TableType = models.Field(TableType.table, title='Type')
+    primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
+                                                         amis_form_item=amis.InputText())
+    logicprimarykeys: Optional[str] = models.Field(default='', title='LogicPrimaryKey', max_length=256,
+                                                         amis_form_item=amis.InputText())
+    indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
+                                                         amis_form_item=amis.InputText())
+    list_display: Optional[str] = models.Field(default='', title='ListDisplay', max_length=256,
+                                          amis_form_item=amis.InputText())
+    search_fields: Optional[str] = models.Field(default='', title='SearchFields', max_length=256,
+                                          amis_form_item=amis.InputText())
+    columns: Optional[dict] = models.Field(index=False, default=json.loads(default_column_defile),
+                                                   sa_column=Column(JSON),
+                                                   title='Columns',
+                                                   amis_form_item=amis.Editor())
+    dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')
+    dbconnection: Optional[DBConnection] = Relationship(back_populates="tablepages")
