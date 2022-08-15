@@ -276,3 +276,23 @@ class TablePageAdmin(admin.ModelAdmin):
             u_form.body=formtab
         return u_form
 
+# API docs
+
+@site.register_admin
+class DocsAdmin(admin.IframeAdmin):
+    group_schema = PageSchema(label='APIDocs', icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label='Docs', icon='fa fa-book')
+    #src = '/apidocs'
+    @property
+    def src(self):
+        return f'{self.app.site.settings.site_url}/apidocs'
+
+
+@site.register_admin
+class ReDocsAdmin(admin.IframeAdmin):
+    group_schema = PageSchema(label='APIDocs', icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label='Redocs', icon='fa fa-book')
+    # 设置跳转链接
+    @property
+    def src(self):
+        return f'{self.app.site.settings.site_url}/apiredoc'

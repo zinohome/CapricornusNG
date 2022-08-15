@@ -39,6 +39,8 @@ app = FastAPI(debug=settings.debug,
               description=dsconfig.Application_Config.app_description,
               version=dsconfig.Application_Config.app_version,
               openapi_url=prefix + "/openapi.json",
+              docs_url=None,
+              redoc_url=None
               )
 
 # 自动生成model和admin
@@ -94,7 +96,7 @@ app.mount("/static", StaticFiles(directory="apps/static"), name="static")
 
 # 3.配置 Swagger UI CDN
 from fastapi.openapi.docs import get_swagger_ui_html
-@app.get("/docs", include_in_schema=False)
+@app.get("/apidocs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url=app.openapi_url,
@@ -108,13 +110,12 @@ async def custom_swagger_ui_html():
 async def swagger_ui_redirect():
     return get_swagger_ui_oauth2_redirect_html()
 
-# 4.配置 Swager UI CDN
-@app.get("/redoc", include_in_schema=False)
+# 4.配置 Redoc CDN
+@app.get("/apiredoc", include_in_schema=False)
 async def custom_swagger_ui_html():
-    return get_swagger_ui_html(
+    return get_redoc_html(
         openapi_url=app.openapi_url,
         title=f"{app.title} - ReDoc",
-        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         redoc_js_url="/static/redoc/redoc.standalone.js",
         redoc_favicon_url="/static/favicon.ico",
         with_google_fonts=False,
