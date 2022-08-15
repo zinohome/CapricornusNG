@@ -166,7 +166,7 @@ class TableMeta(BaseSQLModel, table=True):
                                                                                                   amis.InputText(name='pythonType', label='PythonType', disabled=True)],
                                                                             canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${index|plus}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection')
+    dbconn_id: int = models.Field(title='Connection ID', nullable=False, foreign_key="capricornus_db_connection.id")
     dbconnection: Optional[DBConnection] = Relationship(back_populates="tablemetas")
 
 class TablePage(BaseSQLModel, table=True):
@@ -205,5 +205,5 @@ class TablePage(BaseSQLModel, table=True):
                                                                                                   amis.InputText(name='amis_table_column', label='TableColumn')],
                                                                             canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${index|plus}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    dbconn_id: Optional[int] = models.Field(default=None, foreign_key="capricornus_db_connection.id", title='DBConnection', amis_form_item=amis.Hidden(disabled=True))
+    dbconn_id: int = models.Field(title='Connection ID', nullable=False, foreign_key="capricornus_db_connection.id")
     dbconnection: Optional[DBConnection] = Relationship(back_populates="tablepages")
