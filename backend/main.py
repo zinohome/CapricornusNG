@@ -19,6 +19,11 @@ from core.dbmeta import DBMeta
 from core.dsconfig import DSConfig
 from core.settings import settings
 from util.log import log as log
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
 
 
 dsconfig = DSConfig(settings.app_profile)
@@ -87,14 +92,30 @@ app.add_middleware(
 # 2. 配置静态资源目录
 app.mount("/static", StaticFiles(directory="apps/static"), name="static")
 
-# # 3.配置 Swagger UI CDN
-# from fastapi.openapi.docs import get_swagger_ui_html
-# @app.get("/docs", include_in_schema=False)
-# async def custom_swagger_ui_html():
-#     return get_swagger_ui_html(
-#         openapi_url=app.openapi_url,
-#         title=f"{app.title} - Swagger UI",
-#         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-#         swagger_js_url="https://unpkg.com/swagger-ui-dist@4/swagger-ui-bundle.js",
-#         swagger_css_url="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css",
-#     )
+# 3.配置 Swagger UI CDN
+from fastapi.openapi.docs import get_swagger_ui_html
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} - Swagger UI",
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="/static/swagger-ui-dist@4/swagger-ui-bundle.js",
+        swagger_favicon_url="/static/favicon.ico",
+        swagger_css_url="/static/swagger-ui-dist@4/swagger-ui.css",
+    )
+@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+async def swagger_ui_redirect():
+    return get_swagger_ui_oauth2_redirect_html()
+
+# 4.配置 Swager UI CDN
+@app.get("/redoc", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} - ReDoc",
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        redoc_js_url="/static/redoc/redoc.standalone.js",
+        redoc_favicon_url="/static/favicon.ico",
+        with_google_fonts=False,
+    )

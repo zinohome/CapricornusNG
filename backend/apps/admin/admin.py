@@ -179,8 +179,8 @@ class TableMetaAdmin(admin.ModelAdmin):
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
         for action in header_toolbar:
-            if isinstance(action, amis.components.ActionType.Drawer):
-                if action.label == _('Bulk Create') or action.label == _('Create') :
+            if action.type == 'button':
+                if action.label == _('Bulk Create') or action.label == _('Create'):
                     action.hidden = True
         return header_toolbar
 
@@ -234,7 +234,6 @@ class TablePageAdmin(admin.ModelAdmin):
         header_toolbar = await super().get_actions_on_header_toolbar(request)
         for action in header_toolbar:
             if action.type == 'button':
-                log.debug(action)
                 if action.label == _('Bulk Create') or action.label == _('Create') :
                     action.hidden = True
         return header_toolbar
