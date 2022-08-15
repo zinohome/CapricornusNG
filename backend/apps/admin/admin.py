@@ -33,10 +33,10 @@ class DataApp(admin.AdminApp):
 
     def __init__(self, app: "AdminApp"):
         super().__init__(app)
-        alltables = dbmeta.get_tables() + dbmeta.get_views()
+        alltables = dbmeta.get_table_pages()
         if len(alltables)>0:
             for tbl in alltables:
-                dtable = dbmeta.gettable(tbl)
+                dtable = dbmeta.getpage(tbl)
                 if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
                     adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
                     adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')

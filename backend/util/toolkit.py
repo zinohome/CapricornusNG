@@ -180,6 +180,17 @@ def get_db_dialect_from_uri(uri):
     db_sub = uri.split(':')[0].split('+')[1].strip()
     return db_sub
 
+def get_first_primarykey(primarykeystr, logicprimarykeystr):
+    pk = None
+    if len(primarykeystr) > 0:
+        pk = primarykeystr.split(',')[0]
+    else:
+        if len(logicprimarykeystr) >0:
+            pk = logicprimarykeystr.split(',')[0]
+        else:
+            pk = None
+    return pk
+
 if __name__ == '__main__':
     str1 = "{'name': 'productDescription', 'type': TEXT(), 'default': None, 'comment': None, 'nullable': False}"
     print(to_json(str1))

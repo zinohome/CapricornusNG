@@ -20,9 +20,21 @@ from core.dsconfig import DSConfig
 from core.settings import settings
 from util.log import log as log
 
-app = FastAPI(debug=settings.debug)
+
 dsconfig = DSConfig(settings.app_profile)
 apiengine = APIEngine(dsconfig)
+'''API prefix'''
+prefix = dsconfig.Application_Config.app_prefix
+if prefix.startswith('/'):
+    pass
+else:
+    prefix = '/' + prefix
+app = FastAPI(debug=settings.debug,
+              title=dsconfig.Application_Config.app_name,
+              description=dsconfig.Application_Config.app_description,
+              version=dsconfig.Application_Config.app_version,
+              openapi_url=prefix + "/openapi.json",
+              )
 
 # 自动生成model和admin
 dbmeta = DBMeta(dsconfig, apiengine)

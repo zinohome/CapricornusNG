@@ -1,5 +1,5 @@
 from asgiref.sync import sync_to_async
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
@@ -12,11 +12,7 @@ from main import dsconfig, apiengine
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
-router = APIRouter(prefix='/admin', tags=['admin'])
-
-@router.get('/hello', include_in_schema=False)
-async def hello(name: str = '') -> str:
-    return f'hello {name}'
+router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.requires()())])
 
 @router.post('/db_connection_test',
          tags=["admin"],
@@ -67,12 +63,3 @@ async def db_sync_schema(dbconnection: DBConnection) -> str:
     except Exception as e:
         traceback.print_exc()
         return {"status":1,"msg":_("DataBase synchronized Error")}
-
-@router.get('/users',
-         tags=["admin"],
-         summary="Get user information.",
-         description="Return user information",
-         include_in_schema=True)
-async def read_users_me(request: Request) -> str:
-    print(dir(auth))
-    return auth.authenticate_user
