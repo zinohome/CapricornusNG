@@ -182,6 +182,11 @@ class TableMetaAdmin(admin.ModelAdmin):
     list_display = [DBConnection.name, TableMeta.meta_id, TableMeta.name, TableMeta.table_type, TableMeta.primarykeys, TableMeta.columns]
     search_fields = [TableMeta.name]
 
+    async def get_select(self, request: Request) -> Select:
+        g_select = await super().get_select(request)
+        g_select = g_select.select_from(TableMeta).join(DBConnection)
+        return g_select
+
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
         for action in header_toolbar:
@@ -234,8 +239,13 @@ class TablePageAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
     model = TablePage
     pk_name = 'page_id'
-    list_display = [TableMeta.dbconn_id, TablePage.page_id, TablePage.name, TablePage.label, TablePage.primarykeys, TablePage.columns]
+    list_display = [DBConnection.name, TablePage.page_id, TablePage.name, TablePage.label, TablePage.primarykeys, TablePage.columns]
     search_fields = [TablePage.name]
+
+    async def get_select(self, request: Request) -> Select:
+        g_select = await super().get_select(request)
+        g_select = g_select.select_from(TablePage).join(DBConnection)
+        return g_select
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
