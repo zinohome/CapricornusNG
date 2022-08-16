@@ -13,8 +13,10 @@ import simplejson as json
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy_database import Database, AsyncDatabase
 
+from apps.admin.models.dbconfig import DBConfig
+from apps.admin.models.dbconnection import DBConnection
+from apps.admin.models.tablemeta import TableMeta
 from core.settings import settings
-from apps.admin.models import TableMeta, DBConnection, DBConfig
 from util import toolkit
 from util.log import log as log
 
@@ -58,7 +60,7 @@ class DSConfig(metaclass=Cached):
         self.asyncdb = AsyncDatabase(self.engine)
 
     def loaddefault(self):
-        Database_Config_dict = {'name': 'sample-datasource', 'db_uri': 'sqlite+aiosqlite:////Users/zhangjun/PycharmProjects/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'db_useschema': False, 'db_exclude_tablespaces': None, 'id': 2, 'db_schema': None, 'db_conf_id': 2}
+        Database_Config_dict = {'name': 'sample-datasource', 'db_uri': 'sqlite+aiosqlite:////Users/zhangjun/PycharmProjects/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'db_useschema': False, 'db_exclude_tablespaces': None, 'conn_id': 2, 'db_schema': None, 'db_conf_id': 2}
         Application_Config_dict = {'app_name': 'Capricornus', 'app_version': 'v2.1.5', 'app_description': 'REST API for RDBMS', 'app_prefix': '/api/v2', 'app_cors_origins': "'*'", 'app_service_model': 'Standalone', 'app_param_prefix': 'up_b_', 'app_force_generate_meta': True, 'app_log_level': 'INFO', 'app_user_func': True, 'app_exception_detail': True, 'app_admin_use_https': False, 'app_confirm_key': 'Confirmed', 'app_http_port': 8880, 'app_https_port': 8843, 'app_http_timeout': 10, 'app_load_metadat_on_load': True, 'app_clear_metadat_on_startup': True, 'app_clear_metadat_on_shutdown': True}
         Schema_Config_dict = {'schema_cache_enabled': True, 'schema_model_refresh': True, 'schema_cache_filename': 'capricornus_metadata', 'schema_db_metafile': 'metadata.json', 'schema_db_logicpkfile': 'logicpk.json', 'schema_db_logicpkneedfile': 'logicpk-need.json', 'schema_fetch_all_table': True, 'schema_fetch_tables': 'table1, table2'}
         Query_Config_dict = {'query_limit_upset': 2000, 'query_default_limit': 10, 'query_default_offset': 0}
@@ -81,7 +83,7 @@ class DSConfig(metaclass=Cached):
             self.Database_Config = SimpleNamespace(**json.loads(connresult[0].json()))
             #log.debug('Database_Config: %s' % self.Database_Config)
             confstmt = select(DBConfig).where(
-                DBConfig.id == self.Database_Config.db_conf_id)
+                DBConfig.config_id == self.Database_Config.db_conf_id)
             confresult = self.db.scalars_all(confstmt)
             if len(confresult) > 0:
                 self.Application_Config = SimpleNamespace(**confresult[0].application_params)
@@ -96,7 +98,7 @@ class DSConfig(metaclass=Cached):
                 #log.debug('Security_Config: %s' % self.Security_Config)
                 #log.debug('Connection_Config: %s' % self.Connection_Config)
                 #log.debug('Admin_Config: %s' % self.Admin_Config)
-            tablestmt = select(TableMeta).where(TableMeta.dbconn_id == self.Database_Config.id)
+            tablestmt = select(TableMeta).where(TableMeta.dbconn_id == self.Database_Config.conn_id)
             tableresult = self.db.scalars_all(tablestmt)
             if len(tableresult) > 0:
                 self.db_schema_existed = True

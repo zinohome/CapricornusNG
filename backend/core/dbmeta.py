@@ -195,7 +195,7 @@ class DBMeta(metaclass=Cached):
                         jtbl = {}
                         jtbls[table_name] = jtbl
                         jtbl['name'] = table_name
-                        jtbl['dbconn_id'] = self.dsconfig.Database_Config.id
+                        jtbl['dbconn_id'] = self.dsconfig.Database_Config.conn_id
                         jtbl['table_schema'] = self.dsconfig.Database_Config.db_schema
                         jtbl['table_type'] = 'table'
                         pk = inspector.get_pk_constraint(table_name)
@@ -264,7 +264,7 @@ class DBMeta(metaclass=Cached):
                         vtbl = {}
                         jtbls[view_name] = vtbl
                         vtbl['name'] = view_name
-                        vtbl['dbconn_id'] = self.dsconfig.Database_Config.id
+                        vtbl['dbconn_id'] = self.dsconfig.Database_Config.conn_id
                         vtbl['table_schema'] = self.dsconfig.Database_Config.db_schema
                         vtbl['table_type'] = 'view'
                         pk = inspector.get_pk_constraint(view_name)
@@ -324,7 +324,7 @@ class DBMeta(metaclass=Cached):
         self._tables = []
         self._pages = []
         for meta in metas:
-            table = TableSchema(meta.id, meta.name, meta.table_type)
+            table = TableSchema(meta.meta_id, meta.name, meta.table_type)
             table.dbconn_id = meta.dbconn_id
             table.table_schema = meta.table_schema
             table.primarykeys = meta.primarykeys
@@ -336,7 +336,7 @@ class DBMeta(metaclass=Cached):
             if table.table_type == 'view':
                 self._viewCount = self._viewCount + 1
         for page in pages:
-            tpage = TablePageSchema(page.id, page.name, page.table_type)
+            tpage = TablePageSchema(page.page_id, page.name, page.table_type)
             tpage.dbconn_id = page.dbconn_id
             tpage.label = page.label
             tpage.table_schema = page.table_schema

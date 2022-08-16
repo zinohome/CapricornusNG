@@ -11,8 +11,8 @@
 
 
 class TablePageSchema(object):
-    def __init__(self, id, table_name, table_type):
-        self._id = id
+    def __init__(self, page_id, table_name, table_type):
+        self._page_id = page_id
         self._name = table_name
         self._label = None
         self._table_type = table_type
@@ -26,12 +26,12 @@ class TablePageSchema(object):
         self._columns = None
 
     @property
-    def id(self):
-        return self._id
+    def page_id(self):
+        return self._page_id
 
-    @id.setter
-    def id(self, value):
-        self._id = value
+    @page_id.setter
+    def page_id(self, value):
+        self._page_id = value
 
     @property
     def dbconn_id(self):
@@ -148,7 +148,7 @@ class TablePageSchema(object):
     @property
     def json(self):
         return {
-            '_id': self._id,
+            'page_id': self._page_id,
             'dbconn_id': self._dbconn_id,
             'name': self._name,
             'label': self._label,

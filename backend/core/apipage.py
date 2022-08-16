@@ -12,8 +12,8 @@ import weakref
 from sqlalchemy import select, insert, update, delete
 import simplejson as json
 
+from apps.admin.models.tablepage import TablePage
 from core.settings import settings
-from apps.admin.models import TablePage
 from util.log import log as log
 
 class Cached(type):
@@ -32,10 +32,10 @@ class Cached(type):
 class ApiPage(metaclass=Cached):
     def __init__(self, dsconfig, name):
         self.dsconfig = dsconfig
-        self.id = None
+        self.page_id = None
         self.name = name
         self.label = None
-        self.dbconn_id = self.dsconfig.Database_Config.id
+        self.dbconn_id = self.dsconfig.Database_Config.conn_id
         self.table_schema = None
         self.table_type = None
         self.primarykeys = None
@@ -47,8 +47,8 @@ class ApiPage(metaclass=Cached):
         self.valuedict = None
 
     def loadfrom_json(self,jsonobj):
-        if 'id' in jsonobj:
-            self.id = jsonobj['id']
+        if 'page_id' in jsonobj:
+            self.page_id = jsonobj['page_id']
         if 'name' in jsonobj:
             self.name = jsonobj['name']
         if 'label' in jsonobj:
@@ -192,8 +192,8 @@ class ApiPage(metaclass=Cached):
     def create_table(self):
         try:
             insertdict = self.valuedict.copy()
-            if 'id' in insertdict:
-                del insertdict['id']
+            if 'page_id' in insertdict:
+                del insertdict['page_id']
             stmt = insert(TablePage).values(insertdict)
             result = self.dsconfig.db.execute(stmt)
             return result.lastrowid
@@ -205,8 +205,8 @@ class ApiPage(metaclass=Cached):
     async def async_create_table(self):
         try:
             insertdict = self.valuedict.copy()
-            if 'id' in insertdict:
-                del insertdict['id']
+            if 'page_id' in insertdict:
+                del insertdict['page_id']
             stmt = insert(TablePage).values(insertdict)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
             return result.lastrowid
@@ -226,15 +226,15 @@ class ApiPage(metaclass=Cached):
                 updatedict = self.valuedict.copy()
                 updatedict['label'] = olddict['label']
                 self.valuedict['label'] = olddict['label']
-                stmt = update(TablePage).where(TablePage.id == olddict['id']).values(updatedict)
+                stmt = update(TablePage).where(TablePage.page_id == olddict['page_id']).values(updatedict)
                 result = self.dsconfig.db.execute(stmt)
-                self.valuedict['id'] = olddict['id']
-                return self.valuedict['id']
+                self.valuedict['page_id'] = olddict['page_id']
+                return self.valuedict['page_id']
             else:
                 # insert
                 insertdict = self.valuedict.copy()
-                if 'id' in insertdict:
-                    del insertdict['id']
+                if 'page_id' in insertdict:
+                    del insertdict['page_id']
                 stmt = insert(TablePage).values(insertdict)
                 result = self.dsconfig.db.execute(stmt)
                 return result.lastrowid
@@ -245,7 +245,7 @@ class ApiPage(metaclass=Cached):
 
     async def async_create_update_table(self):
         try:
-            stmt = select(TablePage).where(TablePage.name == self.name, TablePage.dbconn_id == self.dbconn_id)
+            stmt = select(TablePage).where(TablePage.name == self.name, TablePage.dbconn_page_id == self.dbconn_page_id)
             result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
             if len(result) > 0:
                 #update ingore pagedef
@@ -253,15 +253,15 @@ class ApiPage(metaclass=Cached):
                 updatedict = self.valuedict.copy()
                 updatedict['label'] = olddict['label']
                 self.valuedict['label'] = olddict['label']
-                stmt = update(TablePage).where(TablePage.id == olddict['id']).values(updatedict)
+                stmt = update(TablePage).where(TablePage.page_id == olddict['page_id']).values(updatedict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
-                self.valuedict['id'] = olddict['id']
-                return self.valuedict['id']
+                self.valuedict['page_id'] = olddict['page_id']
+                return self.valuedict['page_id']
             else:
                 #insert
                 insertdict = self.valuedict.copy()
-                if 'id' in insertdict:
-                    del insertdict['id']
+                if 'page_id' in insertdict:
+                    del insertdict['page_id']
                 stmt = insert(TablePage).values(insertdict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
                 return result.lastrowid
@@ -273,7 +273,7 @@ class ApiPage(metaclass=Cached):
 
     def delete_table(self):
         try:
-            stmt = delete(TablePage).where(TablePage.id == self.id)
+            stmt = delete(TablePage).where(TablePage.page_id == self.page_id)
             result = self.dsconfig.db.execute(stmt)
             return result.rowcount
         except Exception as exp:
@@ -283,7 +283,7 @@ class ApiPage(metaclass=Cached):
 
     async def async_delete_table(self):
         try:
-            stmt = delete(TablePage).where(TablePage.id == self.id)
+            stmt = delete(TablePage).where(TablePage.page_id == self.page_id)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
             return result.rowcount
         except Exception as exp:

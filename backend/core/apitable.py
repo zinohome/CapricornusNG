@@ -12,8 +12,8 @@ import weakref
 from sqlalchemy import select, insert, update, delete
 import simplejson as json
 
+from apps.admin.models.tablemeta import TableMeta
 from core.settings import settings
-from apps.admin.models import TableMeta
 from util.log import log as log
 
 class Cached(type):
@@ -32,9 +32,9 @@ class Cached(type):
 class ApiTable(metaclass=Cached):
     def __init__(self, dsconfig, name):
         self.dsconfig = dsconfig
-        self.id = None
+        self.meta_id = None
         self.name = name
-        self.dbconn_id = self.dsconfig.Database_Config.id
+        self.dbconn_id = self.dsconfig.Database_Config.conn_id
         self.table_schema = None
         self.table_type = None
         self.primarykeys = None
@@ -43,8 +43,8 @@ class ApiTable(metaclass=Cached):
         self.valuedict = None
 
     def loadfrom_json(self,jsonobj):
-        if 'id' in jsonobj:
-            self.id = jsonobj['id']
+        if 'meta_id' in jsonobj:
+            self.meta_id = jsonobj['meta_id']
         if 'name' in jsonobj:
             self.name = jsonobj['name']
         if 'dbconn_id' in jsonobj:
@@ -178,8 +178,8 @@ class ApiTable(metaclass=Cached):
     def create_table(self):
         try:
             insertdict = self.valuedict.copy()
-            if 'id' in insertdict:
-                del insertdict['id']
+            if 'meta_id' in insertdict:
+                del insertdict['meta_id']
             stmt = insert(TableMeta).values(insertdict)
             result = self.dsconfig.db.execute(stmt)
             return result.lastrowid
@@ -191,8 +191,8 @@ class ApiTable(metaclass=Cached):
     async def async_create_table(self):
         try:
             insertdict = self.valuedict.copy()
-            if 'id' in insertdict:
-                del insertdict['id']
+            if 'meta_id' in insertdict:
+                del insertdict['meta_id']
             stmt = insert(TableMeta).values(insertdict)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
             return result.lastrowid
@@ -210,15 +210,15 @@ class ApiTable(metaclass=Cached):
                 # update ingore pagedef
                 olddict = result[0].dict()
                 updatedict = self.valuedict.copy()
-                stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
+                stmt = update(TableMeta).where(TableMeta.meta_id == olddict['meta_id']).values(updatedict)
                 result = self.dsconfig.db.execute(stmt)
-                self.valuedict['id'] = olddict['id']
-                return self.valuedict['id']
+                self.valuedict['meta_id'] = olddict['meta_id']
+                return self.valuedict['meta_id']
             else:
                 # insert
                 insertdict = self.valuedict.copy()
-                if 'id' in insertdict:
-                    del insertdict['id']
+                if 'meta_id' in insertdict:
+                    del insertdict['meta_id']
                 stmt = insert(TableMeta).values(insertdict)
                 result = self.dsconfig.db.execute(stmt)
                 return result.lastrowid
@@ -235,15 +235,15 @@ class ApiTable(metaclass=Cached):
                 #update ingore pagedef
                 olddict = result[0].dict()
                 updatedict = self.valuedict.copy()
-                stmt = update(TableMeta).where(TableMeta.id == olddict['id']).values(updatedict)
+                stmt = update(TableMeta).where(TableMeta.meta_id == olddict['meta_id']).values(updatedict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
-                self.valuedict['id'] = olddict['id']
-                return self.valuedict['id']
+                self.valuedict['meta_id'] = olddict['meta_id']
+                return self.valuedict['meta_id']
             else:
                 #insert
                 insertdict = self.valuedict.copy()
-                if 'id' in insertdict:
-                    del insertdict['id']
+                if 'meta_id' in insertdict:
+                    del insertdict['meta_id']
                 stmt = insert(TableMeta).values(insertdict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
                 return result.lastrowid
@@ -255,7 +255,7 @@ class ApiTable(metaclass=Cached):
 
     def delete_table(self):
         try:
-            stmt = delete(TableMeta).where(TableMeta.id == self.id)
+            stmt = delete(TableMeta).where(TableMeta.meta_id == self.meta_id)
             result = self.dsconfig.db.execute(stmt)
             return result.rowcount
         except Exception as exp:
@@ -265,7 +265,7 @@ class ApiTable(metaclass=Cached):
 
     async def async_delete_table(self):
         try:
-            stmt = delete(TableMeta).where(TableMeta.id == self.id)
+            stmt = delete(TableMeta).where(TableMeta.meta_id == self.meta_id)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
             return result.rowcount
         except Exception as exp:

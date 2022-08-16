@@ -8,6 +8,10 @@ from pydantic import BaseModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.sql.expression import Select
 
+from apps.admin.models.dbconfig import DBConfig
+from apps.admin.models.dbconnection import DBConnection
+from apps.admin.models.tablemeta import TableMeta
+from apps.admin.models.tablepage import TablePage
 
 try:
     import ujson as json
@@ -16,7 +20,6 @@ except ImportError:
 from core.adminsite import site
 from starlette.requests import Request
 
-from .models import DBConnection, DBConfig, TableMeta, TablePage
 from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
@@ -67,7 +70,8 @@ class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
     model = DBConnection
-    list_display = [DBConnection.id, DBConnection.name, DBConnection.db_useschema, DBConnection.db_schema, DBConfig.name]
+    pk_name = 'conn_id'
+    list_display = [DBConnection.conn_id, DBConnection.name, DBConnection.db_useschema, DBConnection.db_schema, DBConfig.name]
     search_fields = [DBConnection.name, DBConfig.name]
     test_connection_api = {
                 'url':'/admin/db_connection_test',
@@ -81,7 +85,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
                 'url':'/admin/db_sync_schema',
                 'method':'post',
                 'data':{
-                    'id':'${id}',
+                    'conn_id':'${conn_id}',
                     'name':'${name}',
                     'db_uri':'${db_uri}',
                     'db_useschema':'${db_useschema}',
@@ -132,6 +136,7 @@ class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Config', icon='fa fa-sliders-h')
     model = DBConfig
+    pk_name = 'config_id'
     search_fields = [DBConfig.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
@@ -173,7 +178,8 @@ class TableMetaAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
     model = TableMeta
-    list_display = [TableMeta.id, TableMeta.dbconn_id, TableMeta.name, TableMeta.table_type, TableMeta.primarykeys, TableMeta.columns]
+    pk_name = 'meta_id'
+    list_display = [DBConnection.name, TableMeta.meta_id, TableMeta.name, TableMeta.table_type, TableMeta.primarykeys, TableMeta.columns]
     search_fields = [TableMeta.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
@@ -227,7 +233,8 @@ class TablePageAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
     model = TablePage
-    list_display = [TablePage.id, TableMeta.dbconn_id, TablePage.name, TablePage.label, TablePage.primarykeys, TablePage.columns]
+    pk_name = 'page_id'
+    list_display = [TableMeta.dbconn_id, TablePage.page_id, TablePage.name, TablePage.label, TablePage.primarykeys, TablePage.columns]
     search_fields = [TablePage.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:

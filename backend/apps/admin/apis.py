@@ -4,9 +4,12 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
+from apps.admin.models.dbconnection import DBConnection
+from apps.admin.models.dburimodel import DBURIModel
+from core.apiengine import APIEngine
+from core.dsconfig import DSConfig
 from core.settings import settings
 from core.adminsite import site, auth
-from apps.admin.models import DBURIModel, DBConnection
 from core.dbmeta import DBMeta
 from main import dsconfig, apiengine
 from util.log import log as log
@@ -42,7 +45,9 @@ async def db_sync_schema(dbconnection: DBConnection) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:
-        dbmeta = await sync_to_async(func=DBMeta)(dsconfig, apiengine)
+        sycdsconfig = DSConfig(dbconnection.name)
+        syncapiengine = APIEngine(sycdsconfig)
+        dbmeta = await sync_to_async(func=DBMeta)(sycdsconfig, syncapiengine)
         log.debug('[Step 0/8] Meta synchronize initialized')
         await sync_to_async(func=dbmeta.load_metadata)()
         log.debug('[Step 1/8] Metadata loaded')

@@ -11,8 +11,8 @@
 
 
 class TableSchema(object):
-    def __init__(self, id, table_name, table_type):
-        self._id = id
+    def __init__(self, meta_id, table_name, table_type):
+        self._meta_id = meta_id
         self._name = table_name
         self._table_type = table_type
         self._dbconn_id = None
@@ -22,12 +22,12 @@ class TableSchema(object):
         self._columns = None
 
     @property
-    def id(self):
-        return self._id
+    def meta_id(self):
+        return self._meta_id
 
-    @id.setter
-    def id(self, value):
-        self._id = value
+    @meta_id.setter
+    def meta_id(self, value):
+        self._meta_id = value
 
     @property
     def dbconn_id(self):
@@ -100,7 +100,7 @@ class TableSchema(object):
     @property
     def json(self):
         return {
-            '_id': self._id,
+            'meta_id': self._meta_id,
             'dbconn_id': self._dbconn_id,
             'name': self._name,
             'table_type': self._table_type,
