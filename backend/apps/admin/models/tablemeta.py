@@ -48,7 +48,7 @@ class TableMeta(BaseSQLModel, table=True):
                                                                                                   amis.InputText(name='autoincrement', label='Autoincrement', disabled=True),
                                                                                                   amis.InputText(name='primary_key', label='Primarykey', disabled=True),
                                                                                                   amis.InputText(name='pythonType', label='PythonType', disabled=True)],
-                                                                            canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${index|plus}'),
+                                                                            canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${columns[${index}].name}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     dbconn_id: int = models.Field(title='Connection ID', nullable=False, foreign_key="capricornus_db_connection.conn_id")
     tmdbconnection: "DBConnection" = Relationship(back_populates="tablemetas")

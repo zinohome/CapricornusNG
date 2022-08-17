@@ -63,7 +63,7 @@ class TablePage(BaseSQLModel, table=True):
                                                                                                   amis.Hidden(name='pythonType', label='PythonType'),
                                                                                                   amis.InputText(name='amis_form_item', label='FormItem'),
                                                                                                   amis.InputText(name='amis_table_column', label='TableColumn')],
-                                                                            canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${index|plus}'),
+                                                                            canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${columns[${index}].name}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     dbconn_id: int = models.Field(title='Connection ID', nullable=False, foreign_key="capricornus_db_connection.conn_id")
     tpdbconnection: "DBConnection" = Relationship(back_populates="tablepages")
