@@ -53,7 +53,7 @@ class TablePage(BaseSQLModel, table=True):
                                           amis_form_item=amis.InputText())
     columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_page_defile),
                                                    sa_column=Column(JSON), title='Columns',
-                                                   amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='name', label='Name', unique='true', disabled=True),
+                                                   amis_form_item=amis.Combo(type='combo', id='columns', items=[amis.InputText(name='name', label='Name', unique='true', disabled=True),
                                                                                                   amis.InputText(name='title', label='Title'),
                                                                                                   amis.Hidden(name='type', label='Type'),
                                                                                                   amis.Hidden(name='nullable', label='Nullable'),
