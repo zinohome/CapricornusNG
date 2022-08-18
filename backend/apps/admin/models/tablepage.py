@@ -49,7 +49,7 @@ class TablePage(BaseSQLModel, table=True):
     list_display: Optional[str] = models.Field(default='', title='ListDisplay', max_length=256,
                                           amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${page_id}'))
     search_fields: Optional[str] = models.Field(default='', title='SearchFields', max_length=256,
-                                          amis_form_item=amis.InputText())
+                                          amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${page_id}'))
     columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_page_defile),
                                                    sa_column=Column(JSON), title='Columns',
                                                    amis_form_item=amis.Combo(type='combo', id='columns', items=[amis.InputText(name='name', label='Name', unique='true', disabled=True),

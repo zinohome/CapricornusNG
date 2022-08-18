@@ -1,20 +1,16 @@
 from asgiref.sync import sync_to_async
-from fastapi import APIRouter, Request, Depends
-from sqlalchemy import text
+from fastapi import APIRouter, Depends
+from sqlalchemy import text, select
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
-from sqlmodel.ext.asyncio.session import AsyncSession
-
-from apps.admin.models import TablePage
 from apps.admin.models.dbconnection import DBConnection
 from apps.admin.models.dburimodel import DBURIModel
+from apps.admin.models.tablepage import TablePage
 from core.apiengine import APIEngine
 from core.dsconfig import DSConfig
-from core.settings import settings
 from core.adminsite import site, auth
 from core.dbmeta import DBMeta
-from main import dsconfig, apiengine
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
@@ -22,16 +18,27 @@ router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.r
 
 @router.get('/get_column_options/{page_id}',
          tags=["admin"],
-         summary="Get column option list.",
-         description="Return column option list",
+         summary="Get column options list.",
+         description="Return column options list",
          include_in_schema=True)
-async def get_column_options(page_id: int, session: AsyncSession = Depends(site.db.session_generator)):
-    log.debug('page_id is %s' % page_id)
-    returndict = {'status':1,'msg':'api error','data':None}
-    log.debug(site.db)
-    page = await session.get(TablePage, page_id)
-    log.debug(page)
-    return returndict
+async def get_column_options(page_id: int):
+    try:
+        returndict = {'status':1,'msg':_("Get column options Error")}
+        result = await site.db.async_get(TablePage, page_id)
+        if result.columns:
+            clsname = result.name.strip().capitalize()
+            datalist = []
+            for column in result.columns:
+                datalist.append({'label':column['name'],'value':clsname + '.' + column['name']})
+            returndict['status'] = 0
+            returndict['msg'] = 'Success'
+            returndict['data'] = datalist
+        return returndict
+            
+    except Exception as e:
+        log.error('Get column options Error !')
+        traceback.print_exc()
+        return {"status": 1, "msg": _("Get column options Error")}
 
 @router.post('/db_connection_test',
          tags=["admin"],
