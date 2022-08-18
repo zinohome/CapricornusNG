@@ -15,7 +15,6 @@ from fastapi_amis_admin import amis,models
 from typing import TYPE_CHECKING,Optional, Dict, Any, List
 from sqlmodel import Column, JSON
 from apps.admin.models.basesqlmodel import BaseSQLModel
-from apps.admin.models.tabletype import TableType
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 from sqlmodel import Relationship
@@ -40,7 +39,7 @@ class TablePage(BaseSQLModel, table=True):
                                             amis_form_item=amis.InputText())
     table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
                                             amis_form_item=amis.Hidden())
-    table_type: TableType = models.Field(TableType.table, title='Type', amis_form_item=amis.Hidden())
+    table_type: Optional[str] = models.Field(default='table', title='Type', amis_form_item=amis.Hidden())
     primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
                                                          amis_form_item=amis.InputText(disabled = True))
     logicprimarykeys: Optional[str] = models.Field(default='', title='LogicPrimaryKey', max_length=256,
@@ -48,7 +47,7 @@ class TablePage(BaseSQLModel, table=True):
     indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
                                                          amis_form_item=amis.Hidden())
     list_display: Optional[str] = models.Field(default='', title='ListDisplay', max_length=256,
-                                          amis_form_item=amis.InputText())
+                                          amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${page_id}'))
     search_fields: Optional[str] = models.Field(default='', title='SearchFields', max_length=256,
                                           amis_form_item=amis.InputText())
     columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_page_defile),

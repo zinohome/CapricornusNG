@@ -4,6 +4,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from apps.admin.models import TablePage
 from apps.admin.models.dbconnection import DBConnection
 from apps.admin.models.dburimodel import DBURIModel
 from core.apiengine import APIEngine
@@ -16,6 +19,19 @@ from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
 router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.requires()())])
+
+@router.get('/get_column_options/{page_id}',
+         tags=["admin"],
+         summary="Get column option list.",
+         description="Return column option list",
+         include_in_schema=True)
+async def get_column_options(page_id: int, session: AsyncSession = Depends(site.db.session_generator)):
+    log.debug('page_id is %s' % page_id)
+    returndict = {'status':1,'msg':'api error','data':None}
+    log.debug(site.db)
+    page = await session.get(TablePage, page_id)
+    log.debug(page)
+    return returndict
 
 @router.post('/db_connection_test',
          tags=["admin"],

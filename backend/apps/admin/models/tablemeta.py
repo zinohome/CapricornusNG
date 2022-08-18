@@ -17,7 +17,6 @@ from apps.admin.models.basesqlmodel import BaseSQLModel
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 from sqlmodel import Relationship, Column, JSON
-from .tabletype import TableType
 
 if TYPE_CHECKING:
     from .dbconnection import DBConnection
@@ -34,7 +33,7 @@ class TableMeta(BaseSQLModel, table=True):
     )
     table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
                                             amis_form_item=amis.InputText(disabled = True))
-    table_type: TableType = models.Field(TableType.table, title='Type',amis_form_item = amis.InputText(disabled = True))
+    table_type: Optional[str] = models.Field(default='table', title='Type',amis_form_item = amis.InputText(disabled = True))
     primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
                                                          amis_form_item=amis.InputText(disabled = True))
     indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
