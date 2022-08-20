@@ -35,8 +35,8 @@ class Cached(type):
             return obj
 
 class DSConfig(metaclass=Cached):
-    def __init__(self, name=settings.app_profile):
-        self.name = name
+    def __init__(self, ds_name=settings.app_profile):
+        self.ds_name = ds_name
         self.db_schema_existed = False
         self.Application_Config = None
         self.Schema_Config = None
@@ -60,7 +60,7 @@ class DSConfig(metaclass=Cached):
         self.asyncdb = AsyncDatabase(self.engine)
 
     def loaddefault(self):
-        Database_Config_dict = {'name': 'sample-datasource', 'db_uri': 'sqlite+aiosqlite:////Users/zhangjun/PycharmProjects/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'db_useschema': False, 'db_exclude_tablespaces': None, 'conn_id': 2, 'db_schema': None, 'db_conf_id': 2}
+        Database_Config_dict = {'ds_name': 'sample-datasource', 'ds_uri': 'sqlite+aiosqlite:////Users/zhangjun/PycharmProjects/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'ds_exclude_tablespaces': None, 'ds_id': 2, 'ds_schema': None, 'ds_config_id': 2}
         Application_Config_dict = {'app_name': 'Capricornus', 'app_version': 'v2.1.5', 'app_description': 'REST API for RDBMS', 'app_prefix': '/api/v2', 'app_cors_origins': "'*'", 'app_service_model': 'Standalone', 'app_param_prefix': 'up_b_', 'app_force_generate_meta': True, 'app_log_level': 'INFO', 'app_user_func': True, 'app_exception_detail': True, 'app_admin_use_https': False, 'app_confirm_key': 'Confirmed', 'app_http_port': 8880, 'app_https_port': 8843, 'app_http_timeout': 10, 'app_load_metadat_on_load': True, 'app_clear_metadat_on_startup': True, 'app_clear_metadat_on_shutdown': True}
         Schema_Config_dict = {'schema_cache_enabled': True, 'schema_model_refresh': True, 'schema_cache_filename': 'capricornus_metadata', 'schema_db_metafile': 'metadata.json', 'schema_db_logicpkfile': 'logicpk.json', 'schema_db_logicpkneedfile': 'logicpk-need.json', 'schema_fetch_all_table': True, 'schema_fetch_tables': 'table1, table2'}
         Query_Config_dict = {'query_limit_upset': 2000, 'query_default_limit': 10, 'query_default_offset': 0}
@@ -77,10 +77,13 @@ class DSConfig(metaclass=Cached):
 
     def readconfig(self):
         connstmt = select(Datasource).where(
-            Datasource.name == self.name)
+            Datasource.ds_name == self.ds_name)
         connresult = self.db.scalars_all(connstmt)
         if len(connresult) > 0:
             self.Database_Config = SimpleNamespace(**json.loads(connresult[0].json()))
+            self.Database_Config.ds_useschema = False
+            if (not self.Database_Config.ds_schema is None) and (len(self.Database_Config.ds_schema.strip()) > 0):
+                self.Database_Config.ds_useschema = True
             #log.debug('Database_Config: %s' % self.Database_Config)
             confstmt = select(DatasourceConfig).where(
                 DatasourceConfig.ds_config_id == self.Database_Config.db_conf_id)
@@ -104,7 +107,6 @@ class DSConfig(metaclass=Cached):
                 self.db_schema_existed = True
 
 if __name__ == '__main__':
-    '''
     dsconfig = DSConfig(settings.app_profile)
     #log.debug(dsconfig.Query_Config)
     log.debug('Database_Config: %s' % dsconfig.Database_Config)
@@ -115,4 +117,3 @@ if __name__ == '__main__':
     log.debug('Connection_Config: %s' % dsconfig.Connection_Config)
     log.debug('Admin_Config: %s' % dsconfig.Admin_Config)
     log.debug('db_schema_existed: %s' % dsconfig.db_schema_existed)
-    '''
