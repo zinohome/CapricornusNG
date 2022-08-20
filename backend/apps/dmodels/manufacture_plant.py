@@ -17,8 +17,8 @@ from apps.dmodels.basesqlmodel import BaseSQLModel
 
 class Manufacture_plant(BaseSQLModel, table=True):
     __tablename__ = 'Manufacture_Plant'
-    plant_name: str = models.Field(default='None', title='plant_name', nullable=False, amis_form_item='', amis_table_column='')
-    plant_type: Optional[str] = models.Field(default='None', title='plant_type', nullable=True, amis_form_item='', amis_table_column='')
-    plant_location: Optional[str] = models.Field(default='None', title='plant_location', nullable=True, amis_form_item='', amis_table_column='')
-    company_owned: Optional[int] = models.Field(default='None', title='company_owned', nullable=True, amis_form_item='', amis_table_column='')
-    manufacture_plant_id: Optional[int] = models.Field(default='None', title='manufacture_plant_id', primary_key=True, amis_form_item='', amis_table_column='')
+    plant_name: str = models.Field(default=None, title='plant_name', nullable=False, amis_form_item='', amis_table_column='')
+    plant_type: Optional[str] = models.Field(default=None, title='plant_type', nullable=True, amis_form_item='', amis_table_column='')
+    plant_location: Optional[str] = models.Field(default=None, title='plant_location', nullable=True, amis_form_item='', amis_table_column='')
+    company_owned: Optional[int] = models.Field(default=None, title='company_owned', nullable=True, amis_form_item='', amis_table_column='')
+    manufacture_plant_id: Optional[int] = models.Field(default=None, title='manufacture_plant_id', primary_key=True, amis_form_item='', amis_table_column='')

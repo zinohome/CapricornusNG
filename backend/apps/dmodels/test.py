@@ -15,7 +15,7 @@ from typing import Optional
 from apps.dmodels.basesqlmodel import BaseSQLModel
 
 
-class Brands(BaseSQLModel, table=True):
-    __tablename__ = 'Brands'
-    brand_name: str = models.Field(default=None, title='brand_name', nullable=False, amis_form_item='', amis_table_column='')
-    brand_id: Optional[int] = models.Field(default=None, title='brand_id', primary_key=True, amis_form_item='', amis_table_column='')
+class Test(BaseSQLModel, table=True):
+    __tablename__ = 'test'
+    id: Optional[int] = models.Field(default=None, title='id', primary_key=True, amis_form_item='', amis_table_column='')
+    name: str = models.Field(default=None, title='name', nullable=False, amis_form_item='', amis_table_column='')

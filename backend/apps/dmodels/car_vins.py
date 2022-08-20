@@ -17,8 +17,8 @@ from apps.dmodels.basesqlmodel import BaseSQLModel
 
 class Car_vins(BaseSQLModel, table=True):
     __tablename__ = 'Car_Vins'
-    model_id: int = models.Field(default='None', title='model_id', nullable=False, amis_form_item='', amis_table_column='')
-    option_set_id: int = models.Field(default='None', title='option_set_id', nullable=False, amis_form_item='', amis_table_column='')
-    manufactured_date: date = models.Field(default='None', title='manufactured_date', nullable=False, amis_form_item='', amis_table_column='')
-    manufactured_plant_id: int = models.Field(default='None', title='manufactured_plant_id', nullable=False, amis_form_item='', amis_table_column='')
-    vin: Optional[int] = models.Field(default='None', title='vin', primary_key=True, amis_form_item='', amis_table_column='')
+    model_id: int = models.Field(default=None, title='model_id', nullable=False, amis_form_item='', amis_table_column='')
+    option_set_id: int = models.Field(default=None, title='option_set_id', nullable=False, amis_form_item='', amis_table_column='')
+    manufactured_date: date = models.Field(default=None, title='manufactured_date', nullable=False, amis_form_item='', amis_table_column='')
+    manufactured_plant_id: int = models.Field(default=None, title='manufactured_plant_id', nullable=False, amis_form_item='', amis_table_column='')
+    vin: Optional[int] = models.Field(default=None, title='vin', primary_key=True, amis_form_item='', amis_table_column='')

@@ -154,7 +154,7 @@ def validQueryJson(jsonstr):
     #TODO valid jsonstr from query parameter
 
 def sync_uri(uri):
-    db_sub, dialect_sub, drv_sub = uri.split(':')[0].split('+')[0].strip(), uri.split(':')[0].split('+')[1].strip(), uri.split(':')[1].strip()
+    db_sub, dialect_sub, drv_sub = uri.split(':')[0].split('+')[0].strip(), uri.split(':')[0].split('+')[1].strip(), '/'+uri.split(':/')[1].strip()
     sync_dialect_sub = ''
     if db_sub == 'sqlite':
         sync_dialect_sub = 'pysqlite'

@@ -38,6 +38,7 @@ class DSEngine(metaclass=Cached):
         uri = self.dsconfig.Database_Config.ds_uri
         log.debug('Connect use uri [ %s ]' % uri)
         syncuri = toolkit.sync_uri(uri)
+        log.debug('Connect use syncuri [ %s ]' % syncuri)
         if syncuri is None:
             raise RuntimeError("Can't create Engine, please check uri")
         if toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri).lower() == 'oracle':

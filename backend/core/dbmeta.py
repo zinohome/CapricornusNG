@@ -35,7 +35,10 @@ from util.log import log as log
 # cache file define
 cache_path = os.path.join(os.path.expanduser("~"), ".capricornus_cache")
 InternalObjEnum = {
-        'sqlite':['sqlite_master','sqlite_sequence','sqlite_stat1','sqlite_stat3','sqlite_stat4','sqlite_dbdata']
+        'sqlite':['sqlite_master','sqlite_sequence','sqlite_stat1','sqlite_stat3','sqlite_stat4','sqlite_dbdata'],
+        'mysql':['sqlite_master','sqlite_sequence','sqlite_stat1','sqlite_stat3','sqlite_stat4','sqlite_dbdata'],
+        'postgresql':['sqlite_master','sqlite_sequence','sqlite_stat1','sqlite_stat3','sqlite_stat4','sqlite_dbdata'],
+        'oracle':['sqlite_master','sqlite_sequence','sqlite_stat1','sqlite_stat3','sqlite_stat4','sqlite_dbdata']
                        }
 class Cached(type):
     def __init__(self, *args, **kwargs):
