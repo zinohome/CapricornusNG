@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #  #
 #  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
 #  #
@@ -5,6 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+
 from typing import List
 from fastapi_amis_admin import admin
 from fastapi_amis_admin.amis import PageSchema, TableColumn
@@ -15,7 +19,7 @@ from apps.dmodels.dealer_brand import Dealer_brand
 
 class Dealer_brandAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(page_title='Dealer_Brand', icon='fa fa-border-none')
+    page_schema = PageSchema(page_title='Dealer_Brand', icon='fa fa-border-all')
     model = Dealer_brand
     pk_name = 'dealer_id'
 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #  #
 #  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
 #  #
@@ -5,6 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+
 from typing import List
 from fastapi_amis_admin import admin
 from fastapi_amis_admin.amis import PageSchema, TableColumn
@@ -15,7 +19,7 @@ from apps.dmodels.car_options import Car_options
 
 class Car_optionsAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(page_title='Car_Options', icon='fa fa-border-none')
+    page_schema = PageSchema(page_title='Car_Options', icon='fa fa-border-all')
     model = Car_options
     pk_name = 'option_set_id'
 

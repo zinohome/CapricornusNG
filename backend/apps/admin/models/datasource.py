@@ -8,6 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+
 import sqlmodel
 
 from fastapi_amis_admin import amis,models
@@ -41,5 +42,5 @@ class Datasource(BaseSQLModel, table=True):
     ds_exclude_tablespaces: Optional[str] = models.Field(default='', title=_('ExcludedTableSpace'), max_length=256, amis_form_item=amis.InputText())
     ds_config_id: int = models.Field(title=_('DatasourceConfigID'), nullable=False, foreign_key="capricornus_datasource_config.ds_config_id")
     datasourceconfig: "DatasourceConfig" = Relationship(back_populates="datasource")
-    #datasourcemetas: List["DatasourceMeta"] = Relationship(back_populates="dmdatasource")
-    #datasourcepages: List["DatasourcePage"] = Relationship(back_populates="dpdatasource")
+    datasourcemetas: List["DatasourceMeta"] = Relationship(back_populates="dmdatasource")
+    datasourcepages: List["DatasourcePage"] = Relationship(back_populates="dpdatasource")

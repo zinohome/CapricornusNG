@@ -1,14 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#  #
+#  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
+#  #
+#  @Time    : 2021
+#  @Author  : Zhang Jun
+#  @Email   : ibmzhangjun@139.com
+#  @Software: Capricornus
+
 import importlib
 
-from fastapi import APIRouter, Request, Depends
-import traceback
-
-from sqlalchemy_database import AsyncDatabase
-
-from apps.dmodels.brands import Brands
-from apps.dmodels.car_parts import Car_parts
-from core.settings import settings
-from core.adminsite import site, auth
+from fastapi import APIRouter, Depends
+from core.adminsite import auth
 from crud import SQLModelCrud
 from main import dsconfig, apiengine, dbmeta, prefix
 from util.log import log as log

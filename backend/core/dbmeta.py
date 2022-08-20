@@ -8,7 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
-import asyncio
+
 import base64
 import os
 import pickle
@@ -16,8 +16,6 @@ import traceback
 import uuid
 import weakref
 
-import uvloop
-from asgiref.sync import async_to_sync
 from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import inspect, Table
 

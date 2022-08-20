@@ -1,11 +1,19 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#  #
+#  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
+#  #
+#  @Time    : 2021
+#  @Author  : Zhang Jun
+#  @Email   : ibmzhangjun@139.com
+#  @Software: Capricornus
+
 import importlib
-from typing import Dict, Any, Optional, List
+from typing import List
 
 from fastapi_amis_admin import amis,admin
 from fastapi_amis_admin.admin import AdminApp
-from fastapi_amis_admin.crud import BaseApiOut
-from pydantic import BaseModel
-from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.sql.expression import Select
 
 from apps.admin.models.datasourceconfig import DatasourceConfig
@@ -24,7 +32,6 @@ from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, 
 from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 
-from apps.dadmins.car_partsadmin import Car_partsAdmin
 from main import dsconfig, apiengine, dbmeta
 
 # DataApp

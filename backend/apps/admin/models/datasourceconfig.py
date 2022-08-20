@@ -8,6 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+
 import sqlmodel
 
 import simplejson as json

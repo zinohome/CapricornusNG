@@ -1,14 +1,16 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #  #
 #  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
-#  #  -- metastore & pagedef
+#  #
 #  @Time    : 2021
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
-from asgiref.sync import async_to_sync
+
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI
-from sqlmodel import SQLModel
 from starlette.staticfiles import StaticFiles
 
 from core.adminsite import site
@@ -16,7 +18,6 @@ from core.dsengine import DSEngine
 from core.dbmeta import DBMeta
 from core.dsconfig import DSConfig
 from core.settings import settings
-from util.log import log as log
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,

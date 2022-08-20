@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#  #
+#  Copyright (C) 2021 ZinoHome, Inc. All Rights Reserved
+#  #
+#  @Time    : 2021
+#  @Author  : Zhang Jun
+#  @Email   : ibmzhangjun@139.com
+#  @Software: Capricornus
+
 from asgiref.sync import sync_to_async
 from fastapi import APIRouter, Depends
 from sqlalchemy import text, select
@@ -16,25 +27,24 @@ from fastapi_amis_admin.utils.translation import i18n as _
 
 router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.requires()())])
 
-@router.get('/get_column_options/{page_id}',
+@router.get('/get_column_options/{meta_id}',
          tags=["admin"],
          summary="Get column options list.",
          description="Return column options list",
          include_in_schema=True)
-async def get_column_options(page_id: int):
+async def get_column_options(meta_id: int):
     try:
         returndict = {'status':1,'msg':_("Get column options Error")}
-        result = await site.db.async_get(DatasourcePage, page_id)
-        if result.columns:
-            clsname = result.name.strip().capitalize()
+        result = await site.db.async_get(DatasourcePage, meta_id)
+        if result.meta_columns:
+            clsname = result.meta_name.strip().capitalize()
             datalist = []
-            for column in result.columns:
+            for column in result.meta_columns:
                 datalist.append({'label':column['name'],'value':clsname + '.' + column['name']})
             returndict['status'] = 0
             returndict['msg'] = 'Success'
             returndict['data'] = datalist
         return returndict
-            
     except Exception as e:
         log.error('Get column options Error !')
         traceback.print_exc()
@@ -45,9 +55,9 @@ async def get_column_options(page_id: int):
          summary="Test database connection.",
          description="Return database connection test result",
          include_in_schema=True)
-async def db_connection_test(dburi: DSURIModel) -> str:
-    log.debug('Try to test db connection with dburi : %s' % dburi.db_uri)
-    engine = create_async_engine(dburi.db_uri,echo=False,pool_pre_ping=True)
+async def db_connection_test(ds_uri: DSURIModel) -> str:
+    log.debug('Try to test db connection with dburi : %s' % ds_uri.ds_uri)
+    engine = create_async_engine(ds_uri.ds_uri,echo=False,pool_pre_ping=True)
     try:
         async with engine.connect() as conn:
             result = await conn.execute(text("SELECT 1"))
@@ -64,11 +74,11 @@ async def db_connection_test(dburi: DSURIModel) -> str:
          summary="Synchronize database schema.",
          description="Synchronize database schema",
          include_in_schema=True)
-async def db_sync_schema(dbconnection: Datasource) -> str:
-    log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
-    log.debug('Database Connection infomation is : %s' % dbconnection.json())
+async def db_sync_schema(datasource: Datasource) -> str:
+    log.debug('Try to synchronize database schema dburi : %s' % datasource.ds_uri)
+    log.debug('Database Connection infomation is : %s' % datasource.json())
     try:
-        sycdsconfig = DSConfig(dbconnection.name)
+        sycdsconfig = DSConfig(datasource.ds_name)
         syncapiengine = DSEngine(sycdsconfig)
         dbmeta = await sync_to_async(func=DBMeta)(sycdsconfig, syncapiengine)
         log.debug('[Step 0/8] Meta synchronize initialized')

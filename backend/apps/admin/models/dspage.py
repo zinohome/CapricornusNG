@@ -8,6 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+
 import sqlmodel
 
 import simplejson as json
@@ -68,8 +69,8 @@ class DatasourcePage(BaseSQLModel, table=True):
                                                                                 tabsLabelTpl='${meta_columns[${index}].name}'),
                                                       amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     page_list_display: Optional[str] = models.Field(default='', title=_('ListDisplay'), max_length=256,
-                                          amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${page_id}'))
+                                          amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${meta_id}'))
     page_search_fields: Optional[str] = models.Field(default='', title=_('SearchFields'), max_length=256,
-                                          amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${page_id}'))
+                                          amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${meta_id}'))
     ds_id: int = models.Field(title=_('DatasourceID'), nullable=False, foreign_key="capricornus_datasource.ds_id")
-    #dpdatasource: "Datasource" = Relationship(back_populates="datasourcepages")
+    dpdatasource: "Datasource" = Relationship(back_populates="datasourcepages")
