@@ -40,7 +40,7 @@ class DataApp(admin.AdminApp):
         if len(alltables)>0:
             for tbl in alltables:
                 dtable = dbmeta.getpage(tbl)
-                if (len(dtable.primarykeys.strip()) > 0) or (len(dtable.logicprimarykeys.strip()) > 0):
+                if (len(dtable.meta_primarykeys.strip()) > 0) or (len(dtable.page_logicprimarykeys.strip()) > 0):
                     adminmodel = importlib.import_module('apps.dadmins.' + tbl.strip().lower() + 'admin')
                     adminclass = getattr(adminmodel, tbl.strip().capitalize() + 'Admin')
                     log.debug('Register admin model %s ……' % tbl.strip().capitalize())
@@ -70,14 +70,14 @@ class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
     model = Datasource
-    pk_name = 'conn_id'
-    list_display = [Datasource.conn_id, Datasource.name, Datasource.db_useschema, Datasource.db_schema, DatasourceConfig.name]
-    search_fields = [Datasource.name, DatasourceConfig.name]
+    pk_name = 'ds_id'
+    list_display = [Datasource.ds_id, Datasource.ds_name, Datasource.ds_schema, DatasourceConfig.ds_config_name]
+    search_fields = [Datasource.ds_name, DatasourceConfig.ds_config_name]
     test_connection_api = {
                 'url':'/admin/db_connection_test',
                 'method':'post',
                 'data':{
-                    'db_uri':'${db_uri}'
+                    'ds_uri':'${ds_uri}'
                         },
                 'cache':10000
                     }
@@ -85,13 +85,12 @@ class DBConnectionAdmin(admin.ModelAdmin):
                 'url':'/admin/db_sync_schema',
                 'method':'post',
                 'data':{
-                    'conn_id':'${conn_id}',
-                    'name':'${name}',
-                    'db_uri':'${db_uri}',
-                    'db_useschema':'${db_useschema}',
-                    'db_schema':'${db_schema}',
-                    'db_exclude_tablespaces':'${db_exclude_tablespaces}',
-                    'db_conf_id':'${db_conf_id}'
+                    'ds_id':'${ds_id}',
+                    'ds_name':'${ds_name}',
+                    'ds_uri':'${ds_uri}',
+                    'ds_schema':'${ds_schema}',
+                    'ds_exclude_tablespaces':'${ds_exclude_tablespaces}',
+                    'ds_config_id':'${ds_config_id}'
                         },
                 'cache':1000
                     }
@@ -110,7 +109,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
             drawer = c_action.drawer
             actions = []
             actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
-            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
+            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','ds_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
             actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
             drawer.actions = actions
         return c_action
@@ -121,8 +120,8 @@ class DBConnectionAdmin(admin.ModelAdmin):
             drawer = u_action.drawer
             actions = []
             actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
-            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','db_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
-            actions.append(ActionType.Ajax(label=_('Sync Structure'), confirmText=_('Confirm to sync all tables immediately?'), required=['db_profilename','db_uri'], level=LevelEnum.danger, api=DBConnectionAdmin.sync_schema_api))
+            actions.append(ActionType.Ajax(label=_('Test Connection'), required=['db_profilename','ds_uri'], level=LevelEnum.secondary, api=DBConnectionAdmin.test_connection_api))
+            actions.append(ActionType.Ajax(label=_('Sync Structure'), confirmText=_('Confirm to sync all tables immediately?'), required=['ds_name','ds_uri'], level=LevelEnum.danger, api=DBConnectionAdmin.sync_schema_api))
             actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
             drawer.actions = actions
         return u_action
@@ -137,7 +136,7 @@ class DBConfigAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Database Config', icon='fa fa-sliders-h')
     model = DatasourceConfig
     pk_name = 'ds_config_id'
-    search_fields = [DatasourceConfig.name]
+    search_fields = [DatasourceConfig.ds_config_name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
@@ -179,8 +178,8 @@ class TableMetaAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
     model = DatasourceMeta
     pk_name = 'meta_id'
-    list_display = [Datasource.name, DatasourceMeta.meta_id, DatasourceMeta.name, DatasourceMeta.table_type, DatasourceMeta.primarykeys, DatasourceMeta.columns]
-    search_fields = [DatasourceMeta.name]
+    list_display = [Datasource.ds_name, DatasourceMeta.meta_id, DatasourceMeta.meta_name, DatasourceMeta.meta_type, DatasourceMeta.meta_primarykeys, DatasourceMeta.meta_columns]
+    search_fields = [DatasourceMeta.meta_name]
 
     async def get_select(self, request: Request) -> Select:
         g_select = await super().get_select(request)
@@ -238,9 +237,9 @@ class TablePageAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
     model = DatasourcePage
-    pk_name = 'page_id'
-    list_display = [Datasource.name, DatasourcePage.page_id, DatasourcePage.name, DatasourcePage.label, DatasourcePage.primarykeys, DatasourcePage.columns]
-    search_fields = [DatasourcePage.name]
+    pk_name = 'meta_id'
+    list_display = [Datasource.ds_name, DatasourcePage.meta_id, DatasourcePage.meta_name, DatasourcePage.page_title, DatasourcePage.meta_primarykeys, DatasourcePage.page_logicprimarykeys, DatasourcePage.meta_columns]
+    search_fields = [DatasourcePage.meta_name]
 
     async def get_select(self, request: Request) -> Select:
         g_select = await super().get_select(request)
