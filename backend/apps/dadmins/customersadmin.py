@@ -15,7 +15,7 @@ from apps.dmodels.customers import Customers
 
 class CustomersAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Customers', icon='fa fa-border-all')
+    page_schema = PageSchema(page_title='Customers', icon='fa fa-border-none')
     model = Customers
     pk_name = 'customer_id'
 

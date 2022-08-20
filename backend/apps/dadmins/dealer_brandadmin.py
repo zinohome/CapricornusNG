@@ -15,7 +15,7 @@ from apps.dmodels.dealer_brand import Dealer_brand
 
 class Dealer_brandAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Dealer_Brand', icon='fa fa-border-all')
+    page_schema = PageSchema(page_title='Dealer_Brand', icon='fa fa-border-none')
     model = Dealer_brand
     pk_name = 'dealer_id'
 

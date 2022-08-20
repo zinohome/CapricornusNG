@@ -15,10 +15,10 @@ from typing import Optional
 from apps.dmodels.basesqlmodel import BaseSQLModel
 
 
-class {{ name|trim|capitalize }}(BaseSQLModel, table=True):
-    __tablename__ = '{{ name }}'
-{% for column_define in columns %}
-{% if primarykeys|trim|length >0 %}
+class {{ meta_name|trim|capitalize }}(BaseSQLModel, table=True):
+    __tablename__ = '{{ meta_name }}'
+{% for column_define in meta_columns %}
+{% if meta_primarykeys|trim|length >0 %}
     {% if column_define.nullable == 'True' %}
         {% if column_define.primary_key | int > 0 %}
     {{column_define.name}}: Optional[{{column_define.pythonType}}] = models.Field(default='{{column_define.default}}', title='{{column_define.title}}', primary_key=True, amis_form_item='{{column_define.amis_form_item}}', amis_table_column='{{column_define.amis_table_column}}')
@@ -33,7 +33,7 @@ class {{ name|trim|capitalize }}(BaseSQLModel, table=True):
         {% endif %}
     {% endif %}
 {% else %}
-{% set lklist = logicprimarykeys.split(',') %}
+{% set lklist = page_logicprimarykeys.split(',') %}
 {% if column_define.nullable == 'True' %}
         {% if column_define.name|trim in lklist %}
     {{column_define.name}}: Optional[{{column_define.pythonType}}] = models.Field(default='{{column_define.default}}', title='{{column_define.title}}', primary_key=True)

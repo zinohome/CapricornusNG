@@ -18,7 +18,7 @@ class MetaSchema(object):
         self._ds_id = None
         self._meta_schema = None
         self._meta_primarykeys = None
-        self._meta_index = None
+        self._meta_indexes = None
         self._meta_columns = None
 
     @property
@@ -70,12 +70,12 @@ class MetaSchema(object):
         self._meta_primarykeys = value
 
     @property
-    def meta_index(self):
-        return self._meta_index
+    def meta_indexes(self):
+        return self._meta_indexes
 
-    @meta_index.setter
-    def meta_index(self, value):
-        self._meta_index = value
+    @meta_indexes.setter
+    def meta_indexes(self, value):
+        self._meta_indexes = value
 
     @property
     def meta_columns(self):
@@ -94,7 +94,7 @@ class MetaSchema(object):
             'meta_type': self._meta_type,
             'meta_schema': self._meta_schema,
             'meta_primarykeys': self._meta_primarykeys,
-            'meta_index': self._meta_index,
+            'meta_indexes': self._meta_indexes,
             'meta_columns': self._meta_columns
         }
 

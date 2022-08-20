@@ -38,7 +38,7 @@ class DsmetaService(metaclass=Cached):
         self.meta_schema = None
         self.meta_type = None
         self.meta_primarykeys = None
-        self.meta_index = None
+        self.meta_indexes = None
         self.meta_columns = None
         self.valuedict = None
 
@@ -57,10 +57,10 @@ class DsmetaService(metaclass=Cached):
             if isinstance(jsonobj['meta_primarykeys'],list):
                 jsonobj['meta_primarykeys'] = ','.join(jsonobj['meta_primarykeys'])
             self.meta_primarykeys = jsonobj['meta_primarykeys']
-        if 'meta_index' in jsonobj:
-            if isinstance(jsonobj['meta_index'],list):
-                jsonobj['meta_index'] = ','.join(jsonobj['meta_index'])
-            self.meta_index = jsonobj['meta_index']
+        if 'meta_indexes' in jsonobj:
+            if isinstance(jsonobj['meta_indexes'],list):
+                jsonobj['meta_indexes'] = ','.join(jsonobj['meta_indexes'])
+            self.meta_indexes = jsonobj['meta_indexes']
         if 'meta_columns' in jsonobj:
             self.meta_columns = jsonobj['meta_columns']
         self.valuedict = jsonobj

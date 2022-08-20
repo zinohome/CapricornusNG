@@ -15,7 +15,7 @@ from apps.dmodels.models import Models
 
 class ModelsAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Models', icon='fa fa-border-all')
+    page_schema = PageSchema(page_title='Models', icon='fa fa-border-none')
     model = Models
     pk_name = 'model_id'
 

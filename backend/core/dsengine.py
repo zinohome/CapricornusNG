@@ -27,16 +27,16 @@ class Cached(type):
             self.__cache[args] = obj
             return obj
 
-class APIEngine(metaclass=Cached):
+class DSEngine(metaclass=Cached):
     def __init__(self, dsconfig):
         self.dsconfig = dsconfig
-        self.name = dsconfig.Database_Config.name
-        uri = self.dsconfig.Database_Config.db_uri
+        self.ds_name = dsconfig.Database_Config.ds_name
+        uri = self.dsconfig.Database_Config.ds_uri
         log.debug('Connect use uri [ %s ]' % uri)
         syncuri = toolkit.sync_uri(uri)
         if syncuri is None:
             raise RuntimeError("Can't create Engine, please check uri")
-        if toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri).lower() == 'oracle':
+        if toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri).lower() == 'oracle':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
                                                 pool_size=self.dsconfig.Connection_Config.con_pool_size,
@@ -57,7 +57,7 @@ class APIEngine(metaclass=Cached):
                                                 exclude_tablespaces=toolkit.to_list(
                                                     self.dsconfig.Database_Config.db_exclude_tablespaces)
                                                 )
-        elif toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri).lower() == 'sqlite':
+        elif toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri).lower() == 'sqlite':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
                                                 pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,

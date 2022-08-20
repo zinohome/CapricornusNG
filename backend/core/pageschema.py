@@ -18,7 +18,7 @@ class PageSchema(object):
         self._ds_id = None
         self._meta_schema = None
         self._meta_primarykeys = None
-        self._meta_index = None
+        self._meta_indexes = None
         self._meta_columns = None
         self._page_logicprimarykeys = None
         self._page_title = None
@@ -74,12 +74,12 @@ class PageSchema(object):
         self._meta_primarykeys = value
 
     @property
-    def meta_index(self):
-        return self._meta_index
+    def meta_indexes(self):
+        return self._meta_indexes
 
-    @meta_index.setter
-    def meta_index(self, value):
-        self._meta_index = value
+    @meta_indexes.setter
+    def meta_indexes(self, value):
+        self._meta_indexes = value
 
     @property
     def meta_columns(self):
@@ -90,6 +90,38 @@ class PageSchema(object):
         self._meta_columns = value
 
     @property
+    def page_logicprimarykeys(self):
+        return self._page_logicprimarykeys
+
+    @page_logicprimarykeys.setter
+    def page_logicprimarykeys(self, value):
+        self._page_logicprimarykeys = value
+
+    @property
+    def page_title(self):
+        return self._page_title
+
+    @page_title.setter
+    def page_title(self, value):
+        self._page_title = value
+
+    @property
+    def page_list_display(self):
+        return self._page_list_display
+
+    @page_list_display.setter
+    def page_list_display(self, value):
+        self._page_list_display = value
+
+    @property
+    def page_search_fields(self):
+        return self._page_search_fields
+
+    @page_search_fields.setter
+    def page_search_fields(self, value):
+        self._page_search_fields = value
+
+    @property
     def json(self):
         return {
             'meta_id': self._meta_id,
@@ -98,7 +130,7 @@ class PageSchema(object):
             'meta_type': self._meta_type,
             'meta_schema': self._meta_schema,
             'meta_primarykeys': self._meta_primarykeys,
-            'meta_index': self._meta_index,
+            'meta_indexes': self._meta_indexes,
             'meta_columns': self._meta_columns,
             'page_logicprimarykeys': self._page_logicprimarykeys,
             'page_title': self._page_title,

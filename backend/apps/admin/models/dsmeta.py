@@ -49,4 +49,4 @@ class DatasourceMeta(BaseSQLModel, table=True):
                                                                             canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${meta_columns[${index}].name}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     ds_id: int = models.Field(title=_('DatasourceID'), nullable=False, foreign_key="capricornus_datasource.ds_id")
-    dmdatasource: "Datasource" = Relationship(back_populates="datasourcemetas")
+    #dmdatasource: "Datasource" = Relationship(back_populates="datasourcemetas")

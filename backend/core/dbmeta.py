@@ -26,7 +26,7 @@ from core.settings import settings
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
 
-from core.apiengine import APIEngine
+from core.dsengine import DSEngine
 from core.dsmetaservice import DsmetaService
 from core.dsconfig import DSConfig
 from core.pageschema import PageSchema
@@ -53,12 +53,12 @@ class Cached(type):
             return obj
 
 class DBMeta(metaclass=Cached):
-    def __init__(self, dsconfig, apiengine):
+    def __init__(self, dsconfig, dsengine):
         self.dsconfig = dsconfig
-        self.apiengine = apiengine
-        self.name = dsconfig.Database_Config.name
+        self.dsengine = dsengine
+        self.ds_name = dsconfig.Database_Config.ds_name
         self._useschema = self.dsconfig.Database_Config.ds_useschema
-        self._schema = self.dsconfig.Database_Config.db_schema
+        self._schema = self.dsconfig.Database_Config.ds_schema
         self._tableCount = 0
         self._tables = None
         self._pages = None
@@ -113,7 +113,7 @@ class DBMeta(metaclass=Cached):
             return None
 
     def load_metadata(self):
-        engine = self.apiengine.connect()
+        engine = self.dsengine.connect()
         cached_metadata = None
         metadata_pickle_filename = self.dsconfig.Schema_Config.schema_cache_filename
         if self.dsconfig.Schema_Config.schema_cache_enabled == True:
@@ -160,14 +160,14 @@ class DBMeta(metaclass=Cached):
             self._metadata = metadata
 
     def gen_schema(self):
-        engine = self.apiengine.connect()
+        engine = self.dsengine.connect()
         inspector = inspect(engine)
         metadata = self.metadata
         try:
             if metadata is not None:
-                log.debug("Generate Schema from : [ %s ] with db schema [ %s ]" % (self.dsconfig.Database_Config.db_uri, self._schema))
+                log.debug("Generate Schema from : [ %s ] with db schema [ %s ]" % (self.dsconfig.Database_Config.ds_uri, self._schema))
                 jmeta = {}
-                jmeta['Schema'] = self.dsconfig.Database_Config.db_schema
+                jmeta['Schema'] = self.dsconfig.Database_Config.ds_schema
                 jtbls = {}
                 jmeta['Tables'] = jtbls
                 table_list_set = set(toolkit.to_list(self.dsconfig.Schema_Config.schema_fetch_tables))
@@ -177,7 +177,7 @@ class DBMeta(metaclass=Cached):
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if not table_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not table_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_table = True
                         else:
@@ -194,24 +194,24 @@ class DBMeta(metaclass=Cached):
                         #cptypedict = dict([(c.name, c.type.python_type.__name__) for c in user_table.columns])
                         jtbl = {}
                         jtbls[table_name] = jtbl
-                        jtbl['name'] = table_name
-                        jtbl['dbconn_id'] = self.dsconfig.Database_Config.conn_id
-                        jtbl['table_schema'] = self.dsconfig.Database_Config.db_schema
-                        jtbl['table_type'] = 'table'
+                        jtbl['meta_name'] = table_name
+                        jtbl['ds_id'] = self.dsconfig.Database_Config.ds_id
+                        jtbl['meta_schema'] = self.dsconfig.Database_Config.ds_schema
+                        jtbl['meta_type'] = 'table'
                         pk = inspector.get_pk_constraint(table_name)
                         if self._useschema:
                             pk = inspector.get_pk_constraint(table_name, schema=self._schema)
                         if len(pk['constrained_columns']) > 0:
-                            jtbl['primarykeys'] = pk['constrained_columns']
-                            jtbl['logicprimarykeys'] = pk['constrained_columns']
+                            jtbl['meta_primarykeys'] = pk['constrained_columns']
+                            jtbl['page_logicprimarykeys'] = pk['constrained_columns']
                         else:
-                            jtbl['primarykeys'] = []
+                            jtbl['meta_primarykeys'] = []
                             lpk = self.get_table_logicprimarykeys(table_name)
-                            jtbl['logicprimarykeys'] = [] if lpk is None else lpk
-                        jtbl['indexes'] = inspector.get_indexes(table_name)
+                            jtbl['page_logicprimarykeys'] = [] if lpk is None else lpk
+                        jtbl['meta_indexes'] = inspector.get_indexes(table_name)
                         if self._useschema:
-                            jtbl['indexes'] = inspector.get_indexes(table_name, schema=self._schema)
-                        jtbl['columns'] = []
+                            jtbl['meta_indexes'] = inspector.get_indexes(table_name, schema=self._schema)
+                        jtbl['meta_columns'] = []
                         table_columns = inspector.get_columns(table_name)
                         if self._useschema:
                             table_columns = inspector.get_columns(table_name, schema=self._schema)
@@ -219,35 +219,35 @@ class DBMeta(metaclass=Cached):
                             cdict={}
                             for key, value in column.items():
                                 cdict[key] = value.__str__()
-                            if column['name'] in jtbl['primarykeys']:
+                            if column['name'] in jtbl['meta_primarykeys']:
                                 cdict['primary_key'] = 1
                             else:
                                 cdict['primary_key'] = 0
                             cdict['pythonType'] = cptypedict[cdict['name']]
-                            jtbl['columns'].append(cdict)
-                        log.debug('Extracting table schema for : %s ……' % jtbl['name'])
+                            jtbl['meta_columns'].append(cdict)
+                        log.debug('Extracting table schema for : %s ……' % jtbl['meta_name'])
                         ptbl = jtbl.copy()
-                        del jtbl['logicprimarykeys']
-                        japitable = DsmetaService(self.dsconfig, jtbl['name'])
-                        japitable.loadfrom_json(jtbl)
-                        japitable.create_update_table()
-                        ptbl['label'] = ptbl['name']
-                        ptbl['list_display'] = ''
-                        ptbl['search_fields'] = ''
-                        for item in ptbl['columns']:
+                        del jtbl['page_logicprimarykeys']
+                        jdsmetasvc = DsmetaService(self.dsconfig, jtbl['meta_name'])
+                        jdsmetasvc.loadfrom_json(jtbl)
+                        jdsmetasvc.create_update_table()
+                        ptbl['page_title'] = ptbl['meta_name']
+                        ptbl['page_list_display'] = ''
+                        ptbl['page_search_fields'] = ''
+                        for item in ptbl['meta_columns']:
                             item['title'] = item['name']
                             item['amis_form_item'] = ''
                             item['amis_table_column'] = ''
-                        papipage = DspageService(self.dsconfig, ptbl['name'])
-                        papipage.loadfrom_json(ptbl)
-                        papipage.create_update_table()
+                        dspagesvc = DspageService(self.dsconfig, ptbl['meta_name'])
+                        dspagesvc.loadfrom_json(ptbl)
+                        dspagesvc.create_update_table()
                 # gen schema for views
                 view_names = inspector.get_view_names()
                 if self._useschema:
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if not view_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not view_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_view = True
                         else:
@@ -263,24 +263,24 @@ class DBMeta(metaclass=Cached):
                         #cptypedict = dict([(c.name, c.type.python_type.__name__) for c in user_view.columns])
                         vtbl = {}
                         jtbls[view_name] = vtbl
-                        vtbl['name'] = view_name
-                        vtbl['dbconn_id'] = self.dsconfig.Database_Config.conn_id
-                        vtbl['table_schema'] = self.dsconfig.Database_Config.db_schema
-                        vtbl['table_type'] = 'view'
+                        vtbl['meta_name'] = view_name
+                        vtbl['ds_id'] = self.dsconfig.Database_Config.ds_id
+                        vtbl['meta_schema'] = self.dsconfig.Database_Config.ds_schema
+                        vtbl['meta_type'] = 'view'
                         pk = inspector.get_pk_constraint(view_name)
                         if self._useschema:
                             pk = inspector.get_pk_constraint(view_name, schema=self._schema)
                         if len(pk['constrained_columns']) > 0:
-                            vtbl['primarykeys'] = pk['constrained_columns']
-                            vtbl['logicprimarykeys'] = pk['constrained_columns']
+                            vtbl['meta_primarykeys'] = pk['constrained_columns']
+                            vtbl['page_logicprimarykeys'] = pk['constrained_columns']
                         else:
-                            vtbl['primarykeys'] = []
+                            vtbl['meta_primarykeys'] = []
                             lpk = self.get_table_logicprimarykeys(view_name)
-                            vtbl['logicprimarykeys'] = [] if lpk is None else lpk
-                        vtbl['indexes'] = inspector.get_indexes(view_name)
+                            vtbl['page_logicprimarykeys'] = [] if lpk is None else lpk
+                        vtbl['meta_indexes'] = inspector.get_indexes(view_name)
                         if self._useschema:
-                            vtbl['indexes'] = inspector.get_indexes(view_name, schema=self._schema)
-                        vtbl['columns'] = []
+                            vtbl['meta_indexes'] = inspector.get_indexes(view_name, schema=self._schema)
+                        vtbl['meta_columns'] = []
                         view_columns = inspector.get_columns(view_name)
                         if self._useschema:
                             view_columns = inspector.get_columns(view_name, schema=self._schema)
@@ -288,28 +288,28 @@ class DBMeta(metaclass=Cached):
                             vdict = {}
                             for key, value in vcolumn.items():
                                 vdict[key] = value.__str__()
-                            if column['name'] in vtbl['primarykeys']:
+                            if column['meta_name'] in vtbl['meta_primarykeys']:
                                 vdict['primary_key'] = 1
                             else:
                                 vdict['primary_key'] = 0
                             vdict['pythonType'] = cptypedict[vdict['name']]
-                            vtbl['columns'].append(vdict)
-                        log.debug('Extracting view schema for : %s ……' % vtbl['name'])
+                            vtbl['meta_columns'].append(vdict)
+                        log.debug('Extracting view schema for : %s ……' % vtbl['meta_name'])
                         ptbl = vtbl.copy()
-                        del vtbl['logicprimarykeys']
-                        vapitable = DsmetaService(self.dsconfig, vtbl['name'])
-                        vapitable.loadfrom_json(vtbl)
-                        vapitable.create_update_table()
-                        ptbl['label'] = ptbl['name']
-                        ptbl['list_display'] = ''
-                        ptbl['search_fields'] = ''
-                        for item in ptbl['columns']:
+                        del vtbl['page_logicprimarykeys']
+                        vdsmetasvc = DsmetaService(self.dsconfig, vtbl['meta_name'])
+                        vdsmetasvc.loadfrom_json(vtbl)
+                        vdsmetasvc.create_update_table()
+                        ptbl['page_title'] = ptbl['meta_name']
+                        ptbl['page_list_display'] = ''
+                        ptbl['page_search_fields'] = ''
+                        for item in ptbl['meta_columns']:
                             item['title'] = item['name']
                             item['amis_form_item'] = ''
                             item['amis_table_column'] = ''
-                        papipage = DspageService(self.dsconfig, ptbl['name'])
-                        papipage.loadfrom_json(ptbl)
-                        papipage.create_update_table()
+                        dspagesvc = DspageService(self.dsconfig, ptbl['meta_name'])
+                        dspagesvc.loadfrom_json(ptbl)
+                        dspagesvc.create_update_table()
         except Exception as exp:
             log.error('Exception at dbmeta.gen_schema() %s ' % exp)
             if settings.app_exception_detail:
@@ -324,28 +324,28 @@ class DBMeta(metaclass=Cached):
         self._tables = []
         self._pages = []
         for meta in metas:
-            table = MetaSchema(meta.meta_id, meta.name, meta.table_type)
-            table.dbconn_id = meta.dbconn_id
-            table.table_schema = meta.table_schema
-            table.primarykeys = meta.primarykeys
-            table.indexes = meta.indexes
-            table.columns = meta.columns
+            table = MetaSchema(meta.meta_id, meta.meta_name, meta.meta_type)
+            table.ds_id = meta.ds_id
+            table.meta_schema = meta.meta_schema
+            table.meta_primarykeys = meta.meta_primarykeys
+            table.meta_indexes = meta.meta_indexes
+            table.meta_columns = meta.meta_columns
             self._tables.append(table)
-            if table.table_type == 'table':
+            if table.meta_type == 'table':
                 self._tableCount = self._tableCount + 1
-            if table.table_type == 'view':
+            if table.meta_type == 'view':
                 self._viewCount = self._viewCount + 1
         for page in pages:
-            tpage = PageSchema(page.page_id, page.name, page.table_type)
-            tpage.dbconn_id = page.dbconn_id
-            tpage.label = page.label
-            tpage.table_schema = page.table_schema
-            tpage.primarykeys = page.primarykeys
-            tpage.logicprimarykeys = page.logicprimarykeys
-            tpage.indexes = page.indexes
-            tpage.list_display = page.list_display
-            tpage.search_fields = page.search_fields
-            tpage.columns = page.columns
+            tpage = PageSchema(page.meta_id, page.meta_name, page.meta_type)
+            tpage.ds_id = page.ds_id
+            tpage.page_title = page.page_title
+            tpage.meta_schema = page.meta_schema
+            tpage.meta_primarykeys = page.meta_primarykeys
+            tpage.page_logicprimarykeys = page.page_logicprimarykeys
+            tpage.meta_indexes = page.meta_indexes
+            tpage.page_list_display = page.page_list_display
+            tpage.page_search_fields = page.page_search_fields
+            tpage.meta_columns = page.meta_columns
             self._pages.append(tpage)
         log.debug('Schema load with [ %s ] tables and [ %s ] views' % (self._tableCount, self._viewCount))
 
@@ -353,7 +353,7 @@ class DBMeta(metaclass=Cached):
     def gettable(self, value):
         if len(self._tables) > 0:
             for table in self._tables:
-                if table.name == value:
+                if table.meta_name == value:
                     return table
         else:
             return None
@@ -361,7 +361,7 @@ class DBMeta(metaclass=Cached):
     def getpage(self, value):
         if len(self._pages) > 0:
             for page in self._pages:
-                if page.name == value:
+                if page.meta_name == value:
                     return page
         else:
             return None
@@ -375,10 +375,10 @@ class DBMeta(metaclass=Cached):
             return None
 
     def get_table_logicprimarykeys(self, table_name):
-        apipage = DspageService(self.dsconfig, table_name)
-        tablemetas = apipage.query_table_byName()
+        dspagesvc = DspageService(self.dsconfig, table_name)
+        tablemetas = dspagesvc.query_table_byName()
         if tablemetas is not None:
-            return tablemetas[0].logicprimarykeys
+            return tablemetas[0].page_logicprimarykeys
         else:
             return None
 
@@ -386,7 +386,7 @@ class DBMeta(metaclass=Cached):
         rtn = False
         table = self.gettable(table_name)
         if table is not None:
-            for column in table.columns:
+            for column in table.meta_columns:
                 if column['type'] == 'NULL':
                     rtn = True
                     break
@@ -410,27 +410,27 @@ class DBMeta(metaclass=Cached):
     def get_tables(self):
         tblist = []
         for tb in self._tables:
-            if tb.table_type == 'table':
-                tblist.append(tb.name)
+            if tb.meta_type == 'table':
+                tblist.append(tb.meta_name)
         return tblist
 
     def get_views(self):
         viewlist = []
         for tb in self._tables:
-            if tb.table_type == 'view':
-                viewlist.append(tb.name)
+            if tb.meta_type == 'view':
+                viewlist.append(tb.meta_name)
         return viewlist
 
     def get_table_pages(self):
         tplist = []
         for pg in self._pages:
-                tplist.append(pg.name)
+                tplist.append(pg.meta_name)
         return tplist
 
     def response_schema(self):
         tblist = []
         for tb in self._tables:
-            tblist.append(tb.name)
+            tblist.append(tb.meta_name)
         return tblist
 
     def gen_dbdirgram(self):
@@ -444,22 +444,22 @@ class DBMeta(metaclass=Cached):
             canvas = {}
             with open(canvasfilepath, 'r') as canvasfile:
                 canvas = json.loads(canvasfile.read())
-            canvas['databaseName'] = self.dsconfig.Database_Config.name
+            canvas['databaseName'] = self.dsconfig.Database_Config.ds_name
             dbdiagram['canvas'] = canvas
             tables = self.get_tables()
             tbllist = []
             for tbl in tables:
                 dgtable = self.gettable(tbl)
                 ndgtable = {}
-                ndgtable['name'] = dgtable.name
+                ndgtable['name'] = dgtable.meta_name
                 ndgtable['comment'] = ''
                 ndgtable['id'] = str(uuid.uuid1())
                 ndgtable['ui'] = {'active': True, 'left': 50, 'top': 50, 'zIndex': 1, 'widthName': 60,
                                   'widthComment': 60}
                 ndgcolume = {}
-                pks = dgtable.primarykeys
+                pks = dgtable.meta_primarykeys
                 clmlist = []
-                for clm in dgtable.columns:
+                for clm in dgtable.meta_columns:
                     ndgcolume = {}
                     ndgcolume['id'] = str(uuid.uuid1())
                     ndgcolume['name'] = clm['name']
@@ -495,7 +495,7 @@ class DBMeta(metaclass=Cached):
     def gen_dbdirgramcanvas(self):
         try:
             log.debug("Generate DB Dirgram Canvas from : [ %s ] with db schema "
-                      "[ %s ]" % (self.dsconfig.Database_Config.name, self._schema))
+                      "[ %s ]" % (self.dsconfig.Database_Config.ds_name, self._schema))
             basepath = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
             apppath = os.path.abspath(os.path.join(basepath, os.pardir))
             configpath = os.path.abspath(os.path.join(apppath, 'appconfig'))
@@ -505,7 +505,7 @@ class DBMeta(metaclass=Cached):
             canvas = {}
             with open(canvasfilepath, 'r') as canvasfile:
                 canvas = json.loads(canvasfile.read())
-            canvas['databaseName'] = self.dsconfig.Database_Config.name
+            canvas['databaseName'] = self.dsconfig.Database_Config.ds_name
             dbdiagram['canvas'] = canvas
             # log.debug(dbdiagram)
             with open(diagramfilepath, 'w', encoding='utf-8') as diagramfile:
@@ -521,21 +521,21 @@ class DBMeta(metaclass=Cached):
         apppath = os.path.abspath(os.path.join(basepath, os.pardir))
         configpath = os.path.abspath(os.path.join(apppath, 'appconfig'))
         ddlfilepath = os.path.abspath(os.path.join(configpath, "dbddl.sql"))
-        engine = self.apiengine.connect()
+        engine = self.dsengine.connect()
         inspector = inspect(engine)
         metadata = self.metadata
         ddlstr = ''
         try:
             if metadata is not None:
                 log.debug("Generate DLL from : [ %s ] with db schema "
-                          "[ %s ]" % (self.dsconfig.Database_Config.name, self._schema))
+                          "[ %s ]" % (self.dsconfig.Database_Config.ds_name, self._schema))
                 table_list_set = set(toolkit.to_list(self.dsconfig.Schema_Config.schema_fetch_tables))
                 table_names = inspector.get_table_names()
                 if self._useschema:
                     table_names = inspector.get_table_names(schema=self._schema)
                 for table_name in table_names:
                     persist_table = False
-                    if not table_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not table_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_table = True
                         else:
@@ -562,7 +562,7 @@ class DBMeta(metaclass=Cached):
                     view_names = inspector.get_view_names(schema=self._schema)
                 for view_name in view_names:
                     persist_view = False
-                    if not view_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.db_uri)]:
+                    if not view_name in InternalObjEnum[toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri)]:
                         if self.dsconfig.Schema_Config.schema_fetch_all_table:
                             persist_view = True
                         else:
@@ -605,7 +605,7 @@ class DBMeta(metaclass=Cached):
             tbls = self.get_table_pages()
             for tbl in tbls:
                 dtable = self.getpage(tbl)
-                log.debug("Generate model for table: %s" % dtable.name)
+                log.debug("Generate model for table: %s" % dtable.meta_name)
                 env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
                 template = env.get_template('sqlmodel_tmpl.py')
                 gencode = template.render(dtable.json)
@@ -628,7 +628,7 @@ class DBMeta(metaclass=Cached):
             tbls = self.get_table_pages()
             for tbl in tbls:
                 dtable = self.getpage(tbl)
-                log.debug("Generate service for table: %s" % dtable.name)
+                log.debug("Generate service for table: %s" % dtable.meta_name)
                 env = Environment(loader=FileSystemLoader(tmplpath), trim_blocks=True, lstrip_blocks=True)
                 template = env.get_template('modeladmin_tmpl.py')
                 gencode = template.render(dtable.json)
@@ -672,16 +672,20 @@ class DBMeta(metaclass=Cached):
 if __name__ == '__main__':
 
     dsconfig = DSConfig(settings.app_profile)
-    apiengine = APIEngine(dsconfig)
-    dbmeta = DBMeta(dsconfig, apiengine)
+    dsengine = DSEngine(dsconfig)
+    dbmeta = DBMeta(dsconfig, dsengine)
     dbmeta.load_metadata()
     dbmeta.gen_schema()
     dbmeta.load_schema()
+    dbmeta.gen_dbdirgram()
     dbmeta.gen_dbdirgramcanvas()
     dbmeta.gen_ddl()
     dbmeta.gen_models()
     dbmeta.gen_admins()
     '''
+    
+    
+    #
     tbl = dbmeta.gettable('Customers')
     log.debug(tbl.json)
     log.debug(dbmeta.get_table_primary_keys('Customers'))

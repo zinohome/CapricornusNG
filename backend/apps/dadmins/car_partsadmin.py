@@ -15,7 +15,7 @@ from apps.dmodels.car_parts import Car_parts
 
 class Car_partsAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Car_Parts', icon='fa fa-border-all')
+    page_schema = PageSchema(page_title='Car_Parts', icon='fa fa-border-none')
     model = Car_parts
     pk_name = 'part_id'
 

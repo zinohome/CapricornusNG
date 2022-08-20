@@ -15,7 +15,7 @@ from apps.dmodels.brands import Brands
 
 class BrandsAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Brands', icon='fa fa-border-all')
+    page_schema = PageSchema(page_title='Brands', icon='fa fa-border-none')
     model = Brands
     pk_name = 'brand_id'
 

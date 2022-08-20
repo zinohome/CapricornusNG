@@ -7,7 +7,7 @@ import traceback
 from apps.admin.models.datasource import Datasource
 from apps.admin.models.dsurimodel import DSURIModel
 from apps.admin.models.dspage import DatasourcePage
-from core.apiengine import APIEngine
+from core.dsengine import DSEngine
 from core.dsconfig import DSConfig
 from core.adminsite import site, auth
 from core.dbmeta import DBMeta
@@ -69,7 +69,7 @@ async def db_sync_schema(dbconnection: Datasource) -> str:
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:
         sycdsconfig = DSConfig(dbconnection.name)
-        syncapiengine = APIEngine(sycdsconfig)
+        syncapiengine = DSEngine(sycdsconfig)
         dbmeta = await sync_to_async(func=DBMeta)(sycdsconfig, syncapiengine)
         log.debug('[Step 0/8] Meta synchronize initialized')
         await sync_to_async(func=dbmeta.load_metadata)()

@@ -86,7 +86,7 @@ class DSConfig(metaclass=Cached):
                 self.Database_Config.ds_useschema = True
             #log.debug('Database_Config: %s' % self.Database_Config)
             confstmt = select(DatasourceConfig).where(
-                DatasourceConfig.ds_config_id == self.Database_Config.db_conf_id)
+                DatasourceConfig.ds_config_id == self.Database_Config.ds_config_id)
             confresult = self.db.scalars_all(confstmt)
             if len(confresult) > 0:
                 self.Application_Config = SimpleNamespace(**confresult[0].application_params)
@@ -101,12 +101,13 @@ class DSConfig(metaclass=Cached):
                 #log.debug('Security_Config: %s' % self.Security_Config)
                 #log.debug('Connection_Config: %s' % self.Connection_Config)
                 #log.debug('Admin_Config: %s' % self.Admin_Config)
-            tablestmt = select(DatasourceMeta).where(DatasourceMeta.dbconn_id == self.Database_Config.conn_id)
+            tablestmt = select(DatasourceMeta).where(DatasourceMeta.ds_id == self.Database_Config.ds_id)
             tableresult = self.db.scalars_all(tablestmt)
             if len(tableresult) > 0:
                 self.db_schema_existed = True
 
 if __name__ == '__main__':
+    '''
     dsconfig = DSConfig(settings.app_profile)
     #log.debug(dsconfig.Query_Config)
     log.debug('Database_Config: %s' % dsconfig.Database_Config)
@@ -117,3 +118,4 @@ if __name__ == '__main__':
     log.debug('Connection_Config: %s' % dsconfig.Connection_Config)
     log.debug('Admin_Config: %s' % dsconfig.Admin_Config)
     log.debug('db_schema_existed: %s' % dsconfig.db_schema_existed)
+    '''

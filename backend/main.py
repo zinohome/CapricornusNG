@@ -5,8 +5,6 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
-import asyncio
-
 from asgiref.sync import async_to_sync
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI
@@ -14,7 +12,7 @@ from sqlmodel import SQLModel
 from starlette.staticfiles import StaticFiles
 
 from core.adminsite import site
-from core.apiengine import APIEngine
+from core.dsengine import DSEngine
 from core.dbmeta import DBMeta
 from core.dsconfig import DSConfig
 from core.settings import settings
@@ -25,12 +23,10 @@ from fastapi.openapi.docs import (
     get_swagger_ui_oauth2_redirect_html,
 )
 
-# init
-site.db.run_sync(SQLModel.metadata.create_all, is_session=False)
 
 # dsconfig & dsengine
 dsconfig = DSConfig(settings.app_profile)
-apiengine = APIEngine(dsconfig)
+apiengine = DSEngine(dsconfig)
 
 # API prefix
 prefix = dsconfig.Application_Config.app_prefix
