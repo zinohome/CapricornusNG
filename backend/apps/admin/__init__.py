@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from util.log import log as log
 
 def setup(app: FastAPI):
     # 1. 导入管理应用

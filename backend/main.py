@@ -25,10 +25,14 @@ from fastapi.openapi.docs import (
     get_swagger_ui_oauth2_redirect_html,
 )
 
+# init
+site.db.run_sync(SQLModel.metadata.create_all, is_session=False)
 
+# dsconfig & dsengine
 dsconfig = DSConfig(settings.app_profile)
 apiengine = APIEngine(dsconfig)
-'''API prefix'''
+
+# API prefix
 prefix = dsconfig.Application_Config.app_prefix
 if prefix.startswith('/'):
     pass
@@ -66,7 +70,7 @@ site.mount_app(app)
 async def startup():
 
     from core.adminsite import auth
-    await site.db.async_run_sync(SQLModel.metadata.create_all, is_session=False)
+    #await site.db.async_run_sync(SQLModel.metadata.create_all, is_session=False)
     await auth.create_role_user(role_key='admin')
     await auth.create_role_user(role_key='vip')
     await auth.create_role_user(role_key='test')
