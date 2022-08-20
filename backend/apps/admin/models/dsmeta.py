@@ -12,34 +12,33 @@ import sqlmodel
 
 import simplejson as json
 from fastapi_amis_admin import amis,models
-from typing import TYPE_CHECKING,Optional, Dict, Any, List
+from typing import TYPE_CHECKING,Optional, List
 from apps.admin.models.basesqlmodel import BaseSQLModel
-from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 from sqlmodel import Relationship, Column, JSON
 
 if TYPE_CHECKING:
-    from .dbconnection import DBConnection
+    from .datasource import Datasource
 
 default_column_defile="{\"column_name\":{\"name\": \"column_name\", \"type\": \"INTEGER\", \"nullable\": \"False\", \"default\": \"None\", \"autoincrement\": \"auto\", \"primary_key\": 0, \"pythonType\": \"int\"}}"
 
-class TableMeta(BaseSQLModel, table=True):
-    __tablename__ = 'capricornus_table_meta'
-    meta_id: int = models.Field(default=None, title='ID', primary_key=True, nullable=False)
-    name: str = models.Field(
-        title='Table Name',
+class DatasourceMeta(BaseSQLModel, table=True):
+    __tablename__ = 'capricornus_meta'
+    meta_id: int = models.Field(default=None, title=_('MetaID'), primary_key=True, nullable=False)
+    meta_name: str = models.Field(
+        title=_('Name'),
         sa_column=sqlmodel.Column(sqlmodel.String(100), unique=False, index=True, nullable=False),
                 amis_form_item = amis.InputText(disabled = True)
     )
-    table_schema: Optional[str] = models.Field(default='', title='Schema', max_length=256,
+    meta_schema: Optional[str] = models.Field(default='', title=_('Schema'), max_length=256,
                                             amis_form_item=amis.InputText(disabled = True))
-    table_type: Optional[str] = models.Field(default='table', title='Type',amis_form_item = amis.InputText(disabled = True))
-    primarykeys: Optional[str] = models.Field(default='', title='PrimaryKey', max_length=256,
+    meta_type: Optional[str] = models.Field(default='table', title=_('Type'),amis_form_item = amis.InputText(disabled = True))
+    meta_primarykeys: Optional[str] = models.Field(default='', title=_('PrimaryKey'), max_length=256,
                                                          amis_form_item=amis.InputText(disabled = True))
-    indexes: Optional[str] = models.Field(default='', title='Indexes', max_length=256,
+    meta_indexes: Optional[str] = models.Field(default='', title=_('Indexes'), max_length=256,
                                                          amis_form_item=amis.InputText(disabled = True))
-    columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_defile),
-                                           sa_column=Column(JSON), title='Columns',
+    meta_columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_defile),
+                                           sa_column=Column(JSON), title=_('Columns'),
                                                    amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='name', label='Name', unique='true', disabled=True),
                                                                                                   amis.InputText(name='type', label='Type', disabled=True),
                                                                                                   amis.InputText(name='nullable', label='Nullable', disabled=True),
@@ -47,7 +46,7 @@ class TableMeta(BaseSQLModel, table=True):
                                                                                                   amis.InputText(name='autoincrement', label='Autoincrement', disabled=True),
                                                                                                   amis.InputText(name='primary_key', label='Primarykey', disabled=True),
                                                                                                   amis.InputText(name='pythonType', label='PythonType', disabled=True)],
-                                                                            canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${columns[${index}].name}'),
+                                                                            canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${meta_columns[${index}].name}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    dbconn_id: int = models.Field(title='Connection ID', nullable=False, foreign_key="capricornus_db_connection.conn_id")
-    tmdbconnection: "DBConnection" = Relationship(back_populates="tablemetas")
+    ds_id: int = models.Field(title=_('DatasourceID'), nullable=False, foreign_key="capricornus_datasource.ds_id")
+    dmdatasource: "Datasource" = Relationship(back_populates="datasourcemetas")

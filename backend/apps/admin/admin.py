@@ -8,10 +8,10 @@ from pydantic import BaseModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.sql.expression import Select
 
-from apps.admin.models.dbconfig import DBConfig
-from apps.admin.models.dbconnection import DBConnection
-from apps.admin.models.tablemeta import TableMeta
-from apps.admin.models.tablepage import TablePage
+from apps.admin.models.datasourceconfig import DatasourceConfig
+from apps.admin.models.datasource import Datasource
+from apps.admin.models.dsmeta import DatasourceMeta
+from apps.admin.models.dspage import DatasourcePage
 
 try:
     import ujson as json
@@ -65,14 +65,14 @@ class AdminApp(admin.AdminApp):
 
 # Register your models here.
 
-# DBConnection Admin
+# Datasource Admin
 class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
-    model = DBConnection
+    model = Datasource
     pk_name = 'conn_id'
-    list_display = [DBConnection.conn_id, DBConnection.name, DBConnection.db_useschema, DBConnection.db_schema, DBConfig.name]
-    search_fields = [DBConnection.name, DBConfig.name]
+    list_display = [Datasource.conn_id, Datasource.name, Datasource.db_useschema, Datasource.db_schema, DatasourceConfig.name]
+    search_fields = [Datasource.name, DatasourceConfig.name]
     test_connection_api = {
                 'url':'/admin/db_connection_test',
                 'method':'post',
@@ -129,15 +129,15 @@ class DBConnectionAdmin(admin.ModelAdmin):
 
     async def get_select(self, request: Request) -> Select:
         sel = await super().get_select(request)
-        return sel.join(DBConfig, isouter=True)
+        return sel.join(DatasourceConfig, isouter=True)
 
-# DBConfig Admin
+# DatasourceConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Database Config', icon='fa fa-sliders-h')
-    model = DBConfig
-    pk_name = 'config_id'
-    search_fields = [DBConfig.name]
+    model = DatasourceConfig
+    pk_name = 'ds_config_id'
+    search_fields = [DatasourceConfig.name]
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
         header_toolbar = await super().get_actions_on_header_toolbar(request)
@@ -173,18 +173,18 @@ class DBConfigAdmin(admin.ModelAdmin):
             u_form.body=formtab
         return u_form
 
-# TableMeta Admin
+# DatasourceMeta Admin
 class TableMetaAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
-    model = TableMeta
+    model = DatasourceMeta
     pk_name = 'meta_id'
-    list_display = [DBConnection.name, TableMeta.meta_id, TableMeta.name, TableMeta.table_type, TableMeta.primarykeys, TableMeta.columns]
-    search_fields = [TableMeta.name]
+    list_display = [Datasource.name, DatasourceMeta.meta_id, DatasourceMeta.name, DatasourceMeta.table_type, DatasourceMeta.primarykeys, DatasourceMeta.columns]
+    search_fields = [DatasourceMeta.name]
 
     async def get_select(self, request: Request) -> Select:
         g_select = await super().get_select(request)
-        g_select = g_select.select_from(TableMeta).join(DBConnection)
+        g_select = g_select.select_from(DatasourceMeta).join(Datasource)
         return g_select
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:
@@ -233,18 +233,18 @@ class TableMetaAdmin(admin.ModelAdmin):
             u_form.body=formtab
         return u_form
 
-# TablePage Admin
+# DatasourcePage Admin
 class TablePageAdmin(admin.ModelAdmin):
     group_schema = None
     page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
-    model = TablePage
+    model = DatasourcePage
     pk_name = 'page_id'
-    list_display = [DBConnection.name, TablePage.page_id, TablePage.name, TablePage.label, TablePage.primarykeys, TablePage.columns]
-    search_fields = [TablePage.name]
+    list_display = [Datasource.name, DatasourcePage.page_id, DatasourcePage.name, DatasourcePage.label, DatasourcePage.primarykeys, DatasourcePage.columns]
+    search_fields = [DatasourcePage.name]
 
     async def get_select(self, request: Request) -> Select:
         g_select = await super().get_select(request)
-        g_select = g_select.select_from(TablePage).join(DBConnection)
+        g_select = g_select.select_from(DatasourcePage).join(Datasource)
         return g_select
 
     async def get_actions_on_header_toolbar(self, request: Request) -> List[Action]:

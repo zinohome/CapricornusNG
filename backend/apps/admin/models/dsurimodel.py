@@ -11,5 +11,5 @@
 
 from pydantic import BaseModel as requestBaseModel
 
-class DBURIModel(requestBaseModel):
-    db_uri: str
+class DSURIModel(requestBaseModel):
+    ds_uri: str

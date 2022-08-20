@@ -12,9 +12,8 @@ import sqlmodel
 
 import simplejson as json
 from fastapi_amis_admin import amis,models
-from typing import TYPE_CHECKING,Optional, Dict, Any, List
+from typing import TYPE_CHECKING,Optional
 from apps.admin.models.basesqlmodel import BaseSQLModel
-from util.log import log as log
 from fastapi_amis_admin.utils.translation import i18n as _
 from sqlmodel import Relationship, Column, JSON
 
@@ -26,19 +25,19 @@ default_admin_params = "{\"DEBUG\": true, \"SECRET_KEY\": \"bgt56yh@Passw0rd\", 
 default_security_params = "{\"security_key\": \"47051d5e3bafcfcba3c80d6d1119a7adf78d2967a8972b00af1ea231ca61f589\", \"security_algorithm\": \"HS256\", \"access_token_expire_minutes\": 30}"
 
 if TYPE_CHECKING:
-    from .dbconnection import DBConnection
+    from .datasource import Datasource
 
-# DBConfig Model
-class DBConfig(BaseSQLModel, table=True):
-    __tablename__ = 'capricornus_db_config'
-    config_id: int = models.Field(default=None, title='ID', primary_key=True, nullable=False)
-    name: str = models.Field(
-        title='ConfigName',
+# DatasourceConfig Model
+class DatasourceConfig(BaseSQLModel, table=True):
+    __tablename__ = 'capricornus_datasource_config'
+    ds_config_id: int = models.Field(default=None, title=_('ConfigID'), primary_key=True, nullable=False)
+    ds_config_name: str = models.Field(
+        title=_('ConfigName'),
         max_length=100,
         sa_column=sqlmodel.Column(sqlmodel.String(100), unique=True, index=True, nullable=False)
     )
     application_params: Optional[dict] = models.Field(index=False, default=json.loads(default_application_params),sa_column=Column(JSON),
-                                                     title='ApplicationParams',
+                                                     title=_('ApplicationParams'),
                                                      amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='app_name', label='app_name', disabled=True),
                                                                                                  amis.InputText(name='app_version', label='app_version', disabled=True),
                                                                                                  amis.InputText(name='app_description', label='app_description', disabled=True),
@@ -61,7 +60,7 @@ class DBConfig(BaseSQLModel, table=True):
                                                                             canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     connection_params: Optional[dict] = models.Field(index=False, default=json.loads(default_connection_params),sa_column=Column(JSON),
-                                                    title='ConnectionParams',
+                                                    title=_('ConnectionParams'),
                                                     amis_form_item=amis.Combo(type='combo', items=[amis.InputNumber(name='con_pool_size', label='con_pool_size'),
                                                                                                  amis.InputNumber(name='con_max_overflow', label='con_max_overflow'),
                                                                                                  amis.InputText(name='con_pool_use_lifo', label='con_pool_use_lifo', type='list-select', options=[{'label':'True','value':True},{'label':'False','value':False}]),
@@ -70,7 +69,7 @@ class DBConfig(BaseSQLModel, table=True):
                                                                             canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     schema_params: Optional[dict] = models.Field(index=False, default=json.loads(default_schema_params),sa_column=Column(JSON),
-                                                title='SchemaParams',
+                                                title=_('SchemaParams'),
                                                 amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='schema_cache_enabled', label='schema_cache_enabled', type='list-select', options=[{'label':'True','value':True},{'label':'False','value':False}]),
                                                                                                  amis.InputText(name='schema_model_refresh', label='schema_model_refresh', type='list-select', options=[{'label':'True','value':True},{'label':'False','value':False}]),
                                                                                                  amis.InputText(name='schema_cache_filename', label='schema_cache_filename', disabled=True),
@@ -82,14 +81,14 @@ class DBConfig(BaseSQLModel, table=True):
                                                                             canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     query_params: Optional[dict] = models.Field(index=False, default=json.loads(default_query_params),sa_column=Column(JSON),
-                                               title='QueryParams',
+                                               title=_('QueryParams'),
                                                amis_form_item=amis.Combo(type='combo', items=[amis.InputNumber(name='query_limit_upset', label='query_limit_upset'),
                                                                                                  amis.InputNumber(name='query_default_limit', label='query_default_limit'),
                                                                                                  amis.InputNumber(name='query_default_offset', label='query_default_offset')],
                                                                             canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     admin_params: Optional[dict] = models.Field(index=False, default=json.loads(default_admin_params),sa_column=Column(JSON),
-                                               title='AdminParams',
+                                               title=_('AdminParams'),
                                                amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='DEBUG', label='DEBUG', type='list-select', options=[{'label':'True','value':True},{'label':'False','value':False}]),
                                                                                                  amis.InputText(name='SECRET_KEY', label='SECRET_KEY'),
                                                                                                  amis.InputText(name='SESSION_COOKIE_HTTPONLY', label='SESSION_COOKIE_HTTPONLY', type='list-select', options=[{'label':'True','value':True},{'label':'False','value':False}]),
@@ -99,10 +98,10 @@ class DBConfig(BaseSQLModel, table=True):
                                                                             canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     security_params: Optional[dict] = models.Field(index=False, default=json.loads(default_security_params),sa_column=Column(JSON),
-                                                  title='SecurityParams',
+                                                  title=_('SecurityParams'),
                                                   amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='security_key', label='security_key'),
                                                                                                  amis.InputText(name='security_algorithm', label='security_algorithm', disabled=True),
                                                                                                  amis.InputNumber(name='access_token_expire_minutes', label='access_token_expire_minutes')],
                                                                             canAccessSuperData=True, tabsMode=True, multiLine=True),
                                                      amis_table_column=amis.TableColumn(type='json', levelExpand=0))
-    dbconnection: "DBConnection" = Relationship(back_populates="dbconfig")
+    datasource: "Datasource" = Relationship(back_populates="datasourceconfig")

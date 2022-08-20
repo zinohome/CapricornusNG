@@ -4,9 +4,9 @@ from sqlalchemy import text, select
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
 
-from apps.admin.models.dbconnection import DBConnection
-from apps.admin.models.dburimodel import DBURIModel
-from apps.admin.models.tablepage import TablePage
+from apps.admin.models.datasource import Datasource
+from apps.admin.models.dsurimodel import DSURIModel
+from apps.admin.models.dspage import DatasourcePage
 from core.apiengine import APIEngine
 from core.dsconfig import DSConfig
 from core.adminsite import site, auth
@@ -24,7 +24,7 @@ router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.r
 async def get_column_options(page_id: int):
     try:
         returndict = {'status':1,'msg':_("Get column options Error")}
-        result = await site.db.async_get(TablePage, page_id)
+        result = await site.db.async_get(DatasourcePage, page_id)
         if result.columns:
             clsname = result.name.strip().capitalize()
             datalist = []
@@ -45,7 +45,7 @@ async def get_column_options(page_id: int):
          summary="Test database connection.",
          description="Return database connection test result",
          include_in_schema=True)
-async def db_connection_test(dburi: DBURIModel) -> str:
+async def db_connection_test(dburi: DSURIModel) -> str:
     log.debug('Try to test db connection with dburi : %s' % dburi.db_uri)
     engine = create_async_engine(dburi.db_uri,echo=False,pool_pre_ping=True)
     try:
@@ -64,7 +64,7 @@ async def db_connection_test(dburi: DBURIModel) -> str:
          summary="Synchronize database schema.",
          description="Synchronize database schema",
          include_in_schema=True)
-async def db_sync_schema(dbconnection: DBConnection) -> str:
+async def db_sync_schema(dbconnection: Datasource) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % dbconnection.db_uri)
     log.debug('Database Connection infomation is : %s' % dbconnection.json())
     try:

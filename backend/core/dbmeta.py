@@ -21,16 +21,16 @@ from asgiref.sync import async_to_sync
 from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import inspect, Table
 
-from core.apipage import ApiPage
+from core.dspageservice import DspageService
 from core.settings import settings
 from sqlalchemy.schema import MetaData,CreateTable
 import simplejson as json
 
 from core.apiengine import APIEngine
-from core.apitable import ApiTable
+from core.dsmetaservice import DsmetaService
 from core.dsconfig import DSConfig
-from core.tablepage import TablePageSchema
-from core.tableschema import TableSchema
+from core.pageschema import PageSchema
+from core.metaschema import MetaSchema
 from util import toolkit
 from util.log import log as log
 
@@ -228,7 +228,7 @@ class DBMeta(metaclass=Cached):
                         log.debug('Extracting table schema for : %s ……' % jtbl['name'])
                         ptbl = jtbl.copy()
                         del jtbl['logicprimarykeys']
-                        japitable = ApiTable(self.dsconfig, jtbl['name'])
+                        japitable = DsmetaService(self.dsconfig, jtbl['name'])
                         japitable.loadfrom_json(jtbl)
                         japitable.create_update_table()
                         ptbl['label'] = ptbl['name']
@@ -238,7 +238,7 @@ class DBMeta(metaclass=Cached):
                             item['title'] = item['name']
                             item['amis_form_item'] = ''
                             item['amis_table_column'] = ''
-                        papipage = ApiPage(self.dsconfig, ptbl['name'])
+                        papipage = DspageService(self.dsconfig, ptbl['name'])
                         papipage.loadfrom_json(ptbl)
                         papipage.create_update_table()
                 # gen schema for views
@@ -297,7 +297,7 @@ class DBMeta(metaclass=Cached):
                         log.debug('Extracting view schema for : %s ……' % vtbl['name'])
                         ptbl = vtbl.copy()
                         del vtbl['logicprimarykeys']
-                        vapitable = ApiTable(self.dsconfig, vtbl['name'])
+                        vapitable = DsmetaService(self.dsconfig, vtbl['name'])
                         vapitable.loadfrom_json(vtbl)
                         vapitable.create_update_table()
                         ptbl['label'] = ptbl['name']
@@ -307,7 +307,7 @@ class DBMeta(metaclass=Cached):
                             item['title'] = item['name']
                             item['amis_form_item'] = ''
                             item['amis_table_column'] = ''
-                        papipage = ApiPage(self.dsconfig, ptbl['name'])
+                        papipage = DspageService(self.dsconfig, ptbl['name'])
                         papipage.loadfrom_json(ptbl)
                         papipage.create_update_table()
         except Exception as exp:
@@ -317,14 +317,14 @@ class DBMeta(metaclass=Cached):
 
     def load_schema(self):
         log.debug('Loading schema from %s ……' % settings.app_profile)
-        apitable = ApiTable(self.dsconfig, 'None')
+        apitable = DsmetaService(self.dsconfig, 'None')
         metas = apitable.get_all_tables()
-        apipage = ApiPage(self.dsconfig, 'None')
+        apipage = DspageService(self.dsconfig, 'None')
         pages = apipage.get_all_tables()
         self._tables = []
         self._pages = []
         for meta in metas:
-            table = TableSchema(meta.meta_id, meta.name, meta.table_type)
+            table = MetaSchema(meta.meta_id, meta.name, meta.table_type)
             table.dbconn_id = meta.dbconn_id
             table.table_schema = meta.table_schema
             table.primarykeys = meta.primarykeys
@@ -336,7 +336,7 @@ class DBMeta(metaclass=Cached):
             if table.table_type == 'view':
                 self._viewCount = self._viewCount + 1
         for page in pages:
-            tpage = TablePageSchema(page.page_id, page.name, page.table_type)
+            tpage = PageSchema(page.page_id, page.name, page.table_type)
             tpage.dbconn_id = page.dbconn_id
             tpage.label = page.label
             tpage.table_schema = page.table_schema
@@ -375,7 +375,7 @@ class DBMeta(metaclass=Cached):
             return None
 
     def get_table_logicprimarykeys(self, table_name):
-        apipage = ApiPage(self.dsconfig, table_name)
+        apipage = DspageService(self.dsconfig, table_name)
         tablemetas = apipage.query_table_byName()
         if tablemetas is not None:
             return tablemetas[0].logicprimarykeys

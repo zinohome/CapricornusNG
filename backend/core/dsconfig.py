@@ -13,9 +13,9 @@ import simplejson as json
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy_database import Database, AsyncDatabase
 
-from apps.admin.models.dbconfig import DBConfig
-from apps.admin.models.dbconnection import DBConnection
-from apps.admin.models.tablemeta import TableMeta
+from apps.admin.models.datasourceconfig import DatasourceConfig
+from apps.admin.models.datasource import Datasource
+from apps.admin.models.dsmeta import DatasourceMeta
 from core.settings import settings
 from util import toolkit
 from util.log import log as log
@@ -76,14 +76,14 @@ class DSConfig(metaclass=Cached):
         self.Admin_Config = SimpleNamespace(**Admin_Config_dict)
 
     def readconfig(self):
-        connstmt = select(DBConnection).where(
-            DBConnection.name == self.name)
+        connstmt = select(Datasource).where(
+            Datasource.name == self.name)
         connresult = self.db.scalars_all(connstmt)
         if len(connresult) > 0:
             self.Database_Config = SimpleNamespace(**json.loads(connresult[0].json()))
             #log.debug('Database_Config: %s' % self.Database_Config)
-            confstmt = select(DBConfig).where(
-                DBConfig.config_id == self.Database_Config.db_conf_id)
+            confstmt = select(DatasourceConfig).where(
+                DatasourceConfig.ds_config_id == self.Database_Config.db_conf_id)
             confresult = self.db.scalars_all(confstmt)
             if len(confresult) > 0:
                 self.Application_Config = SimpleNamespace(**confresult[0].application_params)
@@ -98,7 +98,7 @@ class DSConfig(metaclass=Cached):
                 #log.debug('Security_Config: %s' % self.Security_Config)
                 #log.debug('Connection_Config: %s' % self.Connection_Config)
                 #log.debug('Admin_Config: %s' % self.Admin_Config)
-            tablestmt = select(TableMeta).where(TableMeta.dbconn_id == self.Database_Config.conn_id)
+            tablestmt = select(DatasourceMeta).where(DatasourceMeta.dbconn_id == self.Database_Config.conn_id)
             tableresult = self.db.scalars_all(tablestmt)
             if len(tableresult) > 0:
                 self.db_schema_existed = True
