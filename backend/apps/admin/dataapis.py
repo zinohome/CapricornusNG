@@ -16,7 +16,7 @@ from core.adminsite import auth
 from crud import SQLModelCrud
 from main import dsconfig, apiengine, dbmeta, prefix
 from util.log import log as log
-from util.translation import i18n as _
+from core import i18n as _
 
 from util.toolkit import get_first_primarykey
 

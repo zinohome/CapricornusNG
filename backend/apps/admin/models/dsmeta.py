@@ -15,7 +15,7 @@ import simplejson as json
 from fastapi_amis_admin import amis,models
 from typing import TYPE_CHECKING,Optional, List
 from apps.admin.models.basesqlmodel import BaseSQLModel
-from util.translation import i18n as _
+from core import i18n as _
 from sqlmodel import Relationship, Column, JSON
 
 if TYPE_CHECKING:
