@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-08-21 13:49+0800\n"
+"POT-Creation-Date: 2022-08-21 15:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,5 +83,177 @@ msgstr ""
 
 #: ../apps/admin/admin.py:317
 msgid "Redocs"
+msgstr ""
+
+#: ../apps/admin/apis.py:37 ../apps/admin/apis.py:51
+msgid "Get column options Error"
+msgstr ""
+
+#: ../apps/admin/apis.py:66
+msgid "DataBase Connected"
+msgstr ""
+
+#: ../apps/admin/apis.py:70
+msgid "DataBase Connect Error"
+msgstr ""
+
+#: ../apps/admin/apis.py:100
+msgid "DataBase synchronized"
+msgstr ""
+
+#: ../apps/admin/apis.py:103
+msgid "DataBase synchronized Error"
+msgstr ""
+
+#: ../apps/admin/models/datasource.py:32 ../apps/admin/models/dsmeta.py:52
+#: ../apps/admin/models/dspage.py:75
+msgid "DatasourceID"
+msgstr ""
+
+#: ../apps/admin/models/datasource.py:34
+msgid "DatasourceName"
+msgstr ""
+
+#: ../apps/admin/models/datasource.py:38
+msgid "URI"
+msgstr ""
+
+#: ../apps/admin/models/datasource.py:41 ../apps/admin/models/dsmeta.py:34
+#: ../apps/admin/models/dspage.py:40
+msgid "Schema"
+msgstr ""
+
+#: ../apps/admin/models/datasource.py:42
+msgid "ExcludedTableSpace"
+msgstr ""
+
+#: ../apps/admin/models/datasource.py:43
+msgid "DatasourceConfigID"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:43
+msgid "ConfigID"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:45
+msgid "ConfigName"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:50
+msgid "ApplicationParams"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:73
+msgid "ConnectionParams"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:82
+msgid "SchemaParams"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:90
+msgid "Please enter the comma-separated table name"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:94
+msgid "QueryParams"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:101
+msgid "AdminParams"
+msgstr ""
+
+#: ../apps/admin/models/datasourceconfig.py:111
+msgid "SecurityParams"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:28 ../apps/admin/models/dspage.py:32
+msgid "MetaID"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:30 ../apps/admin/models/dsmeta.py:43
+#: ../apps/admin/models/dspage.py:34
+msgid "Name"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:36 ../apps/admin/models/dsmeta.py:44
+#: ../apps/admin/models/dspage.py:42
+msgid "Type"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:37 ../apps/admin/models/dspage.py:44
+msgid "PrimaryKey"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:39 ../apps/admin/models/dspage.py:48
+msgid "Indexes"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:42 ../apps/admin/models/dspage.py:51
+msgid "Columns"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:45
+msgid "Nullable"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:46
+msgid "Default"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:47
+msgid "Autoincrement"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:48
+msgid "Primarykey"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:49
+msgid "PythonType"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:38
+msgid "Title"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:46
+msgid "LogicPrimaryKey"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:53
+msgid "name"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:55
+msgid "type"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:56
+msgid "nullable"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:58
+msgid "default"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:60
+msgid "autoincrement"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:62
+msgid "primary_key"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:64
+msgid "pythonType"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:71
+msgid "ListDisplay"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:73
+msgid "SearchFields"
 msgstr ""
 
