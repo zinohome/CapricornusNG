@@ -1,0 +1,250 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-08-21 13:49+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ../apps/admin/admin.py:40 ../apps/admin/admin.py:59
+msgid "Data Explore"
+msgstr "数据浏览"
+
+#: ../apps/admin/admin.py:66
+msgid "Data Source"
+msgstr "数据源"
+
+#: ../apps/admin/admin.py:78
+msgid "DataSources"
+msgstr "数据源"
+
+#: ../apps/admin/admin.py:109 ../apps/admin/admin.py:152
+#: ../apps/admin/admin.py:200 ../apps/admin/admin.py:260
+msgid "Bulk Create"
+msgstr "批量新增"
+
+#: ../apps/admin/admin.py:118 ../apps/admin/admin.py:129
+msgid "Cancel"
+msgstr "取消"
+
+#: ../apps/admin/admin.py:119 ../apps/admin/admin.py:130
+msgid "Test Connection"
+msgstr "测试连接"
+
+#: ../apps/admin/admin.py:120 ../apps/admin/admin.py:132
+msgid "Submit"
+msgstr "提交"
+
+#: ../apps/admin/admin.py:131
+msgid "Confirm to sync all tables immediately?"
+msgstr "确定立刻同步所有的表结构吗？"
+
+#: ../apps/admin/admin.py:131
+msgid "Sync Structure"
+msgstr "同步表结构"
+
+#: ../apps/admin/admin.py:143
+msgid "Datasource Config"
+msgstr "数据源配置"
+
+#: ../apps/admin/admin.py:185
+msgid "Table Meta"
+msgstr "表结构"
+
+#: ../apps/admin/admin.py:200 ../apps/admin/admin.py:260
+msgid "Create"
+msgstr "新增"
+
+#: ../apps/admin/admin.py:216 ../apps/admin/admin.py:235
+#: ../apps/admin/admin.py:276 ../apps/admin/admin.py:295
+msgid "Basic Info"
+msgstr "基本信息"
+
+#: ../apps/admin/admin.py:245
+msgid "Page Define"
+msgstr "页面配置"
+
+#: ../apps/admin/admin.py:306 ../apps/admin/admin.py:316
+msgid "APIDocs"
+msgstr "API文档"
+
+#: ../apps/admin/admin.py:307
+msgid "Docs"
+msgstr "Swagger"
+
+#: ../apps/admin/admin.py:317
+msgid "Redocs"
+msgstr "Redoc"
+
+#: ../apps/admin/apis.py:37 ../apps/admin/apis.py:51
+msgid "Get column options Error"
+msgstr ""
+
+#: ../apps/admin/apis.py:66
+msgid "DataBase Connected"
+msgstr "数据库连接成功"
+
+#: ../apps/admin/apis.py:70
+msgid "DataBase Connect Error"
+msgstr "数据库连接失败"
+
+#: ../apps/admin/apis.py:100
+msgid "DataBase synchronized"
+msgstr "表结构同步完成"
+
+#: ../apps/admin/apis.py:103
+msgid "DataBase synchronized Error"
+msgstr "表结构同步出错"
+
+#: ../apps/admin/models/datasource.py:32
+msgid "DatasourceID"
+msgstr "数据源编号"
+
+#: ../apps/admin/models/datasource.py:34
+msgid "DatasourceName"
+msgstr "数据源名称"
+
+#: ../apps/admin/models/datasource.py:38
+msgid "URI"
+msgstr "连接URL"
+
+#: ../apps/admin/models/datasource.py:41
+msgid "Schema"
+msgstr "Schema"
+
+#: ../apps/admin/models/datasource.py:42
+msgid "ExcludedTableSpace"
+msgstr "排除的表空间"
+
+#: ../apps/admin/models/datasource.py:43
+msgid "DatasourceConfigID"
+msgstr "数据源配置编号"
+
+
+#: ../apps/admin/models/datasourceconfig.py:43
+msgid "ConfigID"
+msgstr "配置编号"
+
+#: ../apps/admin/models/datasourceconfig.py:45
+msgid "ConfigName"
+msgstr "配置名称"
+
+#: ../apps/admin/models/datasourceconfig.py:50
+msgid "ApplicationParams"
+msgstr "应用程序参数"
+
+#: ../apps/admin/models/datasourceconfig.py:73
+msgid "ConnectionParams"
+msgstr "连接参数"
+
+#: ../apps/admin/models/datasourceconfig.py:82
+msgid "SchemaParams"
+msgstr "Schema参数"
+
+#: ../apps/admin/models/datasourceconfig.py:90
+msgid "Please enter the comma-separated table name"
+msgstr "请输入逗号分隔的表名称"
+
+#: ../apps/admin/models/datasourceconfig.py:94
+msgid "QueryParams"
+msgstr "查询参数"
+
+#: ../apps/admin/models/datasourceconfig.py:101
+msgid "AdminParams"
+msgstr "Admin控制台参数"
+
+#: ../apps/admin/models/datasourceconfig.py:111
+msgid "SecurityParams"
+msgstr "安全参数"
+
+
+#: ../apps/admin/models/dsmeta.py:28
+msgid "MetaID"
+msgstr "结构编号"
+
+#: ../apps/admin/models/dsmeta.py:30
+msgid "Name"
+msgstr "名称"
+
+#: ../apps/admin/models/dsmeta.py:34
+msgid "Schema"
+msgstr "Schema"
+
+#: ../apps/admin/models/dsmeta.py:36
+msgid "Type"
+msgstr "类型"
+
+#: ../apps/admin/models/dsmeta.py:37
+msgid "PrimaryKey"
+msgstr "主键"
+
+#: ../apps/admin/models/dsmeta.py:39
+msgid "Indexes"
+msgstr "索引"
+
+#: ../apps/admin/models/dsmeta.py:42
+msgid "Columns"
+msgstr "列"
+
+#: ../apps/admin/models/dsmeta.py:52
+msgid "DatasourceID"
+msgstr "数据源编号"
+
+
+#: ../apps/admin/models/dspage.py:32
+msgid "MetaID"
+msgstr "结构编号"
+
+#: ../apps/admin/models/dspage.py:34
+msgid "Name"
+msgstr "名称"
+
+#: ../apps/admin/models/dspage.py:38
+msgid "Title"
+msgstr "标题"
+
+#: ../apps/admin/models/dspage.py:40
+msgid "Schema"
+msgstr "Schema"
+
+#: ../apps/admin/models/dspage.py:42
+msgid "Type"
+msgstr "类型"
+
+#: ../apps/admin/models/dspage.py:44
+msgid "PrimaryKey"
+msgstr "主键"
+
+#: ../apps/admin/models/dspage.py:46
+msgid "LogicPrimaryKey"
+msgstr "逻辑主键"
+
+#: ../apps/admin/models/dspage.py:48
+msgid "Indexes"
+msgstr "索引"
+
+#: ../apps/admin/models/dspage.py:51
+msgid "Columns"
+msgstr "列"
+
+#: ../apps/admin/models/dspage.py:71
+msgid "ListDisplay"
+msgstr "表显示列"
+
+#: ../apps/admin/models/dspage.py:73
+msgid "SearchFields"
+msgstr "模糊搜索字段"
+
+#: ../apps/admin/models/dspage.py:75
+msgid "DatasourceID"
+msgstr "数据源编号"
+

@@ -30,6 +30,7 @@ from fastapi.openapi.docs import (
 )
 from util.log import log as log
 from util.toolkit import sync_uri
+from util.translation import i18n as _
 
 # create Tables
 asyncurl = str(site.db.engine.sync_engine.url)

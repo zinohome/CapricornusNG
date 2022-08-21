@@ -11,10 +11,6 @@
 
 import sqlmodel
 
-import simplejson as json
-from util.log import log as log
-from fastapi_amis_admin.utils.translation import i18n as _
-
 
 class BaseSQLModel(sqlmodel.SQLModel):
     class Config:

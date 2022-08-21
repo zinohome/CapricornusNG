@@ -23,7 +23,7 @@ from core.dsconfig import DSConfig
 from core.adminsite import site, auth
 from core.dbmeta import DBMeta
 from util.log import log as log
-from fastapi_amis_admin.utils.translation import i18n as _
+from util.translation import i18n as _
 
 router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.requires()())])
 

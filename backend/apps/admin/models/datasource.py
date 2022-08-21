@@ -14,7 +14,7 @@ import sqlmodel
 from fastapi_amis_admin import amis,models
 from typing import TYPE_CHECKING,Optional, List
 from apps.admin.models.basesqlmodel import BaseSQLModel
-from fastapi_amis_admin.utils.translation import i18n as _
+from util.translation import i18n as _
 from sqlmodel import Relationship
 
 if TYPE_CHECKING:

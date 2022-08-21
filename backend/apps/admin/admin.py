@@ -30,14 +30,14 @@ from starlette.requests import Request
 
 from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from util.log import log as log
-from fastapi_amis_admin.utils.translation import i18n as _
+from util.translation import i18n as _
 
 from main import dsconfig, apiengine, dbmeta
 
 # DataApp
 @site.register_admin
 class DataApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label=_('Tables'), icon='fa fa-table', sort=99)
+    page_schema = amis.PageSchema(label=_('Data Explore'), icon='fa fa-table', sort=99)
     router_prefix = '/data'
     engine = apiengine.async_connect()
 
@@ -56,14 +56,14 @@ class DataApp(admin.AdminApp):
             self.register_admin(BlankDataPageAdmin)
 # default DataPage
 class BlankDataPageAdmin(admin.PageAdmin):
-    page_schema = PageSchema(label='Data Explor', icon='fa fa-border-all')
+    page_schema = PageSchema(label=_('Data Explore'), icon='fa fa-border-all')
     # 通过page类属性直接配置页面信息;
     page = Page(title='Data Explor', body='')
 
 # AdminApp
 @site.register_admin
 class AdminApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label=_('DataSource'), icon='fa fa-cogs', sort=98)
+    page_schema = amis.PageSchema(label=_('Data Source'), icon='fa fa-cogs', sort=98)
     router_prefix = '/admin'
 
     def __init__(self, app: "AdminApp"):
@@ -75,7 +75,7 @@ class AdminApp(admin.AdminApp):
 # Datasource Admin
 class DBConnectionAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Database Connection', icon='fa fa-database')
+    page_schema = PageSchema(label=_('DataSources'), icon='fa fa-database')
     model = Datasource
     pk_name = 'ds_id'
     list_display = [Datasource.ds_id, Datasource.ds_name, Datasource.ds_schema, DatasourceConfig.ds_config_name]
@@ -140,7 +140,7 @@ class DBConnectionAdmin(admin.ModelAdmin):
 # DatasourceConfig Admin
 class DBConfigAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Database Config', icon='fa fa-sliders-h')
+    page_schema = PageSchema(label=_('Datasource Config'), icon='fa fa-sliders-h')
     model = DatasourceConfig
     pk_name = 'ds_config_id'
     search_fields = [DatasourceConfig.ds_config_name]
@@ -182,7 +182,7 @@ class DBConfigAdmin(admin.ModelAdmin):
 # DatasourceMeta Admin
 class TableMetaAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Table Meta', icon='fa fa-tasks')
+    page_schema = PageSchema(label=_('Table Meta'), icon='fa fa-tasks')
     model = DatasourceMeta
     pk_name = 'meta_id'
     list_display = [Datasource.ds_name, DatasourceMeta.meta_id, DatasourceMeta.meta_name, DatasourceMeta.meta_type, DatasourceMeta.meta_primarykeys, DatasourceMeta.meta_columns]
@@ -242,7 +242,7 @@ class TableMetaAdmin(admin.ModelAdmin):
 # DatasourcePage Admin
 class TablePageAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Table Page', icon='fa fa-file-alt')
+    page_schema = PageSchema(label=_('Page Define'), icon='fa fa-file-alt')
     model = DatasourcePage
     pk_name = 'meta_id'
     list_display = [Datasource.ds_name, DatasourcePage.meta_id, DatasourcePage.meta_name, DatasourcePage.page_title, DatasourcePage.meta_primarykeys, DatasourcePage.page_logicprimarykeys, DatasourcePage.meta_columns]
@@ -303,8 +303,8 @@ class TablePageAdmin(admin.ModelAdmin):
 
 @site.register_admin
 class DocsAdmin(admin.IframeAdmin):
-    group_schema = PageSchema(label='APIDocs', icon='fa fa-book', sort=-100)
-    page_schema = PageSchema(label='Docs', icon='fa fa-book')
+    group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label=_('Docs'), icon='fa fa-book')
     #src = '/apidocs'
     @property
     def src(self):
@@ -313,8 +313,8 @@ class DocsAdmin(admin.IframeAdmin):
 
 @site.register_admin
 class ReDocsAdmin(admin.IframeAdmin):
-    group_schema = PageSchema(label='APIDocs', icon='fa fa-book', sort=-100)
-    page_schema = PageSchema(label='Redocs', icon='fa fa-book')
+    group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label=_('Redocs'), icon='fa fa-book')
     # 设置跳转链接
     @property
     def src(self):

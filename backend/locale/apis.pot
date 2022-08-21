@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-08-21 14:04+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ../apps/admin/apis.py:37 ../apps/admin/apis.py:51
+msgid "Get column options Error"
+msgstr ""
+
+#: ../apps/admin/apis.py:66
+msgid "DataBase Connected"
+msgstr ""
+
+#: ../apps/admin/apis.py:70
+msgid "DataBase Connect Error"
+msgstr ""
+
+#: ../apps/admin/apis.py:100
+msgid "DataBase synchronized"
+msgstr ""
+
+#: ../apps/admin/apis.py:103
+msgid "DataBase synchronized Error"
+msgstr ""
+
