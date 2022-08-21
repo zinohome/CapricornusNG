@@ -249,6 +249,18 @@ msgstr "主键"
 msgid "pythonType"
 msgstr "Python类型"
 
+#: ../apps/admin/models/dspage.py:53
+msgid "Label"
+msgstr "标题"
+
+#: ../apps/admin/models/dspage.py:60
+msgid "AMIS Form Item"
+msgstr "AMIS_Form_Item"
+
+#: ../apps/admin/models/dspage.py:61
+msgid "AMIS Table Column"
+msgstr "AMIS_Table_Column"
+
 #: ../apps/admin/models/dspage.py:71
 msgid "ListDisplay"
 msgstr "列表显示字段"
