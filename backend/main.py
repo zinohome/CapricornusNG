@@ -35,9 +35,10 @@ from core import i18n as _
 # create Tables
 asyncurl = str(site.db.engine.sync_engine.url)
 syncurl = sync_uri(asyncurl)
-syncsitedb = Database(create_engine(syncurl, echo=False))
+syncengine = create_engine(syncurl, echo=False)
 metatables = DatasourceConfig.metadata.tables
-syncsitedb.run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
+Database(syncengine).run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
+syncengine.dispose()
 
 # dsconfig & dsengine
 dsconfig = DSConfig(settings.app_profile)

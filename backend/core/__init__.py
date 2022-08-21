@@ -3,12 +3,13 @@ import os
 from util.translation import i18n
 from core.settings import settings
 
-i18n.set_language(settings.language)
+applan = settings.language
+i18n.set_language(applan)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 i18n.load_translations({
-    "zh_CN": gettext.translation(
+    applan: gettext.translation(
         domain='messages',
         localedir=os.path.join(BASE_DIR, "locale"),
-        languages=['zh_CN']
+        languages=[applan]
     )
 })
