@@ -40,13 +40,13 @@ class DatasourceMeta(BaseSQLModel, table=True):
                                                          amis_form_item=amis.InputText(disabled = True))
     meta_columns: Optional[List[dict]] = models.Field(index=False, default=json.loads(default_column_defile),
                                            sa_column=Column(JSON), title=_('Columns'),
-                                                   amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='name', label='Name', unique='true', disabled=True),
-                                                                                                  amis.InputText(name='type', label='Type', disabled=True),
-                                                                                                  amis.InputText(name='nullable', label='Nullable', disabled=True),
-                                                                                                  amis.InputText(name='default', label='Default', disabled=True),
-                                                                                                  amis.InputText(name='autoincrement', label='Autoincrement', disabled=True),
-                                                                                                  amis.InputText(name='primary_key', label='Primarykey', disabled=True),
-                                                                                                  amis.InputText(name='pythonType', label='PythonType', disabled=True)],
+                                                   amis_form_item=amis.Combo(type='combo', items=[amis.InputText(name='name', label=_('Name'), unique='true', disabled=True),
+                                                                                                  amis.InputText(name='type', label=_('Type'), disabled=True),
+                                                                                                  amis.InputText(name='nullable', label=_('Nullable'), disabled=True),
+                                                                                                  amis.InputText(name='default', label=_('Default'), disabled=True),
+                                                                                                  amis.InputText(name='autoincrement', label=_('Autoincrement'), disabled=True),
+                                                                                                  amis.InputText(name='primary_key', label=_('Primarykey'), disabled=True),
+                                                                                                  amis.InputText(name='pythonType', label=_('PythonType'), disabled=True)],
                                                                             canAccessSuperData=True, tabsMode=True, tabsStyle='line', multiLine=True, multiple=True, tabsLabelTpl='${meta_columns[${index}].name}'),
                                            amis_table_column=amis.TableColumn(type='json', levelExpand=0))
     ds_id: int = models.Field(title=_('DatasourceID'), nullable=False, foreign_key="capricornus_datasource.ds_id")

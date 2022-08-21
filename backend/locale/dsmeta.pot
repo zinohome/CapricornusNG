@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-08-21 14:12+0800\n"
+"POT-Creation-Date: 2022-08-21 14:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 msgid "MetaID"
 msgstr ""
 
-#: ../apps/admin/models/dsmeta.py:30
+#: ../apps/admin/models/dsmeta.py:30 ../apps/admin/models/dsmeta.py:43
 msgid "Name"
 msgstr ""
 
@@ -27,7 +27,7 @@ msgstr ""
 msgid "Schema"
 msgstr ""
 
-#: ../apps/admin/models/dsmeta.py:36
+#: ../apps/admin/models/dsmeta.py:36 ../apps/admin/models/dsmeta.py:44
 msgid "Type"
 msgstr ""
 
@@ -41,6 +41,26 @@ msgstr ""
 
 #: ../apps/admin/models/dsmeta.py:42
 msgid "Columns"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:45
+msgid "Nullable"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:46
+msgid "Default"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:47
+msgid "Autoincrement"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:48
+msgid "Primarykey"
+msgstr ""
+
+#: ../apps/admin/models/dsmeta.py:49
+msgid "PythonType"
 msgstr ""
 
 #: ../apps/admin/models/dsmeta.py:52

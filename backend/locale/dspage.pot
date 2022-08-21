@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-08-21 14:12+0800\n"
+"POT-Creation-Date: 2022-08-21 14:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,6 +49,34 @@ msgstr ""
 
 #: ../apps/admin/models/dspage.py:51
 msgid "Columns"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:53
+msgid "name"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:55
+msgid "type"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:56
+msgid "nullable"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:58
+msgid "default"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:60
+msgid "autoincrement"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:62
+msgid "primary_key"
+msgstr ""
+
+#: ../apps/admin/models/dspage.py:64
+msgid "pythonType"
 msgstr ""
 
 #: ../apps/admin/models/dspage.py:71
