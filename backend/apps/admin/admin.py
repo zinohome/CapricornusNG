@@ -58,7 +58,15 @@ class DataApp(admin.AdminApp):
 class BlankDataPageAdmin(admin.PageAdmin):
     page_schema = PageSchema(label=_('Data Explore'), icon='fa fa-border-all')
     # 通过page类属性直接配置页面信息;
-    page = Page(title='Data Explor', body='')
+    page = Page(title=_('Data Explor'), body='')
+
+# Data Query Page
+@site.register_admin
+class DataQueryAdmin(admin.PageAdmin):
+    group_schema = amis.PageSchema(label=_('Data Query'), icon='fa fa-table', sort=98)
+    page_schema = PageSchema(label=_('Data Query'), icon='fa fa-border-all')
+    # 通过page类属性直接配置页面信息;
+    page = Page(title=_('Data Query'), body='')
 
 # AdminApp
 @site.register_admin

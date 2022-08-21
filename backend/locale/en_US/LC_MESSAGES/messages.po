@@ -85,6 +85,10 @@ msgstr "Swagger"
 msgid "Redocs"
 msgstr "ReDoc"
 
+#: ../apps/admin/admin.py:66
+msgid "Data Query"
+msgstr "Data Query"
+
 #: ../apps/admin/apis.py:37 ../apps/admin/apis.py:51
 msgid "Get column options Error"
 msgstr "Get column options Error"
