@@ -13,3 +13,5 @@ async_class>=0.5.0
 cx_Oracle_async>=0.3.3
 uvloop>=0.16.0
 asgiref>=3.5.2
+gunicorn>=20.1.0
+hypercorn>=0.13.2

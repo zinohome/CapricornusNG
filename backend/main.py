@@ -8,11 +8,16 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+import asyncio
 
+from asgiref.sync import async_to_sync
+from sqlalchemy_database import Database
+from sqlmodel import SQLModel, create_engine
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
+from apps.admin.models.datasourceconfig import DatasourceConfig
 from core.adminsite import site
 from core.dsengine import DSEngine
 from core.dbmeta import DBMeta
@@ -23,7 +28,15 @@ from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
+from util.log import log as log
+from util.toolkit import sync_uri
 
+# create Tables
+asyncurl = str(site.db.engine.sync_engine.url)
+syncurl = sync_uri(asyncurl)
+syncsitedb = Database(create_engine(syncurl, echo=False))
+metatables = DatasourceConfig.metadata.tables
+syncsitedb.run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
 
 # dsconfig & dsengine
 dsconfig = DSConfig(settings.app_profile)
@@ -67,7 +80,9 @@ site.mount_app(app)
 async def startup():
 
     from core.adminsite import auth
-    #await site.db.async_run_sync(SQLModel.metadata.create_all, is_session=False)
+    #metatables = DatasourceConfig.metadata.tables
+    #log.debug(metatables.keys())
+    #await site.db.async_run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
     await auth.create_role_user(role_key='admin')
     await auth.create_role_user(role_key='vip')
     await auth.create_role_user(role_key='test')

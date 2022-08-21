@@ -10,7 +10,7 @@ use_max_workers = None
 if max_workers_str:
     use_max_workers = int(max_workers_str)
 web_concurrency_str = os.getenv("WEB_CONCURRENCY", None)
-worker_class_str = os.getenv("WORKER_CLASS", "trio")
+worker_class_str = os.getenv("WORKER_CLASS", "uvloop")
 
 host = os.getenv("HOST", "0.0.0.0")
 port = os.getenv("PORT", "8843")
