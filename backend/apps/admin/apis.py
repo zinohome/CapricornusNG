@@ -111,12 +111,11 @@ async def sql_query(dsquery: DSQueryModel) -> str:
                 rows = result.fetchall()
                 items = [{**row}for row in rows]
                 await engine.dispose()
-                returnobj = {"status":0,"msg":_("SQL query complete"),"data":{"items":items},"total":len(items)}
+                returnobj = {"status":0,"msg":_("SQL query complete"),"data":{"rows":items}}
                 log.debug(returnobj)
-                log.debug(json.dumps(returnobj))
                 return returnobj
         else:
-            return {"status":0,"msg":_("SQL query complete"),"data":{"items":[]},"total":0}
+            return {"status":0,"msg":_("SQL query complete"),"data":{"rows":[]}}
     except Exception as e:
         log.error('SQL query Error !')
         traceback.print_exc()

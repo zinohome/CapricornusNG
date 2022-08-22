@@ -86,11 +86,12 @@ class DataQueryAdmin(admin.PageAdmin):
                         },
                 'cache':1000
                     }
+    # query form
     form = Form(type='form', title='',
                 name='queryform', id='queryform',
                 submitText=_('> Run'), preventEnterSubmit=True,
                 persistData='app.data.sqlqueryform',
-                target='sqlresult')
+                target='resultform.sqlresult')
     formbodylist = []
     formbodylist.append(amis.Select(type='select', label=_('Select DataSource'),
                                     name='ds_uri', id='ds_uri',
@@ -102,10 +103,18 @@ class DataQueryAdmin(admin.PageAdmin):
     actions = []
     actions.append(Action(actionType='submit', label=_('> Run'), level=LevelEnum.secondary))
     form.actions = actions
+    # result form
+    resultform = Form(type='form', title='',
+                name='resultform', id='resultform', preventEnterSubmit=True)
+    resultformbodylist = []
+    resultformbodylist.append(CRUD(type='crud', id='sqlresult', name='sqlresult', api=queryform_submit_api, loadDataOnce=True, loadDataOnceFetchOnFilter=False))
+    resultform.body = resultformbodylist
+    resultform.actions = []
+    # page body
     pagebodylist = []
     pagebodylist.append(form)
     pagebodylist.append(Divider(type='divider', visible=True))
-    pagebodylist.append(CRUD(type='crud', id='sqlresult', name='sqlresult', api=queryform_submit_api))
+    pagebodylist.append(resultform)
     page = Page(body=pagebodylist)
 
 # AdminApp
