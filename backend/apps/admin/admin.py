@@ -365,7 +365,7 @@ class TablePageAdmin(admin.ModelAdmin):
 @site.register_admin
 class DocsAdmin(admin.IframeAdmin):
     group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
-    page_schema = PageSchema(label=_('Docs'), icon='fa fa-book')
+    page_schema = PageSchema(label=_('Docs'), icon='fa fa-file-code')
     #src = '/apidocs'
     @property
     def src(self):
@@ -375,7 +375,7 @@ class DocsAdmin(admin.IframeAdmin):
 @site.register_admin
 class ReDocsAdmin(admin.IframeAdmin):
     group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
-    page_schema = PageSchema(label=_('Redocs'), icon='fa fa-book')
+    page_schema = PageSchema(label=_('Redocs'), icon='fa fa-file-code')
     # 设置跳转链接
     @property
     def src(self):
@@ -384,11 +384,11 @@ class ReDocsAdmin(admin.IframeAdmin):
 @site.register_admin
 class AmisDocAdmin(admin.IframeAdmin):
     group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
-    page_schema = PageSchema(label='AmisDocument', icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label='AmisDocument', icon='fa fa-file-image')
     src = 'https://aisuda.bce.baidu.com/amis/zh-CN/components/html'
 
 @site.register_admin
 class AmisEditorAdmin(admin.IframeAdmin):
     group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
-    page_schema = PageSchema(label='AmisEditor', icon='fa fa-edit', sort=-100)
+    page_schema = PageSchema(label='AmisEditor', icon='fa fa-edit')
     src = 'https://aisuda.github.io/amis-editor-demo/'
