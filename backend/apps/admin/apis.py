@@ -14,8 +14,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import text, select
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback
+import simplejson as json
 
 from apps.admin.models.datasource import Datasource
+from apps.admin.models.dsquerymodel import DSQueryModel
 from apps.admin.models.dsurimodel import DSURIModel
 from apps.admin.models.dspage import DatasourcePage
 from core.dsengine import DSEngine
@@ -48,7 +50,30 @@ async def get_column_options(meta_id: int):
     except Exception as e:
         log.error('Get column options Error !')
         traceback.print_exc()
-        return {"status": 1, "msg": _("Get column options Error")}
+        return returndict
+
+@router.get('/get_ds_select_options',
+         tags=["admin"],
+         summary="Get datasource select options list.",
+         description="Return datasource select options list",
+         include_in_schema=True)
+async def get_ds_select_options():
+    try:
+        returndict = {'status':1,'msg':_("Get datasource select options Error")}
+        stmt = select(Datasource)
+        result = await site.db.async_scalars_all(stmt)
+        if len(result) > 0:
+            datalist = []
+            for ds in result:
+                datalist.append({'label':ds.ds_name,'value':ds.ds_uri,'uri':ds.ds_uri})
+            returndict['status'] = 0
+            returndict['msg'] = 'Success'
+            returndict['data'] = datalist
+        return returndict
+    except Exception as e:
+        log.error('Get datasource select options Error !')
+        traceback.print_exc()
+        return returndict
 
 @router.post('/db_connection_test',
          tags=["admin"],
@@ -57,17 +82,45 @@ async def get_column_options(meta_id: int):
          include_in_schema=True)
 async def db_connection_test(ds_uri: DSURIModel) -> str:
     log.debug('Try to test db connection with dburi : %s' % ds_uri.ds_uri)
-    engine = create_async_engine(ds_uri.ds_uri,echo=False,pool_pre_ping=True)
     try:
+        engine = create_async_engine(ds_uri.ds_uri,echo=False,pool_pre_ping=True)
         async with engine.connect() as conn:
             result = await conn.execute(text("SELECT 1"))
             #log.debug('Test excute result: %s' % result.fetchall())
             #log.debug('Database Connected !')
+            await engine.dispose()
             return {"status":0,"msg":_("DataBase Connected")}
     except Exception as e:
         log.error('Database Test Connected Error !')
         traceback.print_exc()
         return {"status":1,"msg":_("DataBase Connect Error")}
+
+@router.post('/sql_query',
+         tags=["admin"],
+         summary="SQL Query.",
+         description="Return SQL query result",
+         include_in_schema=True)
+async def sql_query(dsquery: DSQueryModel) -> str:
+    log.debug('Try to sql query with dburi : %s' % dsquery.ds_uri)
+    log.debug('Try to sql query with dburi : %s' % dsquery.query_sql)
+    try:
+        if len(dsquery.ds_uri)>0:
+            engine = create_async_engine(dsquery.ds_uri,echo=False,pool_pre_ping=True)
+            async with engine.connect() as conn:
+                result = await conn.execute(text(dsquery.query_sql))
+                rows = result.fetchall()
+                items = [{**row}for row in rows]
+                await engine.dispose()
+                returnobj = {"status":0,"msg":_("SQL query complete"),"data":{"items":items},"total":len(items)}
+                log.debug(returnobj)
+                log.debug(json.dumps(returnobj))
+                return returnobj
+        else:
+            return {"status":0,"msg":_("SQL query complete"),"data":{"items":[]},"total":0}
+    except Exception as e:
+        log.error('SQL query Error !')
+        traceback.print_exc()
+        return {"status":1,"msg":_("SQL query Error")}
 
 @router.post('/db_sync_schema',
          tags=["admin"],

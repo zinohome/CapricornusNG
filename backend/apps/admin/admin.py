@@ -12,6 +12,7 @@
 import importlib
 from typing import List
 
+from amis import Editor, Divider, Table, Drawer, Alert, Button, CRUD
 from fastapi_amis_admin import amis,admin
 from fastapi_amis_admin.admin import AdminApp
 from sqlmodel.sql.expression import Select
@@ -60,25 +61,63 @@ class BlankDataPageAdmin(admin.PageAdmin):
     # 通过page类属性直接配置页面信息;
     page = Page(title=_('Data Explore'), body='')
 
-# Data Query Page
+
+
+# QueryApp
 @site.register_admin
+class AdminApp(admin.AdminApp):
+    page_schema = amis.PageSchema(label=_('Data Query'), icon='fa fa-laptop', sort=98)
+    router_prefix = '/query'
+
+    def __init__(self, app: "AdminApp"):
+        super().__init__(app)
+        self.register_admin(DataQueryAdmin)
+
 class DataQueryAdmin(admin.PageAdmin):
-    group_schema = amis.PageSchema(label=_('Data Query'), icon='fa fa-laptop', sort=98)
+    group_schema = None
     page_schema = PageSchema(label=_('Data Query'), icon='fa fa-laptop')
     # 通过page类属性直接配置页面信息;
-    page = Page(title=_('Data Query'), body='')
+    queryform_submit_api = {
+                'url':'/admin/sql_query',
+                'method':'post',
+                'data':{
+                    'ds_uri':'${ds_uri}',
+                    'query_sql':'${query_sql}'
+                        },
+                'cache':1000
+                    }
+    form = Form(type='form', title='',
+                name='queryform', id='queryform',
+                submitText=_('> Run'), preventEnterSubmit=True,
+                persistData='app.data.sqlqueryform',
+                target='sqlresult')
+    formbodylist = []
+    formbodylist.append(amis.Select(type='select', label=_('Select DataSource'),
+                                    name='ds_uri', id='ds_uri',
+                                    multiple=False, selectMode='table',
+                                    columns=[{'name':'label','label':_('DSName')},{'name':'uri','label':_('DSURI')}],
+                                    source='/admin/get_ds_select_options'))
+    formbodylist.append(Editor(type='editor', label=_('SQL Editor'), name='query_sql', id='query_sql', language='sql', size='md', allowFullscreen=False))
+    form.body = formbodylist
+    actions = []
+    actions.append(Action(actionType='submit', label=_('> Run'), level=LevelEnum.secondary))
+    form.actions = actions
+    pagebodylist = []
+    pagebodylist.append(form)
+    pagebodylist.append(Divider(type='divider', visible=True))
+    pagebodylist.append(CRUD(type='crud', id='sqlresult', name='sqlresult', api=queryform_submit_api))
+    page = Page(body=pagebodylist)
 
 # AdminApp
 @site.register_admin
 class AdminApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label=_('Data Source'), icon='fa fa-cogs', sort=98)
+    page_schema = amis.PageSchema(label=_('Data Source'), icon='fa fa-cogs', sort=97)
     router_prefix = '/admin'
 
     def __init__(self, app: "AdminApp"):
         super().__init__(app)
         self.register_admin(DBConnectionAdmin, DBConfigAdmin, TableMetaAdmin, TablePageAdmin)
 
-# Register your models here.
 
 # Datasource Admin
 class DBConnectionAdmin(admin.ModelAdmin):
