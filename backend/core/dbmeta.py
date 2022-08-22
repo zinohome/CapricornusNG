@@ -677,13 +677,13 @@ if __name__ == '__main__':
     dbmeta = DBMeta(dsconfig, dsengine)
     dbmeta.load_metadata()
     dbmeta.gen_schema()
+    '''
     dbmeta.load_schema()
     dbmeta.gen_dbdirgram()
     dbmeta.gen_dbdirgramcanvas()
     dbmeta.gen_ddl()
     dbmeta.gen_models()
     dbmeta.gen_admins()
-    '''
     
     
     #

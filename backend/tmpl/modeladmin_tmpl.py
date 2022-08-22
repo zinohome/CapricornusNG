@@ -20,9 +20,9 @@ from apps.dmodels.{{ meta_name|trim|lower }} import {{ meta_name|trim|capitalize
 class {{ meta_name|trim|capitalize }}Admin(admin.ModelAdmin):
     group_schema = None
     {% if meta_type|trim|lower == 'table' %}
-    page_schema = PageSchema(page_title='{{ page_title|trim }}', icon='fa fa-border-all')
+    page_schema = PageSchema(label='{{ page_title|trim }}', page_title='{{ page_title|trim }}', icon='fa fa-border-all')
     {% else %}
-    page_schema = PageSchema(page_title='{{ page_title|trim }}', icon='fa fa-border-none')
+    page_schema = PageSchema(label='{{ page_title|trim }}', page_title='{{ page_title|trim }}', icon='fa fa-border-none')
     {% endif %}
     model = {{ meta_name|trim|capitalize }}
     {% set lklist = page_logicprimarykeys.split(',') %}

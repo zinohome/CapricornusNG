@@ -17,7 +17,9 @@ import simplejson as json
 
 from apps.admin.models.dspage import DatasourcePage
 from core.settings import settings
+from util import toolkit
 from util.log import log as log
+
 
 class Cached(type):
     def __init__(self, *args, **kwargs):
@@ -235,6 +237,8 @@ class DspageService(metaclass=Cached):
                 self.valuedict['page_list_display'] = olddict['page_list_display']
                 updatedict['page_search_fields'] = olddict['page_search_fields']
                 self.valuedict['page_search_fields'] = olddict['page_search_fields']
+                updatedict['meta_columns'] = toolkit.get_updated_colums(updatedict['meta_columns'],olddict['meta_columns'])
+                self.valuedict['meta_columns'] = updatedict['meta_columns']
                 stmt = update(DatasourcePage).where(DatasourcePage.meta_id == olddict['meta_id']).values(updatedict)
                 result = self.dsconfig.db.execute(stmt)
                 self.valuedict['meta_id'] = olddict['meta_id']

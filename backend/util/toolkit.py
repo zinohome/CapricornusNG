@@ -11,6 +11,7 @@
 #  @Software: Capricornus
 
 import ast
+import operator
 import re
 from urllib import parse
 import simplejson as json
@@ -191,10 +192,28 @@ def get_first_primarykey(primarykeystr, logicprimarykeystr):
             pk = None
     return pk
 
+def get_updated_colums(updatecolumns, oldcolumns):
+    rtncolumns = updatecolumns.copy()
+    for column in rtncolumns:
+        cmpcolumn = next((itm for (index, itm) in enumerate(oldcolumns) if itm['name'] == column['name']), None)
+        if not cmpcolumn is None:
+            if not operator.eq(column,cmpcolumn):
+                column['title'] = cmpcolumn['title']
+                column['amis_form_item'] = cmpcolumn['amis_form_item']
+                column['amis_table_column'] = cmpcolumn['amis_table_column']
+    return rtncolumns
+
+
+
 if __name__ == '__main__':
+    upcolumns = [{'name': 'dealer_name', 'type': 'VARCHAR(50)', 'nullable': 'False', 'default': 'None', 'autoincrement': 'auto', 'primary_key': 0, 'pythonType': 'str', 'title': 'dealer_name', 'amis_form_item': '', 'amis_table_column': ''}, {'name': 'dealer_address', 'type': 'VARCHAR(100)', 'nullable': 'True', 'default': 'None', 'autoincrement': 'auto', 'primary_key': 0, 'pythonType': 'str', 'title': 'dealer_address', 'amis_form_item': '', 'amis_table_column': ''}, {'name': 'dealer_id', 'type': 'INTEGER', 'nullable': 'True', 'default': 'None', 'autoincrement': 'auto', 'primary_key': 1, 'pythonType': 'int', 'title': 'dealer_id', 'amis_form_item': '', 'amis_table_column': ''}]
+    oldcolumns = [{'name': 'dealer_name', 'type': 'VARCHAR(50)', 'nullable': 'False', 'default': 'None', 'autoincrement': 'auto', 'primary_key': 0, 'pythonType': 'str', 'title': 'dddd', 'amis_form_item': '', 'amis_table_column': ''}, {'name': 'dealer_address', 'type': 'VARCHAR(100)', 'nullable': 'True', 'default': 'None', 'autoincrement': 'auto', 'primary_key': 0, 'pythonType': 'str', 'title': 'dealer_address', 'amis_form_item': '', 'amis_table_column': ''}, {'name': 'dealer_id', 'type': 'INTEGER', 'nullable': 'True', 'default': 'None', 'autoincrement': 'auto', 'primary_key': 1, 'pythonType': 'int', 'title': 'dealer_id', 'amis_form_item': '', 'amis_table_column': ''}]
+    rtn = get_updated_colums(upcolumns,oldcolumns)
+    log.debug(rtn)
+    '''
     str1 = "{'name': 'productDescription', 'type': TEXT(), 'default': None, 'comment': None, 'nullable': False}"
     print(to_json(str1))
-    '''
+    
     print(uappendlist(['id', 'name', 'phone']))
 
     print(uappend('id'))

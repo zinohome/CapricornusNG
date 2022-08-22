@@ -19,7 +19,7 @@ from apps.dmodels.manufacture_plant import Manufacture_plant
 
 class Manufacture_plantAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(page_title='Manufacture_Plant', icon='fa fa-border-all')
+    page_schema = PageSchema(label='Manufacture_Plant', page_title='Manufacture_Plant', icon='fa fa-border-all')
     model = Manufacture_plant
     pk_name = 'manufacture_plant_id'
 

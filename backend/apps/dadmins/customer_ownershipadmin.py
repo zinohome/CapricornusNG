@@ -19,7 +19,7 @@ from apps.dmodels.customer_ownership import Customer_ownership
 
 class Customer_ownershipAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(page_title='Customer_Ownership', icon='fa fa-border-all')
+    page_schema = PageSchema(label='Customer_Ownership', page_title='Customer_Ownership', icon='fa fa-border-all')
     model = Customer_ownership
     pk_name = 'customer_id'
 

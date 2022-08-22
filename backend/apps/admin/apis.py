@@ -59,16 +59,6 @@ async def db_connection_test(ds_uri: DSURIModel) -> str:
     log.debug('Try to test db connection with dburi : %s' % ds_uri.ds_uri)
     engine = create_async_engine(ds_uri.ds_uri,echo=False,pool_pre_ping=True)
     try:
-        '''
-        log.debug(_('ConfigID'))
-        log.debug(_('DatasourceName'))
-        log.debug(_('URI'))
-        log.debug(_('Columns'))
-        log.debug(_.__dict__)
-        log.debug(_._locales['zh_CN'])
-        for evry in _._locales['zh_CN']:
-            log.debug(evry.__dict__)
-        '''
         async with engine.connect() as conn:
             result = await conn.execute(text("SELECT 1"))
             #log.debug('Test excute result: %s' % result.fetchall())
