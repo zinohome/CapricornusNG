@@ -101,18 +101,20 @@ async def db_connection_test(ds_uri: DSURIModel) -> str:
          description="Return SQL query result",
          include_in_schema=True)
 async def sql_query(dsquery: DSQueryModel) -> str:
-    log.debug('Try to sql query with dburi : %s' % dsquery.ds_uri)
-    log.debug('Try to sql query with dburi : %s' % dsquery.query_sql)
     try:
         if len(dsquery.ds_uri)>0:
+            log.debug('Try to sql query with dburi : %s' % dsquery.ds_uri)
             engine = create_async_engine(dsquery.ds_uri,echo=False,pool_pre_ping=True)
             async with engine.connect() as conn:
                 result = await conn.execute(text(dsquery.query_sql))
                 rows = result.fetchall()
+                columnslist = []
+                for key in result.keys():
+                    columnslist.append({'label':key,'name':key})
                 items = [{**row}for row in rows]
                 await engine.dispose()
-                returnobj = {"status":0,"msg":_("SQL query complete"),"data":{"rows":items}}
-                log.debug(returnobj)
+                returnobj = {"status":0,"msg":_("SQL query complete"),"data":{"rows":items,"columns":columnslist}}
+                #log.debug(returnobj)
                 return returnobj
         else:
             return {"status":0,"msg":_("SQL query complete"),"data":{"rows":[]}}

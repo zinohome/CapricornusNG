@@ -107,7 +107,12 @@ class DataQueryAdmin(admin.PageAdmin):
     resultform = Form(type='form', title='',
                 name='resultform', id='resultform', preventEnterSubmit=True)
     resultformbodylist = []
-    resultformbodylist.append(CRUD(type='crud', id='sqlresult', name='sqlresult', api=queryform_submit_api, loadDataOnce=True, loadDataOnceFetchOnFilter=False))
+    resultformbodylist.append(CRUD(type='crud', id='sqlresult', name='sqlresult',
+                                   api=queryform_submit_api,
+                                   headerToolbar=['export-csv'],
+                                   syncLocation=False,
+                                   loadDataOnce=True,
+                                   loadDataOnceFetchOnFilter=False))
     resultform.body = resultformbodylist
     resultform.actions = []
     # page body
@@ -375,3 +380,15 @@ class ReDocsAdmin(admin.IframeAdmin):
     @property
     def src(self):
         return f'{self.app.site.settings.site_url}/apiredoc'
+
+@site.register_admin
+class AmisDocAdmin(admin.IframeAdmin):
+    group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label='AmisDocument', icon='fa fa-book', sort=-100)
+    src = 'https://aisuda.bce.baidu.com/amis/zh-CN/components/html'
+
+@site.register_admin
+class AmisEditorAdmin(admin.IframeAdmin):
+    group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label='AmisEditor', icon='fa fa-edit', sort=-100)
+    src = 'https://aisuda.github.io/amis-editor-demo/'
