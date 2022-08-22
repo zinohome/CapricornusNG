@@ -65,8 +65,9 @@ class CapricornusAdminSite(AuthAdminSite):
                             )))),
                 ActionType.Url(
                     label=_('Sign out'),
-                    url=f"{user_auth_app.router_path}/logout"
-                ),
+                    url=f"{user_auth_app.router_path}/logout",
+                    blank=False
+        ),
             ]
         }])
         return app
