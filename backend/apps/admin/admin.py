@@ -37,7 +37,7 @@ from main import dsconfig, apiengine, dbmeta
 # DataApp
 @site.register_admin
 class DataApp(admin.AdminApp):
-    page_schema = amis.PageSchema(label=_('Data Explore'), icon='fa fa-table', sort=99)
+    page_schema = amis.PageSchema(label=_('Data Explore'), title='Capricornus - '+_('Data Explore'), icon='fa fa-table', sort=99)
     router_prefix = '/data'
     engine = apiengine.async_connect()
 
@@ -63,8 +63,8 @@ class BlankDataPageAdmin(admin.PageAdmin):
 # Data Query Page
 @site.register_admin
 class DataQueryAdmin(admin.PageAdmin):
-    group_schema = amis.PageSchema(label=_('Data Query'), icon='fa fa-user-minus', sort=98)
-    page_schema = PageSchema(label=_('Data Query'), icon='fa fa-user-minus')
+    group_schema = amis.PageSchema(label=_('Data Query'), icon='fa fa-laptop', sort=98)
+    page_schema = PageSchema(label=_('Data Query'), icon='fa fa-laptop')
     # 通过page类属性直接配置页面信息;
     page = Page(title=_('Data Query'), body='')
 

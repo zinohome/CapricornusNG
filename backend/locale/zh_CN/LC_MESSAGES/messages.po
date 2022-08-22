@@ -273,3 +273,10 @@ msgstr "列表显示字段"
 msgid "SearchFields"
 msgstr "模糊搜索字段"
 
+#: ../core/adminsite.py:50 ../core/adminsite.py:52
+msgid "User Profile"
+msgstr "用户信息"
+
+#: ../core/adminsite.py:67
+msgid "Sign out"
+msgstr "退出登录"
