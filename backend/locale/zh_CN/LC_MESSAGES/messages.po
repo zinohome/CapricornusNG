@@ -89,6 +89,26 @@ msgstr "ReDoc"
 msgid "Data Query"
 msgstr "数据查询"
 
+#: ../apps/admin/admin.py:469
+msgid "> Run"
+msgstr "> 执行"
+
+#: ../apps/admin/admin.py:473
+msgid "Select DataSource"
+msgstr "选择数据源"
+
+#: ../apps/admin/admin.py:476
+msgid "DSName"
+msgstr "数据源名称"
+
+#: ../apps/admin/admin.py:476
+msgid "DSURI"
+msgstr "数据库URI"
+
+#: ../apps/admin/admin.py:476
+msgid "SQL Editor"
+msgstr "SQL编辑器"
+
 #: ../apps/admin/apis.py:37 ../apps/admin/apis.py:51
 msgid "Get column options Error"
 msgstr "获取参数失败"

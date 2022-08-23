@@ -33,7 +33,7 @@ router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.r
          tags=["admin"],
          summary="Get column options list.",
          description="Return column options list",
-         include_in_schema=True)
+         include_in_schema=False)
 async def get_column_options(meta_id: int):
     try:
         returndict = {'status':1,'msg':_("Get column options Error")}
@@ -56,7 +56,7 @@ async def get_column_options(meta_id: int):
          tags=["admin"],
          summary="Get datasource select options list.",
          description="Return datasource select options list",
-         include_in_schema=True)
+         include_in_schema=False)
 async def get_ds_select_options():
     try:
         returndict = {'status':1,'msg':_("Get datasource select options Error")}
@@ -79,7 +79,7 @@ async def get_ds_select_options():
          tags=["admin"],
          summary="Test database connection.",
          description="Return database connection test result",
-         include_in_schema=True)
+         include_in_schema=False)
 async def db_connection_test(ds_uri: DSURIModel) -> str:
     log.debug('Try to test db connection with dburi : %s' % ds_uri.ds_uri)
     try:
@@ -99,7 +99,7 @@ async def db_connection_test(ds_uri: DSURIModel) -> str:
          tags=["admin"],
          summary="SQL Query.",
          description="Return SQL query result",
-         include_in_schema=True)
+         include_in_schema=False)
 async def sql_query(dsquery: DSQueryModel) -> str:
     try:
         if len(dsquery.ds_uri)>0:
@@ -127,7 +127,7 @@ async def sql_query(dsquery: DSQueryModel) -> str:
          tags=["admin"],
          summary="Synchronize database schema.",
          description="Synchronize database schema",
-         include_in_schema=True)
+         include_in_schema=False)
 async def db_sync_schema(datasource: Datasource) -> str:
     log.debug('Try to synchronize database schema dburi : %s' % datasource.ds_uri)
     log.debug('Database Connection infomation is : %s' % datasource.json())

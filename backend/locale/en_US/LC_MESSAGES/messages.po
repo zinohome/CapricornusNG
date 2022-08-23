@@ -89,6 +89,26 @@ msgstr "ReDoc"
 msgid "Data Query"
 msgstr "Data Query"
 
+#: ../apps/admin/admin.py:469
+msgid "> Run"
+msgstr "> Run"
+
+#: ../apps/admin/admin.py:473
+msgid "Select DataSource"
+msgstr "Select DataSource"
+
+#: ../apps/admin/admin.py:476
+msgid "DSName"
+msgstr "DSName"
+
+#: ../apps/admin/admin.py:476
+msgid "DSURI"
+msgstr "DSURI"
+
+#: ../apps/admin/admin.py:476
+msgid "SQL Editor"
+msgstr "SQL Editor"
+
 #: ../apps/admin/apis.py:37 ../apps/admin/apis.py:51
 msgid "Get column options Error"
 msgstr "Get column options Error"

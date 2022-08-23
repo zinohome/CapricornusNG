@@ -11,6 +11,7 @@
 import asyncio
 
 from asgiref.sync import async_to_sync
+from easy_profile import EasyProfileMiddleware, StreamReporter
 from sqlalchemy_database import Database
 from sqlmodel import SQLModel, create_engine
 from starlette.responses import RedirectResponse
@@ -86,13 +87,11 @@ async def startup():
     #log.debug(metatables.keys())
     #await site.db.async_run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
     await auth.create_role_user(role_key='admin')
-    await auth.create_role_user(role_key='vip')
-    await auth.create_role_user(role_key='test')
+    await auth.create_role_user(role_key='writer')
+    await auth.create_role_user(role_key='reader')
 
     #from core.adminsite import scheduler
     #scheduler.start()
-
-
 
 @app.get('/')
 async def index():
