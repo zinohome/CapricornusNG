@@ -9,10 +9,11 @@ cd /opt && \
 git clone https://github.com/zinohome/CapricornusNG.git && \
 cd /opt/CapricornusNG && \
 git pull && \
+cd backend && \
 chmod 755 mkcert-v1.4.3-linux-amd64 && mv mkcert-v1.4.3-linux-amd64 mkcert && mv mkcert /usr/bin/ && \
 mkcert -install && \
-mkdir -p /opt/CapricornusNG/log && \
-mkdir -p /opt/CapricornusNG/cert && \
+mkdir -p /opt/CapricornusNG/backend/log && \
+mkdir -p /opt/CapricornusNG/backend/cert && \
 rm /opt/CapricornusNG/models/*.py && rm /opt/CapricornusNG/services/*.py && \
 mkcert -cert-file /opt/CapricornusNG/cert/cert.pem -key-file /opt/CapricornusNG/cert/key.pem zinohome.com CapricornusNG.zinohome.com localhost 127.0.0.1 ::1 && \
 virtualenv venv && \

@@ -12,8 +12,13 @@
 from datetime import date
 from fastapi_amis_admin import models
 from typing import Optional
-from apps.dmodels.basesqlmodel import BaseSQLModel
+import sqlmodel
 
+class BaseSQLModel(sqlmodel.SQLModel):
+    class Config:
+        use_enum_values = True
+        orm_mode = True
+        arbitrary_types_allowed = True
 
 class Dealers(BaseSQLModel, table=True):
     __tablename__ = 'Dealers'
