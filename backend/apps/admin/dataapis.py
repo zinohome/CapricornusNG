@@ -46,4 +46,5 @@ if len(alltables)>0:
             apiclass = getattr(apimodel, tbl.strip().capitalize())
             apicrud = SQLModelCrud(apiclass, apiengine.async_connect(), pkname).register_crud()
             router.include_router(apicrud.router, dependencies=[Depends(auth.requires()())])
+            #router.include_router(apicrud.router)
 
