@@ -23,5 +23,5 @@ cd /opt/CapricornusNG/backend && cp /bd_build/default_env /opt/CapricornusNG/bac
 cp /bd_build/wait-for /usr/bin/wait-for && chmod 755 /usr/bin/wait-for && \
 ls -l /opt/CapricornusNG/backend/.env && cat /opt/CapricornusNG/backend/.env && \
 ls -l /opt/CapricornusNG/backend/docker/bd_build/ && \
-cp /opt/CapricornusNG/backend/docker/bd_build/50_start_CapricornusNG-h.sh /etc/my_init.d/50_start_CapricornusNG.sh && \
+cp /opt/CapricornusNG/backend/docker/bd_build/50_start_h.sh /etc/my_init.d/50_start_CapricornusNG.sh && \
 chmod 755 /etc/my_init.d/50_start_CapricornusNG.sh
