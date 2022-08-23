@@ -1,4 +1,4 @@
 #!/bin/bash
-IMGNAME=jointhero/CapricornusNG
+IMGNAME=jointhero/capricornusng
 IMGVERSION=v2.1.5
 docker build --no-cache -t $IMGNAME:$IMGVERSION .
