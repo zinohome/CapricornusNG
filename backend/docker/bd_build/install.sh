@@ -14,13 +14,13 @@ chmod 755 mkcert-v1.4.3-linux-amd64 && mv mkcert-v1.4.3-linux-amd64 mkcert && mv
 mkcert -install && \
 mkdir -p /opt/CapricornusNG/backend/log && \
 mkdir -p /opt/CapricornusNG/backend/cert && \
-rm /opt/CapricornusNG/models/*.py && rm /opt/CapricornusNG/services/*.py && \
-mkcert -cert-file /opt/CapricornusNG/cert/cert.pem -key-file /opt/CapricornusNG/cert/key.pem zinohome.com CapricornusNG.zinohome.com localhost 127.0.0.1 ::1 && \
+rm /opt/CapricornusNG/backend/apps/dmodels/*.py && rm /opt/CapricornusNG/backend/apps/dadmins/*.py && \
+mkcert -cert-file /opt/CapricornusNG/backend/cert/cert.pem -key-file /opt/CapricornusNG/backend/cert/key.pem zinohome.com CapricornusNG.zinohome.com localhost 127.0.0.1 ::1 && \
 virtualenv venv && \
 . venv/bin/activate && \
 pip3 install -r requirements.txt && \
-cd /opt/CapricornusNG && cp /bd_build/default_env /opt/CapricornusNG/.env && \
+cd /opt/CapricornusNG/backend && cp /bd_build/default_env /opt/CapricornusNG/backend/.env && \
 cp /bd_build/wait-for /usr/bin/wait-for && chmod 755 /usr/bin/wait-for && \
-ls -l /opt/CapricornusNG/.env && cat /opt/CapricornusNG/.env && \
-cp /opt/CapricornusNG/docker/bd_build/50_start_CapricornusNG-h.sh /etc/my_init.d/50_start_CapricornusNG.sh && \
+ls -l /opt/CapricornusNG/backend/.env && cat /opt/CapricornusNG/backend/.env && \
+cp /opt/CapricornusNG/backend/docker/bd_build/50_start_CapricornusNG-h.sh /etc/my_init.d/50_start_CapricornusNG.sh && \
 chmod 755 /etc/my_init.d/50_start_CapricornusNG.sh
