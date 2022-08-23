@@ -8,10 +8,7 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
-import asyncio
 
-from asgiref.sync import async_to_sync
-from easy_profile import EasyProfileMiddleware, StreamReporter
 from sqlalchemy_database import Database
 from sqlmodel import SQLModel, create_engine
 from starlette.responses import RedirectResponse
@@ -33,7 +30,7 @@ from util.log import log as log
 from util.toolkit import sync_uri
 from core import i18n as _
 
-# create Tables
+# Initialize Tables
 asyncurl = str(site.db.engine.sync_engine.url)
 syncurl = sync_uri(asyncurl)
 syncengine = create_engine(syncurl, echo=False)
@@ -60,6 +57,7 @@ app = FastAPI(debug=settings.debug,
               redoc_url=None
               )
 
+
 # 自动生成model和admin
 dbmeta = DBMeta(dsconfig, apiengine)
 if dsconfig.Application_Config.app_force_generate_meta:
@@ -71,11 +69,11 @@ if dsconfig.Application_Config.app_force_generate_meta:
 else:
     dbmeta.load_schema()
 
-# 安装应用
+# setup app
 from apps import admin
 admin.setup(app)
 
-# 挂载后台管理系统
+# mount admin app
 site.mount_app(app)
 
 
