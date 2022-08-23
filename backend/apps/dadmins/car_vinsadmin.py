@@ -19,7 +19,7 @@ from apps.dmodels.car_vins import Car_vins
 
 class Car_vinsAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='发动机列表', page_title='发动机列表', icon='fa fa-border-all')
+    page_schema = PageSchema(label='Car_Vins', page_title='Car_Vins', icon='fa fa-border-all')
     model = Car_vins
     pk_name = 'vin'
 
