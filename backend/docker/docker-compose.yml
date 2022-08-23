@@ -1,10 +1,10 @@
 version: "3"
 
 services:
-  capricornus:
-    image: "jointhero/capricornus:latest"
-    container_name: capricornus
-    hostname: capricornus
+  CapricornusNG:
+    image: "jointhero/CapricornusNG:latest"
+    container_name: CapricornusNG
+    hostname: CapricornusNG
     restart: on-failure
     depends_on:
       - arangodb
@@ -22,12 +22,12 @@ services:
         timeout: 5s
         retries: 5
     networks:
-      - capricornus
+      - CapricornusNG
 
   arangodb:
     image: "arangodb"
-    container_name: capricornus-arangodb
-    hostname: capricornus-arangodb
+    container_name: CapricornusNG-arangodb
+    hostname: CapricornusNG-arangodb
     user: root
     restart: on-failure
     volumes:
@@ -42,8 +42,8 @@ services:
         timeout: 5s
         retries: 5
     networks:
-      - capricornus
+      - CapricornusNG
 
 networks:
-  capricornus:
+  CapricornusNG:
     driver: bridge
