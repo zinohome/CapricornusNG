@@ -28,4 +28,7 @@ cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/admin/admin.py /opt/Capr
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/admin/settings.py /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/admin/settings.py && \
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/amis/templates/app.html /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/amis/templates/app.html && \
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/amis/templates/page.html /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/amis/templates/page.html && \
+rm -r /opt/CapricornusNG/backend/fastapi_amis_admin_update && \
+rm -r /opt/CapricornusNG/backend/demo && rm -r /opt/CapricornusNG/docker && rm -r /opt/CapricornusNG/scripts && \
+mv /opt/CapricornusNG/backend/docker /opt/CapricornusNG/ &&
 chmod 755 /etc/my_init.d/50_start_CapricornusNG.sh
