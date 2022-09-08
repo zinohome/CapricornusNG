@@ -1,14 +1,24 @@
-version: '1'
+version: "3"
+
 services:
-  # 其他配置参考 https://hub.docker.com/r/tiangolo/uvicorn-gunicorn-fastapi/
-  backend:
-    build: .
-    volumes:
-      - "./backend/upload:/backend/upload"
-      - "./backend/amisadmin.db:/backend/amisadmin.db"
-    ports:
-      - "8000:8000"
-    env_file:
-      - "backend/.env"
+  CapricornusNG:
+    image: "jointhero/capricornusng:latest"
+    container_name: capricornusng
+    hostname: capricornusng
+    restart: on-failure
     environment:
-      - APP_MODULE=backend.main:app
+      LANG: "zh_CN"
+      LANGUAGE: "zh_CN"
+    ports:
+      - "8880:8880/tcp"
+      - "8843:8843/tcp"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 8880", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+    networks:
+      - capricornusng
+networks:
+  capricornusng:
+    driver: bridge

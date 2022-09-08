@@ -1,0 +1,14 @@
+DEBUG=False
+HOST=0.0.0.0
+PORT=8000
+DATABASE_URL_ASYNC=sqlite+aiosqlite:////opt/CapricornusNG/backend/data/capricornus.db?check_same_thread=False
+#DATABASE_URL_ASYNC=mysql+aiomysql://root:passw0rd@127.0.0.1:3306/capricornus?charset=utf8mb4
+#DATABASE_URL_ASYNC=postgresql+asyncpg://root:passw0rd@127.0.0.1:5432/capricornus
+SECRET_KEY=veheyyw6pv1nqtjsdbgt56yhn0hbhjltn42k7nlaikl4rn62bwewawq0qt9o6723
+ALLOW_ORIGINS=["*"]
+LANGUAGE=zh_CN
+APP_MODE=sample-datasource
+APP_PROFILE=sample-datasource
+APP_LOG_LEVEL=INFO
+APP_LOG_FILENAME=capricornus.log
+APP_EXCEPTIONN_DETAIL = True

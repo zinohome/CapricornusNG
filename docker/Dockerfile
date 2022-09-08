@@ -1,16 +1,22 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
+FROM phusion/passenger-full:latest
+MAINTAINER zhangjun <ibmzhangjun@139.com>
 
-WORKDIR /backend
+COPY bd_build/* /bd_build/
+# Sys ENV
+ENV DEBIAN_FRONTEND noninteractive
+ENV HOME /root
+ENV EXT_HOSTS=''
+ENV ORACLE_HOME=/opt/instantclient
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/instantclient
 
-COPY ./backend/requirements.txt /backend/requirements.txt
+# ...put your own build instructions here...
+RUN mkdir -p /data && chmod 755 /bd_build/install.sh && /bd_build/install.sh
 
-RUN python3 -m pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
+# Clean up APT when done.
+RUN /bd_build/cleanup.sh
+WORKDIR /opt
 
-RUN pip install --no-cache-dir --upgrade -r /backend/requirements.txt
-
-COPY ./backend /backend
-
-EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
+# Use baseimage-docker's init system.
+EXPOSE 8890
+VOLUME ["/data"]
+CMD ["/sbin/my_init"]
