@@ -9,17 +9,17 @@ from sqlalchemy import insert, update, delete, func, Table, Column
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.future import select
-from sqlalchemy.orm import InstrumentedAttribute
+from sqlalchemy.orm import InstrumentedAttribute, Session
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.elements import BinaryExpression, UnaryExpression
 from sqlalchemy_database import AsyncDatabase, Database
 from sqlmodel import SQLModel
 from starlette.requests import Request
-from util.log import log as log
+
 from .base import BaseCrud
 from .parser import SQLModelFieldParser, SQLModelListField, get_python_type_parse, SQLModelField
 from .schema import BaseApiOut, ItemListSchema
-from .utils import schema_create_by_modelfield, parser_item_id, parser_str_set_list, schema_create_by_schema
+from .utils import schema_create_by_modelfield, parser_item_id, parser_str_set_list
 
 sql_operator_pattern: Pattern = re.compile(r'^\[(=|<=|<|>|>=|!|!=|<>|\*|!\*|~|!~|-)]')
 sql_operator_map: Dict[str, str] = {
@@ -38,7 +38,6 @@ sql_operator_map: Dict[str, str] = {
     '-': 'between',
 }
 
-
 class SQLModelSelector:
     model: Type[SQLModel] = None
     fields: List[SQLModelListField] = []
@@ -48,10 +47,10 @@ class SQLModelSelector:
     pk_name: str = 'id'
 
     def __init__(
-            self,
-            model: Type[SQLModel] = None,
-            pk_name: str = 'id',
-            fields: List[SQLModelListField] = None
+        self,
+        model: Type[SQLModel] = None,
+        pk_name: str = 'id',
+        fields: List[SQLModelListField] = None
     ) -> None:
         self.model = model or self.model
         assert self.model, 'model is None'
@@ -63,8 +62,12 @@ class SQLModelSelector:
         self.pk: InstrumentedAttribute = self.model.__dict__[self.pk_name]
         self.parser = SQLModelFieldParser(self.model)
         self.fields = fields or self.fields or [self.model]
-        self.fields = list(filter(lambda x: x not in self.parser.filter_insfield(self.exclude),
-                                  self.parser.filter_insfield(self.fields)))
+        self.fields = list(
+            filter(
+                lambda x: x not in self.parser.filter_insfield(self.exclude),
+                self.parser.filter_insfield(self.fields)
+            )
+        )
         self._list_fields_ins: Dict[str, InstrumentedAttribute] = {
             self.parser.get_name(insfield): insfield for insfield in self.fields
         }
@@ -80,15 +83,15 @@ class SQLModelSelector:
             order = insfield.desc() if orderDir == 'desc' else insfield.asc()
             return [order]
         elif self.ordering:
-            order = self.parser.filter_insfield(self.ordering, save_class=(UnaryExpression,))
+            order = self.parser.filter_insfield(self.ordering, save_class = (UnaryExpression,))
         return order
 
     @property
     def _select_maker(self):
         if self.link_models:
             def select_maker(
-                    stmt: Select = Depends(self.get_select),
-                    link_clause=Depends(self.get_link_clause)
+                stmt: Select = Depends(self.get_select),
+                link_clause = Depends(self.get_link_clause)
             ) -> Select:
                 if link_clause is not None:
                     stmt = stmt.where(link_clause)
@@ -98,12 +101,12 @@ class SQLModelSelector:
         return select_maker
 
     async def get_link_clause(
-            self, request: Request,
-            link_model: str = None,
-            link_item_id: Union[int, str] = Query(
-                None, title='pk', example='1,2,3',
-                description='Link Model Primary key or list of primary keys',
-            )
+        self, request: Request,
+        link_model: str = None,
+        link_item_id: Union[int, str] = Query(
+            None, title = 'pk', example = '1,2,3',
+            description = 'Link Model Primary key or list of primary keys',
+        )
     ) -> Optional[Any]:
         if link_model and link_item_id:
             result = self.link_models.get(link_model)
@@ -126,9 +129,9 @@ class SQLModelSelector:
 
     @staticmethod
     def _parser_query_value(
-            value: Any,
-            operator: str = '__eq__',
-            python_type_parse: Callable = str
+        value: Any,
+        operator: str = '__eq__',
+        python_type_parse: Callable = str
     ) -> Tuple[Optional[str], Union[tuple, None]]:
         if isinstance(value, str):
             match = sql_operator_pattern.match(value)
@@ -154,11 +157,10 @@ class SQLModelSelector:
         for k, v in data.items():
             insfield = self._list_fields_ins.get(k)
             if insfield:
-                operator, val = self._parser_query_value(v, python_type_parse=get_python_type_parse(insfield))
+                operator, val = self._parser_query_value(v, python_type_parse = get_python_type_parse(insfield))
                 if operator:
                     lst.append(getattr(insfield, operator)(*val))
         return lst
-
 
 class SQLModelCrud(BaseCrud, SQLModelSelector):
     engine: Union[Engine, AsyncEngine] = None
@@ -168,12 +170,12 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
     list_filter: List[SQLModelListField] = []  # 需要查询的字段
 
     def __init__(
-            self,
-            model: Type[SQLModel],
-            engine: Union[Engine, AsyncEngine],
-            pk_name: str = 'id',
-            fields: List[SQLModelListField] = None,
-            router: APIRouter = None
+        self,
+        model: Type[SQLModel],
+        engine: Union[Engine, AsyncEngine],
+        pk_name: str = 'id',
+        fields: List[SQLModelListField] = None,
+        router: APIRouter = None
     ) -> None:
         self.engine = engine or self.engine
         self.pk_name = pk_name
@@ -185,36 +187,45 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
     def _create_schema_list(self):
         if self.schema_list:
             return self.schema_list
-        modelfields = list(filter(None, [
-            self.parser.get_modelfield(insfield, deepcopy=True)
-            for insfield in self._list_fields_ins.values()
-        ]))
+        modelfields = list(
+            filter(
+                None, [
+                    self.parser.get_modelfield(insfield, deepcopy = True)
+                    for insfield in self._list_fields_ins.values()
+                ]
+            )
+        )
         return schema_create_by_modelfield(
-            schema_name=f'{self.schema_name_prefix}List',
-            modelfields=modelfields,
-            set_none=True,
-            extra=Extra.allow,
+            schema_name = f'{self.schema_name_prefix}List',
+            modelfields = modelfields,
+            set_none = True,
+            extra = Extra.allow,
         )
 
     def _create_schema_filter(self):
         if self.schema_filter:
             return self.schema_filter
         self.list_filter = self.list_filter or self._list_fields_ins.values()
-        modelfields = list(filter(None, [
-            self.parser.get_modelfield(insfield, deepcopy=True)
-            for insfield in self.parser.filter_insfield(self.list_filter)
-        ]))
+        modelfields = list(
+            filter(
+                None, [
+                    self.parser.get_modelfield(insfield, deepcopy = True)
+                    for insfield in self.parser.filter_insfield(self.list_filter)
+                ]
+            )
+        )
         # todo perfect
         for modelfield in modelfields:
             if (not issubclass(modelfield.type_, (Enum, bool)) and issubclass(
-                    modelfield.type_, (int, float, datetime.datetime, datetime.date, datetime.time, Json))):
+                modelfield.type_, (int, float, datetime.datetime, datetime.date, datetime.time, Json)
+            )):
                 modelfield.type_ = str
                 modelfield.outer_type_ = str
                 modelfield.validators = []
         return schema_create_by_modelfield(
-            schema_name=f'{self.schema_name_prefix}Filter',
-            modelfields=modelfields,
-            set_none=True
+            schema_name = f'{self.schema_name_prefix}Filter',
+            modelfields = modelfields,
+            set_none = True
         )
 
     def _create_schema_update(self):
@@ -222,18 +233,22 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             return self.schema_update
         if not self.readonly_fields and not self.update_fields:
             return super(SQLModelCrud, self)._create_schema_update()
-        include = {self.parser.get_modelfield(ins).name
-                   for ins in self.parser.filter_insfield(self.update_fields)
-                   } - {self.pk_name}
-        exclude = {self.parser.get_modelfield(ins).name
-                   for ins in self.parser.filter_insfield(self.readonly_fields)
-                   } | {self.pk_name}
-        return schema_create_by_schema(
-            schema_cls=self.schema_model,
-            schema_name=f'{self.schema_name_prefix}Update',
-            include=include,
-            exclude=exclude,
-            set_none=True
+        self.update_fields = self.parser.filter_insfield(self.update_fields) or self.schema_model.__fields__.values()
+        modelfields = {
+            self.parser.get_modelfield(ins, deepcopy = True)
+            for ins in self.update_fields
+        }
+        modelfields = {
+            field for field in modelfields
+            if field.name not in {
+                self.parser.get_modelfield(ins, deepcopy = True).name
+                for ins in self.parser.filter_insfield(self.readonly_fields)
+            } | {self.pk_name}
+        }
+        return schema_create_by_modelfield(
+            f'{self.schema_name_prefix}Update',
+            modelfields,
+            set_none = True
         )
 
     def _create_schema_create(self):
@@ -241,14 +256,24 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             return self.schema_create
         if not self.create_fields:
             return super(SQLModelCrud, self)._create_schema_create()
-        modelfields = list(filter(None, [
-            self.parser.get_modelfield(field, deepcopy=True)
-            for field in self.create_fields
-        ]))
+        modelfields = list(
+            filter(
+                None, [
+                    self.parser.get_modelfield(field, deepcopy = True)
+                    for field in self.create_fields
+                ]
+            )
+        )
         return schema_create_by_modelfield(
             f'{self.schema_name_prefix}Create',
             modelfields
         )
+
+    def _read_items(self, session: Session, item_id: List[str]):
+        stmt = select(self.model).where(self.pk.in_(list(map(get_python_type_parse(self.pk), item_id))))
+        items = session.scalars(stmt).all()
+        parse = self.schema_read.from_orm if self.schema_read.Config.orm_mode else self.schema_read.parse_obj
+        return [parse(obj) for obj in items]
 
     @property
     def schema_name_prefix(self):
@@ -257,32 +282,38 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
         return super().schema_name_prefix
 
     async def on_create_pre(self, request: Request, obj: BaseModel, **kwargs) -> Dict[str, Any]:
-        data_dict = obj.dict()  # exclude=set(self.pk)
+        data_dict = obj.dict(by_alias = True)  # exclude=set(self.pk)
         if self.pk_name in data_dict and not data_dict.get(self.pk_name):
             del data_dict[self.pk_name]
         return data_dict
 
-    async def on_update_pre(self, request: Request, obj: BaseModel, **kwargs) -> Dict[str, Any]:
-        data = obj.dict(exclude_unset=True)
+    async def on_update_pre(
+        self,
+        request: Request,
+        obj: BaseModel,
+        item_id: Union[List[str], List[int]],
+        **kwargs
+    ) -> Dict[str, Any]:
+        data = obj.dict(exclude_unset = True, by_alias = True)
         data = {key: val for key, val in data.items()
                 if val is not None or self.model.__fields__[key].allow_none}
         return data
 
     async def on_filter_pre(self, request: Request, obj: BaseModel, **kwargs) -> Dict[str, Any]:
-        return obj and {k: v for k, v in obj.dict(exclude_unset=True).items() if v is not None}
+        return obj and {k: v for k, v in obj.dict(exclude_unset = True, by_alias = True).items() if v is not None}
 
     @property
     def route_list(self) -> Callable:
 
         async def route(
-                request: Request,
-                paginator: self.paginator = Depends(self.paginator),  # type: ignore
-                filters: self.schema_filter = Body(None),  # type: ignore
-                stmt: Select = Depends(self._select_maker),
+            request: Request,
+            paginator: self.paginator = Depends(self.paginator),  # type: ignore
+            filters: self.schema_filter = Body(None),  # type: ignore
+            stmt: Select = Depends(self._select_maker),
         ):
             if not await self.has_list_permission(request, paginator, filters):
                 return self.error_no_router_permission(request)
-            data = ItemListSchema(items=[])
+            data = ItemListSchema(items = [])
             page, perPage = paginator.page, paginator.perPage
             filters_data = await self.on_filter_pre(request, filters)
             if filters_data:
@@ -290,26 +321,26 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             if paginator.show_total:
                 data.total = await self.db.async_execute(
                     select(func.count('*')).select_from(stmt.subquery()),
-                    on_close_pre=lambda r: r.scalar()
+                    on_close_pre = lambda r: r.scalar()
                 )
             orderBy = self._calc_ordering(paginator.orderBy, paginator.orderDir)
             if orderBy:
                 stmt = stmt.order_by(*orderBy)
             stmt = stmt.limit(perPage).offset((page - 1) * perPage)
-            data.items = await self.db.async_execute(stmt, on_close_pre=lambda r: r.all())
+            data.items = await self.db.async_execute(stmt, on_close_pre = lambda r: r.all())
             data.items = self.parser.conv_row_to_dict(data.items)
             data.items = [self.schema_list.parse_obj(item) for item in data.items] if data.items else []
             data.query = request.query_params
             data.filters = filters_data
-            return BaseApiOut(data=data)
+            return BaseApiOut(data = data)
 
         return route
 
     @property
     def route_create(self) -> Callable:
         async def route(
-                request: Request,
-                data: Union[self.schema_create, List[self.schema_create]] = Body(...),  # type: ignore
+            request: Request,
+            data: Union[self.schema_create, List[self.schema_create]] = Body(...),  # type: ignore
         ) -> BaseApiOut[Union[int, self.schema_model]]:  # type: ignore
             if not await self.has_create_permission(request, data):
                 return self.error_no_router_permission(request)
@@ -326,68 +357,65 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             try:
                 result = await self.db.async_execute(stmt)
             except Exception as error:
-                return self.error_execute_sql(request=request, error=error)
+                return self.error_execute_sql(request = request, error = error)
             if is_bulk:
-                return BaseApiOut(data=getattr(result, 'rowcount', None))
+                return BaseApiOut(data = getattr(result, 'rowcount', None))
             data = values[0]
             if self.engine.dialect.name == 'postgresql':
                 data[self.pk_name] = result.scalar()
             else:
                 data[self.pk_name] = getattr(result, "lastrowid", None)
             data = self.schema_model.parse_obj(data)
-            return BaseApiOut(data=data)
+            return BaseApiOut(data = data)
 
         return route
 
     @property
     def route_read(self) -> Callable:
+
         async def route(
-                request: Request,
-                item_id: List[str] = Depends(parser_item_id),
-                stmt: Select = Depends(self.get_select)
+            request: Request,
+            item_id: List[str] = Depends(parser_item_id),
         ):
             if not await self.has_read_permission(request, item_id):
                 return self.error_no_router_permission(request)
-            stmt = stmt.where(self.pk.in_(list(map(get_python_type_parse(self.pk), item_id))))
-            items = await self.db.async_execute(stmt, on_close_pre=lambda r: r.all())
-            items = self.parser.conv_row_to_dict(items)
-            if items:
-                items = [self.schema_read.parse_obj(item) for item in items]
-                if len(items) == 1:
-                    items = items[0]
-            return BaseApiOut(data=items)
+            items = await self.db.async_run_sync(self._read_items, item_id)
+            if len(items) == 1:
+                items = items[0]
+            return BaseApiOut(data = items)
 
         return route
 
     @property
     def route_update(self) -> Callable:
         async def route(
-                request: Request,
-                item_id: List[str] = Depends(parser_item_id),
-                data: self.schema_update = Body(...),  # type: ignore
+            request: Request,
+            item_id: List[str] = Depends(parser_item_id),
+            data: self.schema_update = Body(...),  # type: ignore
         ):
             if not await self.has_update_permission(request, item_id, data):
                 return self.error_no_router_permission(request)
-            stmt = update(self.model).where(self.pk.in_(list(map(get_python_type_parse(self.pk), item_id))))
-            values = await self.on_update_pre(request, data)
+            item_id = list(map(get_python_type_parse(self.pk), item_id))
+            stmt = update(self.model).where(self.pk.in_(item_id))
+            values = await self.on_update_pre(request, data, item_id = item_id)
             if not values:
                 return self.error_data_handle(request)
             stmt = stmt.values(values)
             result = await self.db.async_execute(stmt)
-            return BaseApiOut(data=getattr(result, 'rowcount', None))
+            return BaseApiOut(data = getattr(result, 'rowcount', None))
 
         return route
 
     @property
     def route_delete(self) -> Callable:
         async def route(
-                request: Request,
-                item_id: List[str] = Depends(parser_item_id),
+            request: Request,
+            item_id: List[str] = Depends(parser_item_id),
         ):
             if not await self.has_delete_permission(request, item_id):
                 return self.error_no_router_permission(request)
             stmt = delete(self.model).where(self.pk.in_(list(map(get_python_type_parse(self.pk), item_id))))
             result = await self.db.async_execute(stmt)
-            return BaseApiOut(data=getattr(result, 'rowcount', None))
+            return BaseApiOut(data = getattr(result, 'rowcount', None))
 
         return route
