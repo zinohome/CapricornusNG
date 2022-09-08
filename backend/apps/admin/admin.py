@@ -52,28 +52,36 @@ class HomeAdmin(admin.PageAdmin):
                     "data": {
                         "items": [
                             {
-                                "usenum": "活动：2",
+                                "avatarTX": "Table",
                                 "title": "表",
                                 "subtitle": "系统表数量",
-                                "sysnum": "系统：10"
+                                "usenum": 2,
+                                "sysnum": 10,
+                                "tag":"Data"
                             },
                             {
+                                "avatarTX": "View",
                                 "title": "视图",
                                 "subtitle": "系统视图数量",
                                 "usenum": 4,
-                                "sysnum": 12
+                                "sysnum": 12,
+                                "tag":"Data"
                             },
                             {
+                                "avatarTX": "API",
                                 "title": "API",
                                 "subtitle": "系统API数量",
                                 "usenum": 21,
-                                "sysnum": 44
+                                "sysnum": 44,
+                                "tag":"System"
                             },
                             {
+                                "avatarTX": "User",
                                 "title": "用户",
                                 "subtitle": "系统用户数量",
                                 "usenum": 2,
-                                "sysnum": 35
+                                "sysnum": 35,
+                                "tag":"Admin"
                             }
                         ]
                     },
@@ -82,28 +90,46 @@ class HomeAdmin(admin.PageAdmin):
                         "type": "card",
                         "className": "m-b-none",
                         "header": {
+                            "avatarText": "${avatarTX}",
+                            "avatarTextBackground": [
+                                "#FFB900",
+                                "#D83B01",
+                                "#B50E0E",
+                                "#E81123",
+                                "#B4009E",
+                                "#5C2D91",
+                                "#0078D7",
+                                "#00B4FF",
+                                "#008272"
+                            ],
                             "title": "${title}",
-                            "subTitle": "${subtitle}",
-                            "avatar": "http://127.0.0.1:8000/static/images/logo.png"
+                            "subTitle": "${subtitle}"
                         },
                         "body": [
                             {
                                 "name": "usenum",
                                 "id": "u:114a9393eaa4",
-                                "label": False
+                                "label": "当前："
                             },
                             {
                                 "name": "sysnum",
                                 "id": "u:beb3b22ee4bc",
-                                "label": False
+                                "label": "全部："
                             }
                         ],
                         "actions": [
                             {
-                                "label": "详情",
+                                "label": "",
                                 "type": "button",
                                 "id": "u:d26c2b0d730c"
                             }
+                        ],
+                        "toolbar": [
+                          {
+                            "type": "tpl",
+                            "tpl": "${tag}",
+                            "className": "label label-warning"
+                          }
                         ],
                         "id": "u:ec25ab7b71bb"
                     },
@@ -113,37 +139,38 @@ class HomeAdmin(admin.PageAdmin):
                 },
                 {
                     "type": "tpl",
-                    "tpl": "<p>Tips：</p>",
-                    "inline": False,
+                    "tpl": "<p>&nbsp;</p>",
+                    "inline": True,
                     "id": "u:e5a109572034"
                 },
                 {
                     "type": "tabs",
                     "tabs": [
                         {
-                            "title": "1.关于Capricornus",
+                            "title": _("1. About Capricornus"),
                             "body": [
                                 {
                                     "type": "tpl",
-                                    "tpl": "内容1",
+                                    "tpl": _("Capricornus Introduction"),
                                     "inline": False,
                                     "id": "u:aeb8bffd0934"
                                 },
                                 {
                                     "type": "collapse-group",
                                     "activeKey": [
-                                        "1"
+                                        "1",
+                                        "2"
                                     ],
                                     "body": [
                                         {
                                             "type": "collapse",
                                             "key": "1",
                                             "active": True,
-                                            "header": "标题1",
+                                            "header": _("What is Capricornus"),
                                             "body": [
                                                 {
                                                     "type": "tpl",
-                                                    "tpl": "这里是内容1",
+                                                    "tpl": _("Capricornus is an enterprise database API platform, which provides the REST API of OAS3 standard out of the box for enterprise data computing."),
                                                     "inline": False,
                                                     "id": "u:0c3a42f73ee5"
                                                 }
@@ -411,383 +438,6 @@ class HomeAdmin(admin.PageAdmin):
             ]
         }
     )
-'''
-@site.register_admin
-class HomeAdmin(admin.PageAdmin):
-    group_schema = None
-    page_schema = PageSchema(label=_('Home'), icon='fa fa-home', url='/home', isDefaultPage=True, sort=100)
-    page_path = '/home'
-    page = Page.parse_obj(
-        {
-            "type": "page",
-            "title": _("Home"),
-            "body": [
-                {
-                    "type": "cards",
-                    "data": {
-                        "items": [
-                            {
-                                "usenum": "活动：2",
-                                "title": "表",
-                                "subtitle": "系统表数量",
-                                "sysnum": "系统：10"
-                            },
-                            {
-                                "title": "视图",
-                                "subtitle": "系统视图数量",
-                                "usenum": 4,
-                                "sysnum": 12
-                            },
-                            {
-                                "title": "API",
-                                "subtitle": "系统API数量",
-                                "usenum": 21,
-                                "sysnum": 44
-                            },
-                            {
-                                "title": "用户",
-                                "subtitle": "系统用户数量",
-                                "usenum": 2,
-                                "sysnum": 35
-                            }
-                        ]
-                    },
-                    "columnsCount": 4,
-                    "card": {
-                        "type": "card",
-                        "className": "m-b-none",
-                        "header": {
-                            "title": "${title}",
-                            "subTitle": "${subtitle}",
-                            "avatar": "http://127.0.0.1:8000/static/images/logo.png"
-                        },
-                        "body": [
-                            {
-                                "name": "usenum",
-                                "id": "u:114a9393eaa4",
-                                "label": False
-                            },
-                            {
-                                "name": "sysnum",
-                                "id": "u:beb3b22ee4bc",
-                                "label": False
-                            }
-                        ],
-                        "actions": [
-                            {
-                                "label": "详情",
-                                "type": "button",
-                                "id": "u:d26c2b0d730c"
-                            }
-                        ],
-                        "id": "u:ec25ab7b71bb"
-                    },
-                    "id": "u:c3ad6665eb77",
-                    "placeholder": "暂无数据",
-                    "title": ""
-                },
-                {
-                    "type": "tpl",
-                    "tpl": "<p>Tips：</p>",
-                    "inline": False,
-                    "id": "u:e5a109572034"
-                },
-                {
-                    "type": "tabs",
-                    "tabs": [
-                        {
-                            "title": "1.关于Capricornus",
-                            "body": [
-                                {
-                                    "type": "tpl",
-                                    "tpl": "内容1",
-                                    "inline": False,
-                                    "id": "u:aeb8bffd0934"
-                                },
-                                {
-                                    "type": "collapse-group",
-                                    "activeKey": [
-                                        "1"
-                                    ],
-                                    "body": [
-                                        {
-                                            "type": "collapse",
-                                            "key": "1",
-                                            "active": True,
-                                            "header": "标题1",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:0c3a42f73ee5"
-                                                }
-                                            ],
-                                            "id": "u:2455f50a88d4"
-                                        },
-                                        {
-                                            "type": "collapse",
-                                            "key": "2",
-                                            "header": "标题2",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:291d9174b52c"
-                                                }
-                                            ],
-                                            "id": "u:26ca96886079"
-                                        }
-                                    ],
-                                    "id": "u:1bf1727d482b"
-                                }
-                            ],
-                            "id": "u:3f5e38d09b4b"
-                        },
-                        {
-                            "title": "2.创建数据源连接",
-                            "body": [
-                                {
-                                    "type": "tpl",
-                                    "tpl": "内容2",
-                                    "inline": False,
-                                    "id": "u:e7431edf6546"
-                                },
-                                {
-                                    "type": "collapse-group",
-                                    "activeKey": [
-                                        "1"
-                                    ],
-                                    "body": [
-                                        {
-                                            "type": "collapse",
-                                            "key": "1",
-                                            "active": True,
-                                            "header": "标题1",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:74f49b5caf48"
-                                                }
-                                            ],
-                                            "id": "u:8929d733efed"
-                                        },
-                                        {
-                                            "type": "collapse",
-                                            "key": "2",
-                                            "header": "标题2",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:9ad2f2e51b6f"
-                                                }
-                                            ],
-                                            "id": "u:28d01a213633"
-                                        }
-                                    ],
-                                    "id": "u:296d38d26861"
-                                }
-                            ],
-                            "id": "u:8a646cf150ea"
-                        },
-                        {
-                            "title": "3.同步数据结构",
-                            "body": [
-                                {
-                                    "type": "collapse-group",
-                                    "activeKey": [
-                                        "1"
-                                    ],
-                                    "body": [
-                                        {
-                                            "type": "collapse",
-                                            "key": "1",
-                                            "active": True,
-                                            "header": "标题1",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:c170c8d0a68c"
-                                                }
-                                            ],
-                                            "id": "u:a1a415c0304f"
-                                        },
-                                        {
-                                            "type": "collapse",
-                                            "key": "2",
-                                            "header": "标题2",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:614ff4556d7e"
-                                                }
-                                            ],
-                                            "id": "u:c9730f314554"
-                                        }
-                                    ],
-                                    "id": "u:7da393d18f9e"
-                                }
-                            ],
-                            "id": "u:dd4df71837e2"
-                        },
-                        {
-                            "title": "4.发布API",
-                            "body": [
-                                {
-                                    "type": "collapse-group",
-                                    "activeKey": [
-                                        "1"
-                                    ],
-                                    "body": [
-                                        {
-                                            "type": "collapse",
-                                            "key": "1",
-                                            "active": True,
-                                            "header": "标题1",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:10878774c757"
-                                                }
-                                            ],
-                                            "id": "u:998393f62cf1"
-                                        },
-                                        {
-                                            "type": "collapse",
-                                            "key": "2",
-                                            "header": "标题2",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:b478bed9e544"
-                                                }
-                                            ],
-                                            "id": "u:6ca0ea5d7493"
-                                        }
-                                    ],
-                                    "id": "u:77bb5538b5ab"
-                                }
-                            ],
-                            "id": "u:632383574b26"
-                        },
-                        {
-                            "title": "5.数据浏览",
-                            "body": [
-                                {
-                                    "type": "collapse-group",
-                                    "activeKey": [
-                                        "1"
-                                    ],
-                                    "body": [
-                                        {
-                                            "type": "collapse",
-                                            "key": "1",
-                                            "active": True,
-                                            "header": "标题1",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:f98638931245"
-                                                }
-                                            ],
-                                            "id": "u:181a346d4358"
-                                        },
-                                        {
-                                            "type": "collapse",
-                                            "key": "2",
-                                            "header": "标题2",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:7ecdcc5b4dde"
-                                                }
-                                            ],
-                                            "id": "u:a8cab5f9355b"
-                                        }
-                                    ],
-                                    "id": "u:8680deb09838"
-                                }
-                            ],
-                            "id": "u:736b032c6809"
-                        },
-                        {
-                            "title": "6.数据查询",
-                            "body": [
-                                {
-                                    "type": "collapse-group",
-                                    "activeKey": [
-                                        "1"
-                                    ],
-                                    "body": [
-                                        {
-                                            "type": "collapse",
-                                            "key": "1",
-                                            "active": True,
-                                            "header": "标题1",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:c976d4e263e6"
-                                                }
-                                            ],
-                                            "id": "u:684a6227ca0b"
-                                        },
-                                        {
-                                            "type": "collapse",
-                                            "key": "2",
-                                            "header": "标题2",
-                                            "body": [
-                                                {
-                                                    "type": "tpl",
-                                                    "tpl": "这里是内容1",
-                                                    "inline": False,
-                                                    "id": "u:422b06e2a432"
-                                                }
-                                            ],
-                                            "id": "u:0aedac409267"
-                                        }
-                                    ],
-                                    "id": "u:5c4b7a848ad5"
-                                }
-                            ],
-                            "id": "u:3967b442ff95"
-                        }
-                    ],
-                    "id": "u:9a63c1e84358",
-                    "tabsMode": "line"
-                }
-            ],
-            "id": "u:05f50d832729",
-            "messages": {
-            },
-            "pullRefresh": {
-            },
-            "regions": [
-                "body"
-            ]
-        }
-    )
-'''
-
 
 # DataApp
 @site.register_admin
