@@ -8,12 +8,16 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
+import os
 
+from asgi_correlation_id import CorrelationIdMiddleware
 from sqlalchemy_database import Database
 from sqlmodel import SQLModel, create_engine
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
+from fastapi_utils.timing import add_timing_middleware
+from starlette_exporter import PrometheusMiddleware, handle_metrics
 
 from apps.admin.models.datasourceconfig import DatasourceConfig
 from core.adminsite import site
@@ -29,6 +33,12 @@ from fastapi.openapi.docs import (
 from util.log import log as log
 from util.toolkit import sync_uri
 from core import i18n as _
+
+from jaeger_client import Config as jaeger_config
+from opentracing.scope_managers.contextvars import ContextVarsScopeManager
+from opentracing_instrumentation.client_hooks import install_all_patches
+
+from starlette_opentracing import StarletteTracingMiddleWare
 
 # Initialize Tables
 asyncurl = str(site.db.engine.sync_engine.url)
@@ -56,6 +66,38 @@ app = FastAPI(debug=settings.debug,
               docs_url=None,
               redoc_url=None
               )
+# fastapi_utils.timing profiling
+add_timing_middleware(app, record=log.debug, prefix="app", exclude="untimed")
+# asgi-correlation-id
+app.add_middleware(CorrelationIdMiddleware)
+# starlette_exporter
+app.add_middleware(
+    PrometheusMiddleware,
+    app_name="CapricornusNG",
+    prefix='admin',
+    labels={
+        "server_name": os.getenv("HOSTNAME"),
+    },
+    group_paths=True,
+    buckets=[0.1, 0.25, 0.5],
+    skip_paths=['/health'],
+    always_use_int_status=False)
+app.add_route("/metrics", handle_metrics)
+
+# jaeger_tracer
+opentracing_config = jaeger_config(
+    config={
+        "sampler": {"type": "const", "param": 1},
+        "logging": True,
+        "local_agent": {"reporting_host": "192.168.32.120"},
+    },
+    scope_manager=ContextVarsScopeManager(),
+    service_name="CapricornusNG",
+)
+jaeger_tracer = opentracing_config.initialize_tracer()
+install_all_patches()
+app.add_middleware(StarletteTracingMiddleWare, tracer=jaeger_tracer)
+
 
 # 自动生成model和admin
 dbmeta = DBMeta(dsconfig, apiengine)

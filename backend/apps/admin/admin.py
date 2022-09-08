@@ -411,6 +411,11 @@ class HomeAdmin(admin.PageAdmin):
         }
     )
 
+class AmisDocAdmin(admin.IframeAdmin):
+    group_schema = PageSchema(label=_('APIDocs'), icon='fa fa-book', sort=-100)
+    page_schema = PageSchema(label='AmisDocument', icon='fa fa-file-image')
+    src = 'https://aisuda.bce.baidu.com/amis/zh-CN/components/html'
+
 
 # DataApp
 @site.register_admin
