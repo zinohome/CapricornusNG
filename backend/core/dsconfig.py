@@ -15,7 +15,6 @@ import traceback
 import weakref
 from types import SimpleNamespace
 
-from easy_profile import SessionProfiler
 from sqlalchemy import select, create_engine, insert
 import simplejson as json
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -28,7 +27,6 @@ from core.settings import settings
 from util import toolkit
 from util.log import log as log
 
-profiler = SessionProfiler()
 
 class Cached(type):
     def __init__(self, *args, **kwargs):
@@ -69,7 +67,6 @@ class DSConfig(metaclass=Cached):
         self.asyncengine = create_async_engine(url=settings.database_url_async, echo=settings.debug, future=True)
         self.asyncdb = AsyncDatabase(self.engine)
 
-    @profiler()
     def init_sysdb(self):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         DB_DIR = os.path.join(BASE_DIR, "data")
@@ -152,7 +149,6 @@ class DSConfig(metaclass=Cached):
         self.Connection_Config = SimpleNamespace(**Connection_Config_dict)
         self.Admin_Config = SimpleNamespace(**Admin_Config_dict)
 
-    @profiler()
     def readconfig(self):
         try:
             connstmt = select(Datasource).where(

@@ -38,6 +38,7 @@ sql_operator_map: Dict[str, str] = {
     '-': 'between',
 }
 
+
 class SQLModelSelector:
     model: Type[SQLModel] = None
     fields: List[SQLModelListField] = []
@@ -304,7 +305,6 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
 
     @property
     def route_list(self) -> Callable:
-
         async def route(
             request: Request,
             paginator: self.paginator = Depends(self.paginator),  # type: ignore
