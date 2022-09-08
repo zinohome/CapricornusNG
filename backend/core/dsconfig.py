@@ -81,7 +81,7 @@ class DSConfig(metaclass=Cached):
                                    'app_param_prefix': 'up_b_', 'app_force_generate_meta': True,
                                    'app_log_level': 'INFO', 'app_user_func': True, 'app_exception_detail': True,
                                    'app_admin_use_https': False, 'app_confirm_key': 'Confirmed', 'app_http_port': 8880,
-                                   'app_https_port': 8843, 'app_http_timeout': 10, 'app_load_metadat_on_load': True,
+                                   'app_https_port': 8843, 'app_http_timeout': 10, 'app_jaeger_host': 'jaeger', 'app_load_metadat_on_load': True,
                                    'app_clear_metadat_on_startup': True, 'app_clear_metadat_on_shutdown': True}
         Schema_Config_dict = {'schema_cache_enabled': True, 'schema_model_refresh': True,
                               'schema_cache_filename': 'capricornus_metadata', 'schema_db_metafile': 'metadata.json',
@@ -135,7 +135,7 @@ class DSConfig(metaclass=Cached):
 
     def loaddefault(self):
         Database_Config_dict = {'ds_name': 'sample-datasource', 'ds_uri': 'sqlite+aiosqlite:////opt/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'ds_exclude_tablespaces': None, 'ds_id': 2, 'ds_schema': None, 'ds_config_id': 2}
-        Application_Config_dict = {'app_name': 'Capricornus', 'app_version': 'v2.1.5', 'app_description': 'REST API for RDBMS', 'app_prefix': '/api/v2', 'app_cors_origins': "'*'", 'app_service_model': 'Standalone', 'app_param_prefix': 'up_b_', 'app_force_generate_meta': True, 'app_log_level': 'INFO', 'app_user_func': True, 'app_exception_detail': True, 'app_admin_use_https': False, 'app_confirm_key': 'Confirmed', 'app_http_port': 8880, 'app_https_port': 8843, 'app_http_timeout': 10, 'app_load_metadat_on_load': True, 'app_clear_metadat_on_startup': True, 'app_clear_metadat_on_shutdown': True}
+        Application_Config_dict = {'app_name': 'Capricornus', 'app_version': 'v2.1.5', 'app_description': 'REST API for RDBMS', 'app_prefix': '/api/v2', 'app_cors_origins': "'*'", 'app_service_model': 'Standalone', 'app_param_prefix': 'up_b_', 'app_force_generate_meta': True, 'app_log_level': 'INFO', 'app_user_func': True, 'app_exception_detail': True, 'app_admin_use_https': False, 'app_confirm_key': 'Confirmed', 'app_http_port': 8880, 'app_https_port': 8843, 'app_http_timeout': 10, 'app_jaeger_host': 'jaeger','app_load_metadat_on_load': True, 'app_clear_metadat_on_startup': True, 'app_clear_metadat_on_shutdown': True}
         Schema_Config_dict = {'schema_cache_enabled': True, 'schema_model_refresh': True, 'schema_cache_filename': 'capricornus_metadata', 'schema_db_metafile': 'metadata.json', 'schema_db_logicpkfile': 'logicpk.json', 'schema_db_logicpkneedfile': 'logicpk-need.json', 'schema_fetch_all_table': True, 'schema_fetch_tables': 'table1, table2'}
         Query_Config_dict = {'query_limit_upset': 2000, 'query_default_limit': 10, 'query_default_offset': 0}
         Security_Config_dict = {'security_key': '47051d5e3bafcfcba3c80d6d1119a7adf78d2967a8972b00af1ea231ca61f589', 'security_algorithm': 'HS256', 'access_token_expire_minutes': 30}

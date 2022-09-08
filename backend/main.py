@@ -89,7 +89,7 @@ opentracing_config = jaeger_config(
     config={
         "sampler": {"type": "const", "param": 1},
         "logging": True,
-        "local_agent": {"reporting_host": "192.168.32.120"},
+        "local_agent": {"reporting_host": dsconfig.Application_Config.app_jaeger_host},
     },
     scope_manager=ContextVarsScopeManager(),
     service_name="CapricornusNG",
