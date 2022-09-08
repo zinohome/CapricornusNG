@@ -2,17 +2,13 @@ version: "3"
 
 services:
   CapricornusNG:
-    image: "jointhero/CapricornusNG:latest"
-    container_name: CapricornusNG
-    hostname: CapricornusNG
+    image: "jointhero/capricornusng:latest"
+    container_name: capricornusng
+    hostname: capricornusng
     restart: on-failure
-    depends_on:
-      - arangodb
-    links:
-      - arangodb
     environment:
-      arangodb_hosts: "http://arangodb:8529"
-      app_profile: "demo"
+      LANG: "zh_CN"
+      LANGUAGE: "zh_CN"
     ports:
       - "8880:8880/tcp"
       - "8843:8843/tcp"
@@ -22,28 +18,7 @@ services:
         timeout: 5s
         retries: 5
     networks:
-      - CapricornusNG
-
-  arangodb:
-    image: "arangodb"
-    container_name: CapricornusNG-arangodb
-    hostname: CapricornusNG-arangodb
-    user: root
-    restart: on-failure
-    volumes:
-      - /data/arangodb/data/arangodb3:/var/lib/arangodb3
-    environment:
-      ARANGO_ROOT_PASSWORD: "passw0rd"
-    ports:
-      - "8529:8529/tcp"
-    healthcheck:
-        test: ["CMD", "netstat", "-anp", "|", "grep 8529", "||", "exit 1"]
-        interval: 30s
-        timeout: 5s
-        retries: 5
-    networks:
-      - CapricornusNG
-
+      - capricornusng
 networks:
-  CapricornusNG:
+  capricornusng:
     driver: bridge
