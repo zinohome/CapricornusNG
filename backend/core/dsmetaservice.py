@@ -12,12 +12,15 @@
 import traceback
 import weakref
 
+from easy_profile import SessionProfiler
 from sqlalchemy import select, insert, update, delete
 import simplejson as json
 
 from apps.admin.models.dsmeta import DatasourceMeta
 from core.settings import settings
 from util.log import log as log
+
+profiler = SessionProfiler()
 
 class Cached(type):
     def __init__(self, *args, **kwargs):
@@ -100,6 +103,7 @@ class DsmetaService(metaclass=Cached):
                 traceback.print_exc()
             return False
 
+    @profiler()
     def query_table_byName(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.meta_name == self.meta_name, DatasourceMeta.ds_id == self.ds_id)
@@ -113,6 +117,7 @@ class DsmetaService(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    @profiler()
     async def async_query_table_byName(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.meta_name == self.meta_name, DatasourceMeta.ds_id == self.ds_id)
@@ -127,6 +132,7 @@ class DsmetaService(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    @profiler()
     def get_all_tables(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.ds_id == self.ds_id)
@@ -137,6 +143,7 @@ class DsmetaService(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    @profiler()
     async def async_get_all_tables(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.ds_id == self.ds_id)
@@ -151,6 +158,7 @@ class DsmetaService(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    @profiler()
     def getall_table_Name(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.ds_id == self.ds_id)
@@ -161,6 +169,7 @@ class DsmetaService(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    @profiler()
     async def async_getall_table_Name(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.ds_id == self.ds_id)
@@ -178,6 +187,7 @@ class DsmetaService(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    @profiler()
     def create_table(self):
         try:
             insertdict = self.valuedict.copy()
@@ -191,6 +201,7 @@ class DsmetaService(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    @profiler()
     async def async_create_table(self):
         try:
             insertdict = self.valuedict.copy()
@@ -205,6 +216,7 @@ class DsmetaService(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    @profiler()
     def create_update_table(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.meta_name == self.meta_name, DatasourceMeta.ds_id == self.ds_id)
@@ -230,6 +242,7 @@ class DsmetaService(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    @profiler()
     async def async_create_update_table(self):
         try:
             stmt = select(DatasourceMeta).where(DatasourceMeta.meta_name == self.meta_name, DatasourceMeta.ds_id == self.ds_id)
@@ -256,6 +269,7 @@ class DsmetaService(metaclass=Cached):
                 traceback.print_exc()
             return None
 
+    @profiler()
     def delete_table(self):
         try:
             stmt = delete(DatasourceMeta).where(DatasourceMeta.meta_id == self.meta_id)
@@ -266,6 +280,7 @@ class DsmetaService(metaclass=Cached):
             if settings.app_exception_detail:
                 traceback.print_exc()
 
+    @profiler()
     async def async_delete_table(self):
         try:
             stmt = delete(DatasourceMeta).where(DatasourceMeta.meta_id == self.meta_id)

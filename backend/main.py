@@ -8,7 +8,6 @@
 #  @Author  : Zhang Jun
 #  @Email   : ibmzhangjun@139.com
 #  @Software: Capricornus
-
 from sqlalchemy_database import Database
 from sqlmodel import SQLModel, create_engine
 from starlette.responses import RedirectResponse
@@ -56,7 +55,6 @@ app = FastAPI(debug=settings.debug,
               docs_url=None,
               redoc_url=None
               )
-
 
 # 自动生成model和admin
 dbmeta = DBMeta(dsconfig, apiengine)
