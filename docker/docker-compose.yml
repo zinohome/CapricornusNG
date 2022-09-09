@@ -9,11 +9,31 @@ services:
     environment:
       LANG: "zh_CN"
       LANGUAGE: "zh_CN"
+      APP_MODE: "sample-datasource"
+      APP_PROFILE: "sample-datasource"
     ports:
       - "8880:8880/tcp"
       - "8843:8843/tcp"
     healthcheck:
         test: ["CMD", "netstat", "-anp", "|", "grep 8880", "||", "exit 1"]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+    networks:
+      - capricornusng
+  Jaeger:
+    image: "jaegertracing/all-in-one:latest"
+    container_name: jaeger
+    hostname: jaeger
+    restart: on-failure
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: "9411"
+    ports:
+      - "9411:9411/tcp"
+      - "14268:14268/tcp"
+      - "16686:16686/tcp"
+    healthcheck:
+        test: ["CMD", "netstat", "-anp", "|", "grep 16686", "||", "exit 1"]
         interval: 30s
         timeout: 5s
         retries: 5
