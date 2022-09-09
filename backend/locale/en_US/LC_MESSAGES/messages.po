@@ -300,3 +300,15 @@ msgstr "User Profile"
 #: ../core/adminsite.py:67
 msgid "Sign out"
 msgstr "Sign out"
+
+#: ../apps/admin/admin.py:48
+msgid "Home"
+msgstr "Home"
+
+#: ../apps/admin/admin.py:80
+msgid "Current:"
+msgstr "Current:"
+
+#: ../apps/admin/admin.py:85
+msgid "All:"
+msgstr "All:"

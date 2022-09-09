@@ -77,12 +77,12 @@ class HomeAdmin(admin.PageAdmin):
                                 {
                                     "name": "usenum",
                                     "id": "u:114a9393eaa4",
-                                    "label": "当前："
+                                    "label": _("Current:")
                                 },
                                 {
                                     "name": "sysnum",
                                     "id": "u:beb3b22ee4bc",
-                                    "label": "全部："
+                                    "label": _("All:")
                                 }
                             ],
                             "actions": [
@@ -133,7 +133,7 @@ class HomeAdmin(admin.PageAdmin):
                                         "id": "ds_uri",
                                         "mode": "horizontal",
                                         "required": "true",
-                                        "value": "mysql+aiomysql://root:passw0rd@127.0.0.1:3306/mydb?charset=utf8mb4"
+                                        "value": "mysql+aiomysql://root:password@127.0.0.1:3306/mydb?charset=utf8mb4"
                                     },
                                     {
                                         "type": "input-text",

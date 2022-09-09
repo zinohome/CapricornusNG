@@ -300,3 +300,15 @@ msgstr "用户信息"
 #: ../core/adminsite.py:67
 msgid "Sign out"
 msgstr "退出登录"
+
+#: ../apps/admin/admin.py:48
+msgid "Home"
+msgstr "首页"
+
+#: ../apps/admin/admin.py:80
+msgid "Current:"
+msgstr "当前:"
+
+#: ../apps/admin/admin.py:85
+msgid "All:"
+msgstr "全部:"
