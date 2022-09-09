@@ -68,5 +68,5 @@ class DatasourcePage(BaseSQLModel, table=True):
                                           amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${meta_id}'))
     page_search_fields: Optional[str] = models.Field(default='', title=_('SearchFields'), max_length=256,
                                           amis_form_item=amis.Transfer(sortable=True, source='/admin/get_column_options/${meta_id}'))
-    ds_id: int = models.Field(title=_('DatasourceID'), nullable=False, foreign_key="capricornus_datasource.ds_id")
+    ds_id: Optional[int] = models.Field(default=None, title=_('DatasourceID'), foreign_key="capricornus_datasource.ds_id")
     dpdatasource: "Datasource" = Relationship(back_populates="datasourcepages")
