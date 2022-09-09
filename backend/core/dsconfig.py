@@ -26,6 +26,7 @@ from apps.admin.models.dsmeta import DatasourceMeta
 from core.settings import settings
 from util import toolkit
 from util.log import log as log
+from core import i18n as _
 
 
 class Cached(type):
@@ -132,6 +133,70 @@ class DSConfig(metaclass=Cached):
             log.error('Exception at DSConfig.readconfig() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+
+    def create_datasource(self, dsconfigdict):
+        Database_Config_dict = dsconfigdict
+        Application_Config_dict = {'app_name': 'Capricornus', 'app_version': 'v2.1.5',
+                                   'app_description': 'REST API for RDBMS', 'app_prefix': '/api/v2',
+                                   'app_cors_origins': "'*'", 'app_service_model': 'Standalone',
+                                   'app_param_prefix': 'up_b_', 'app_force_generate_meta': True,
+                                   'app_log_level': 'INFO', 'app_user_func': True, 'app_exception_detail': True,
+                                   'app_admin_use_https': False, 'app_confirm_key': 'Confirmed', 'app_http_port': 8880,
+                                   'app_https_port': 8843, 'app_http_timeout': 10, 'app_jaeger_host': 'jaeger', 'app_load_metadat_on_load': True,
+                                   'app_clear_metadat_on_startup': True, 'app_clear_metadat_on_shutdown': True}
+        Schema_Config_dict = {'schema_cache_enabled': True, 'schema_model_refresh': True,
+                              'schema_cache_filename': 'capricornus_metadata', 'schema_db_metafile': 'metadata.json',
+                              'schema_db_logicpkfile': 'logicpk.json', 'schema_db_logicpkneedfile': 'logicpk-need.json',
+                              'schema_fetch_all_table': True, 'schema_fetch_tables': 'table1, table2'}
+        Query_Config_dict = {'query_limit_upset': 2000, 'query_default_limit': 10, 'query_default_offset': 0}
+        Security_Config_dict = {'security_key': '47051d5e3bafcfcba3c80d6d1119a7adf78d2967a8972b00af1ea231ca61f589',
+                                'security_algorithm': 'HS256', 'access_token_expire_minutes': 30}
+        Connection_Config_dict = {'con_pool_size': 20, 'con_max_overflow': 5, 'con_pool_use_lifo': True,
+                                  'con_pool_pre_ping': True, 'con_pool_recycle': 3600}
+        Admin_Config_dict = {'DEBUG': True, 'SECRET_KEY': 'bgt56yh@Passw0rd', 'SESSION_COOKIE_HTTPONLY': True,
+                             'REMEMBER_COOKIE_HTTPONLY': True, 'REMEMBER_COOKIE_DURATION': 3600,
+                             'admin_ignore_primary_key': False}
+        try:
+            dsname = Database_Config_dict['ds_name']
+            connstmt = select(Datasource).where(Datasource.ds_name == dsname)
+            connresult = self.db.scalars_all(connstmt)
+            if len(connresult) == 0:
+                dsconfigname = dsname + '-config-' + ''.join(random.sample(string.ascii_letters + string.digits, 8))
+                log.debug('Create the system configration for DataSource: %s' % dsconfigname)
+                configdict = {
+                    'ds_config_name':''+dsconfigname,
+                    'application_params':Application_Config_dict,
+                    'schema_params':Schema_Config_dict,
+                    'query_params':Query_Config_dict,
+                    'security_params':Security_Config_dict,
+                    'connection_params':Connection_Config_dict,
+                    'admin_params':Admin_Config_dict
+                }
+                dscfgstmt = insert(DatasourceConfig).values(configdict)
+                dscfgresult = self.db.execute(dscfgstmt)
+                configid = dscfgresult.lastrowid
+                if configid > 0 :
+                    log.debug('Create the system configration for DataSource: %s' % dsname)
+                    dsdict = {
+                        'ds_name':dsname,
+                        'ds_config_id':configid,
+                        'ds_uri':Database_Config_dict['ds_uri'] ,
+                        'ds_schema':Database_Config_dict['ds_schema'],
+                        'ds_exclude_tablespaces':Database_Config_dict['ds_exclude_tablespaces']
+                    }
+                    dsstmt = insert(Datasource).values(dsdict)
+                    dsresult = self.db.execute(dsstmt)
+                    #log.debug(dsresult.lastrowid)
+                    return {"status": 0, "msg": _("DataSource Created")}
+                else:
+                    return {"status": 1, "msg": _("DataSource Configration Create Error !")}
+            else:
+                return {"status": 1, "msg": _("DataSource Name Must Be Unique !")}
+        except Exception as exp:
+            log.error('Exception at DSConfig.readconfig() %s ' % exp)
+            if settings.app_exception_detail:
+                traceback.print_exc()
+            return {"status": 1, "msg": _("DataSource Create Error !")}
 
     def loaddefault(self):
         Database_Config_dict = {'ds_name': 'sample-datasource', 'ds_uri': 'sqlite+aiosqlite:////opt/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'ds_exclude_tablespaces': None, 'ds_id': 2, 'ds_schema': None, 'ds_config_id': 2}

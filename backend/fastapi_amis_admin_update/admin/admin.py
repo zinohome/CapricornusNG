@@ -381,8 +381,11 @@ class BaseModelAdmin(SQLModelCrud):
         url = admin.router_path + admin.page_path
         label = modelfield.field_info.title or modelfield.name
         remark = Remark(content = modelfield.field_info.description) if modelfield.field_info.description else None
+        # modify to get forignkey
+        labelfieldname = 'name' if admin.pk_label is None else admin.pk_label
+        valuefieldname = 'id' if admin.pk_name is None else admin.pk_name
         picker = Picker(
-            name = modelfield.alias, label = label, labelField = 'name', valueField = 'id',
+            name = modelfield.alias, label = label, labelField = labelfieldname, valueField = valuefieldname,
             required = (modelfield.required and not is_filter), modalMode = 'dialog', inline = is_filter,
             size = 'full', labelRemark = remark, pickerSchema = '${body}', source = '${body.api}'
         )
