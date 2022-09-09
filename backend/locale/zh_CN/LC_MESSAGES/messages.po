@@ -326,6 +326,10 @@ msgid "Step 1: Create DataSource"
 msgstr "第一步: 连接数据源"
 
 #: ../apps/admin/admin.py:122
+msgid "DataSource Name"
+msgstr "数据源名称"
+
+#: ../apps/admin/admin.py:131
 msgid "DataSource URI"
 msgstr "连接URI"
 
