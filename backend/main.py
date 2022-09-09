@@ -92,7 +92,7 @@ opentracing_config = jaeger_config(
         "local_agent": {"reporting_host": dsconfig.Application_Config.app_jaeger_host},
     },
     scope_manager=ContextVarsScopeManager(),
-    service_name="CapricornusNG",
+    service_name="CapricornusNG-" + settings.app_profile,
 )
 jaeger_tracer = opentracing_config.initialize_tracer()
 install_all_patches()
