@@ -312,3 +312,79 @@ msgstr "当前:"
 #: ../apps/admin/admin.py:85
 msgid "All:"
 msgstr "全部:"
+
+#: ../apps/admin/admin.py:105
+msgid "No Data Found"
+msgstr "暂无数据"
+
+#: ../apps/admin/admin.py:110
+msgid "<p>Capricornus DataSource Wizard</p>"
+msgstr "<p>Capricornus 使用向导</p>"
+
+#: ../apps/admin/admin.py:118
+msgid "<p>Step 1: Create DataSource</p>"
+msgstr "<p>第一步: 连接数据源</p>"
+
+#: ../apps/admin/admin.py:122
+msgid "DataSource URI"
+msgstr "连接URI"
+
+#: ../apps/admin/admin.py:140
+msgid "Schema"
+msgstr "Schema"
+
+#: ../apps/admin/admin.py:147
+msgid "Exclude Tablespaces"
+msgstr "排除的表空间"
+
+#: ../apps/admin/admin.py:169
+msgid "Step 2: Synchronize Data Structure"
+msgstr "第二步: 同步数据结构"
+
+#: ../apps/admin/admin.py:197
+msgid "Step 3: Enjoy Your REST API"
+msgstr "第三步: 使用API"
+
+#: ../apps/admin/admin.py:201
+msgid "<p>Good Job ! Now, enjoy your REST API by change the APP_PROFILE in your Environment variables to your DataSource Name.</p>"
+msgstr "<p>真棒！现在，修改环境变量APP_PROFILE的值为你的数据源名称并重新启动Capricornus，享受你的 REST API 吧……</p>"
+
+#: ../apps/admin/apis.py:48
+msgid "Table"
+msgstr "表"
+
+#: ../apps/admin/apis.py:49
+msgid "Number of Tables"
+msgstr "系统表数量"
+
+#: ../apps/admin/apis.py:56
+msgid "View"
+msgstr "视图"
+
+#: ../apps/admin/apis.py:57
+msgid "Number of Views"
+msgstr "系统视图数量"
+
+#: ../apps/admin/apis.py:65
+msgid "Number of APIs"
+msgstr "系统API数量"
+
+#: ../apps/admin/apis.py:72
+msgid "User"
+msgstr "用户"
+
+#: ../apps/admin/apis.py:73
+msgid "Number of Users"
+msgstr "系统用户数量"
+
+#: ../apps/admin/apis.py:170
+msgid "DataSource Created"
+msgstr "数据源创建成功"
+
+#: ../apps/admin/apis.py:194
+msgid "DataBase synchronized"
+msgstr "数据结构同步成功"
+
+#: ../apps/admin/apis.py:196
+msgid "Wizard Completed"
+msgstr "向导完成"

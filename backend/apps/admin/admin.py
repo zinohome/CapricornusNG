@@ -102,7 +102,7 @@ class HomeAdmin(admin.PageAdmin):
                             "id": "u:ec25ab7b71bb"
                         },
                         "id": "u:c3ad6665eb77",
-                        "placeholder": "暂无数据",
+                        "placeholder": _("No Data Found"),
                         "title": ""
                     },
                     {
@@ -115,11 +115,11 @@ class HomeAdmin(admin.PageAdmin):
                         "type": "wizard",
                         "steps": [
                             {
-                                "title": "第一步 连接数据源",
+                                "title": _("Step 1: Create DataSource"),
                                 "body": [
                                     {
                                         "type": "input-text",
-                                        "label": "数据源名称",
+                                        "label": _("DataSource Name"),
                                         "name": "ds_name",
                                         "id": "ds_name",
                                         "mode": "horizontal",
@@ -128,7 +128,7 @@ class HomeAdmin(admin.PageAdmin):
                                     },
                                     {
                                         "type": "input-text",
-                                        "label": "连接URI",
+                                        "label": _("DataSource URI"),
                                         "name": "ds_uri",
                                         "id": "ds_uri",
                                         "mode": "horizontal",
@@ -137,14 +137,14 @@ class HomeAdmin(admin.PageAdmin):
                                     },
                                     {
                                         "type": "input-text",
-                                        "label": "Schema",
+                                        "label": _("Schema"),
                                         "name": "ds_schema",
                                         "id": "ds_schema",
                                         "mode": "horizontal"
                                     },
                                     {
                                         "type": "input-text",
-                                        "label": "排除的表空间",
+                                        "label": _("Exclude Tablespaces"),
                                         "name": "ds_exclude_tablespaces",
                                         "id": "ds_exclude_tablespaces",
                                         "mode": "horizontal"
@@ -166,11 +166,11 @@ class HomeAdmin(admin.PageAdmin):
                                 }
                             },
                             {
-                                "title": "第二步 同步数据结构",
+                                "title": _("Step 2: Synchronize Data Structure"),
                                 "body": [
                                     {
                                         "type": "input-text",
-                                        "label": "数据源名称",
+                                        "label": _("DataSource Name"),
                                         "name": "confirm_ds_name",
                                         "id": "confirm_ds_name",
                                         "mode": "horizontal",
@@ -194,7 +194,7 @@ class HomeAdmin(admin.PageAdmin):
                                 }
                             },
                             {
-                                "title": "第三步 使用API",
+                                "title": _("Step 3: Enjoy Your REST API"),
                                 "body": [
                                     {
                                         "type": "tpl",

@@ -45,16 +45,16 @@ async def get_home_statis():
                             'items': [
                                 {
                                     'avatarTX': 'Table',
-                                    'title': '表',
-                                    'subtitle': '系统表数量',
+                                    'title': _('Table'),
+                                    'subtitle': _('Number of Tables'),
                                     'usenum': 2,
                                     'sysnum': 10,
                                     'tag':'Data'
                                 },
                                 {
                                     'avatarTX': 'View',
-                                    'title': '视图',
-                                    'subtitle': '系统视图数量',
+                                    'title': _('View'),
+                                    'subtitle': _('Number of Views'),
                                     'usenum': 4,
                                     'sysnum': 12,
                                     'tag':'Data'
@@ -62,15 +62,15 @@ async def get_home_statis():
                                 {
                                     'avatarTX': 'API',
                                     'title': 'API',
-                                    'subtitle': '系统API数量',
+                                    'subtitle': _('Number of APIs'),
                                     'usenum': 21,
                                     'sysnum': 44,
                                     'tag':'System'
                                 },
                                 {
                                     'avatarTX': 'User',
-                                    'title': '用户',
-                                    'subtitle': '系统用户数量',
+                                    'title': _('User'),
+                                    'subtitle': _('Number of Users'),
                                     'usenum': 2,
                                     'sysnum': 35,
                                     'tag':'Admin'
@@ -97,7 +97,7 @@ async def get_home_statis():
         #log.debug(returndict)
         return returndict
     except Exception as e:
-        log.error('Get column options Error !')
+        log.error('Get home statistics Error !')
         traceback.print_exc()
         return returndict
 
@@ -167,7 +167,7 @@ async def dswizard(dswizard: DSWZDModel) -> str:
                     returnvalue = dsconfig.create_datasource(dswizard.dict())
                     log.debug(returnvalue)
                     if returnvalue['status'] == 0:
-                        return {'status': 0, 'msg': 'DataSource Created', 'data':{'ds_name':dswizard.ds_name}}
+                        return {'status': 0, 'msg': _('DataSource Created'), 'data':{'ds_name':dswizard.ds_name}}
                 else:
                     return {"status": 1, "msg": _("DataBase Connect Error")}
         elif dswizard.step == '2':
@@ -213,8 +213,7 @@ async def db_connection_test(ds_uri: DSURIModel) -> str:
             #log.debug('Test excute result: %s' % result.fetchall())
             #log.debug('Database Connected !')
             await engine.dispose()
-            #return {"status":0,"msg":_("DataBase Connected")}
-
+            return {"status":0,"msg":_("DataBase Connected")}
     except Exception as e:
         log.error('Database Test Connected Error !')
         traceback.print_exc()

@@ -312,3 +312,83 @@ msgstr "Current:"
 #: ../apps/admin/admin.py:85
 msgid "All:"
 msgstr "All:"
+
+#: ../apps/admin/admin.py:105
+msgid "No Data Found"
+msgstr "No Data Found"
+
+#: ../apps/admin/admin.py:110
+msgid "<p>Capricornus DataSource Wizard</p>"
+msgstr "<p>Capricornus DataSource Wizard</p>"
+
+#: ../apps/admin/admin.py:118
+msgid "<p>Step 1: Create DataSource</p>"
+msgstr "<p>Step 1: Create DataSource</p>"
+
+#: ../apps/admin/admin.py:122
+msgid "DataSource Name"
+msgstr "DataSource Name"
+
+#: ../apps/admin/admin.py:131
+msgid "DataSource URI"
+msgstr "DataSource URI"
+
+#: ../apps/admin/admin.py:140
+msgid "Schema"
+msgstr "Schema"
+
+#: ../apps/admin/admin.py:147
+msgid "Exclude Tablespaces"
+msgstr "Exclude Tablespaces"
+
+#: ../apps/admin/admin.py:169
+msgid "Step 2: Synchronize Data Structure"
+msgstr "Step 2: Synchronize Data Structure"
+
+#: ../apps/admin/admin.py:197
+msgid "Step 3: Enjoy Your REST API"
+msgstr "Step 3: Enjoy Your REST API"
+
+#: ../apps/admin/admin.py:201
+msgid "<p>Good Job ! Now, enjoy your REST API by change the APP_PROFILE in your Environment variables to your DataSource Name.</p>"
+msgstr "<p>Good Job ! Now, enjoy your REST API by change the APP_PROFILE in your Environment variables to your DataSource Name.</p>"
+
+#: ../apps/admin/apis.py:48
+msgid "Table"
+msgstr "Table"
+
+#: ../apps/admin/apis.py:49
+msgid "Number of Tables"
+msgstr "Number of Tables"
+
+#: ../apps/admin/apis.py:56
+msgid "View"
+msgstr "View"
+
+#: ../apps/admin/apis.py:57
+msgid "Number of Views"
+msgstr "Number of Views"
+
+#: ../apps/admin/apis.py:67
+msgid "Number of APIs"
+msgstr "Number of APIs"
+
+#: ../apps/admin/apis.py:72
+msgid "User"
+msgstr "User"
+
+#: ../apps/admin/apis.py:73
+msgid "Number of Users"
+msgstr "Number of Users"
+
+#: ../apps/admin/apis.py:170
+msgid "DataSource Created"
+msgstr "DataSource Created"
+
+#: ../apps/admin/apis.py:194
+msgid "DataBase synchronized"
+msgstr "DataBase synchronized"
+
+#: ../apps/admin/apis.py:196
+msgid "Wizard Completed"
+msgstr "Wizard Completed"
