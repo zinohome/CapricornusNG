@@ -322,8 +322,8 @@ msgid "<p>Capricornus DataSource Wizard</p>"
 msgstr "<p>Capricornus 使用向导</p>"
 
 #: ../apps/admin/admin.py:118
-msgid "<p>Step 1: Create DataSource</p>"
-msgstr "<p>第一步: 连接数据源</p>"
+msgid "Step 1: Create DataSource"
+msgstr "第一步: 连接数据源"
 
 #: ../apps/admin/admin.py:122
 msgid "DataSource URI"

@@ -322,8 +322,8 @@ msgid "<p>Capricornus DataSource Wizard</p>"
 msgstr "<p>Capricornus DataSource Wizard</p>"
 
 #: ../apps/admin/admin.py:118
-msgid "<p>Step 1: Create DataSource</p>"
-msgstr "<p>Step 1: Create DataSource</p>"
+msgid "Step 1: Create DataSource"
+msgstr "Step 1: Create DataSource"
 
 #: ../apps/admin/admin.py:122
 msgid "DataSource Name"
