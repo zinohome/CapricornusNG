@@ -382,8 +382,8 @@ class BaseModelAdmin(SQLModelCrud):
         label = modelfield.field_info.title or modelfield.name
         remark = Remark(content = modelfield.field_info.description) if modelfield.field_info.description else None
         # modify to get forignkey
-        labelfieldname = 'name' if admin.pk_label is None else admin.pk_label
-        valuefieldname = 'id' if admin.pk_name is None else admin.pk_name
+        labelfieldname = admin.pk_label if (hasattr(admin,'pk_label') and (not admin.pk_label is None)) else 'name'
+        valuefieldname = admin.pk_name if (hasattr(admin,'pk_name') and (not admin.pk_name is None)) else 'id'
         picker = Picker(
             name = modelfield.alias, label = label, labelField = labelfieldname, valueField = valuefieldname,
             required = (modelfield.required and not is_filter), modalMode = 'dialog', inline = is_filter,
