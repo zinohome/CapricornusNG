@@ -1,4 +1,7 @@
-from pydantic import BaseSettings, Field, validator, root_validator
+import logging
+from typing import Any, Union
+
+from pydantic import BaseSettings, Field, root_validator, validator
 
 class Settings(BaseSettings):
     """项目配置"""
@@ -15,6 +18,8 @@ class Settings(BaseSettings):
     language: str = ''  # 'zh_CN','en_US'
     amis_cdn: str = 'https://unpkg.com'
     amis_pkg: str = 'amis@1.10.2'
+    amis_theme: str = "antd"  # 'antd', 'cxd'
+    logger: Union[logging.Logger, Any] = logging.getLogger("fastapi_amis_admin")
     app_exception_detail: bool = Field('', env='APP_EXCEPTIONN_DETAIL')
     app_mode: str = Field('', env='APP_MODE')
     app_profile: str = Field('', env='APP_PROFILE')
@@ -25,8 +30,11 @@ class Settings(BaseSettings):
     def valid_url(url: str):
         return url[:-1] if url.endswith('/') else url
 
-    @root_validator(pre = True)
+    @root_validator(pre=True)
     def valid_database_url(cls, values):
-        if not values.get('database_url') and not values.get('database_url_async'):
-            values.setdefault('database_url', 'sqlite+aiosqlite:///amisadmin.db?check_same_thread=False')
+        if not values.get("database_url") and not values.get("database_url_async"):
+            values.setdefault(
+                "database_url",
+                "sqlite+aiosqlite:///amisadmin.db?check_same_thread=False",
+            )
         return values
