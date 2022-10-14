@@ -8,8 +8,7 @@
     <meta content="IE=Edge" http-equiv="X-UA-Compatible"/>
     <link href="${site_icon}" rel="shortcut icon" type="image/x-icon"/>
     <link href="${cdn}/${pkg}/sdk/sdk.css" rel="stylesheet" title="default"/>
-    <link href="${cdn}/${pkg}/sdk/antd.css" rel="stylesheet" title="default"/>
-    <link href="${cdn}/${pkg}/sdk/carbon.css" rel="stylesheet" title="default"/>
+    ${theme_css}
     <link href="${cdn}/${pkg}/sdk/helper.css" rel="stylesheet"/>
     <link href="${cdn}/${pkg}/sdk/iconfont.css" rel="stylesheet"/>
     <script src="${cdn}/${pkg}/sdk/sdk.js"></script>
@@ -158,7 +157,7 @@
                     }
                 },
                 isCurrentUrl: isCurrentUrl,
-                theme: 'carbon'
+                theme: '${theme}'
             }
         );
 
