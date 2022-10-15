@@ -2,9 +2,14 @@ import logging
 from typing import Any, Union
 
 from pydantic import BaseSettings, Field, root_validator, validator
+from typing_extensions import Literal
+
+from fastapi_amis_admin.amis import API
+
 
 class Settings(BaseSettings):
     """项目配置"""
+
     host: str = '127.0.0.1'
     port: int = 8000
     debug: bool = False
@@ -17,8 +22,10 @@ class Settings(BaseSettings):
     database_url: str = Field('', env = 'DATABASE_URL')
     language: str = ''  # 'zh_CN','en_US'
     amis_cdn: str = 'https://unpkg.com'
-    amis_pkg: str = 'amis@1.10.2'
-    amis_theme: str = "antd"  # 'antd', 'cxd'
+    amis_pkg: str = "amis@2.3.1"
+    amis_theme: Literal["cxd", "antd", "dark", "ang"] = "cxd"
+    amis_image_receiver: API = None  # 图片上传接口
+    amis_file_receiver: API = None  # 文件上传接口
     logger: Union[logging.Logger, Any] = logging.getLogger("fastapi_amis_admin")
     app_exception_detail: bool = Field('', env='APP_EXCEPTIONN_DETAIL')
     app_mode: str = Field('', env='APP_MODE')
@@ -38,3 +45,7 @@ class Settings(BaseSettings):
                 "sqlite+aiosqlite:///amisadmin.db?check_same_thread=False",
             )
         return values
+
+    @validator("amis_image_receiver", "amis_file_receiver", pre=True)
+    def valid_receiver(cls, v, values):
+        return v if v else f"post:{values.get('root_path', '')}/file/upload"
