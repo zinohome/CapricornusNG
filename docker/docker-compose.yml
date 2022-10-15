@@ -9,6 +9,7 @@ services:
     environment:
       LANG: "zh_CN"
       LANGUAGE: "zh_CN"
+      amis_theme: "antd"
       APP_MODE: "sample-datasource"
       APP_PROFILE: "sample-datasource"
     ports:
