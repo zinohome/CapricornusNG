@@ -7,6 +7,7 @@ DATABASE_URL_ASYNC=sqlite+aiosqlite:////opt/CapricornusNG/backend/data/capricorn
 SECRET_KEY=veheyyw6pv1nqtjsdbgt56yhn0hbhjltn42k7nlaikl4rn62bwewawq0qt9o6723
 ALLOW_ORIGINS=["*"]
 LANGUAGE=zh_CN
+amis_theme=antd
 APP_MODE=sample-datasource
 APP_PROFILE=sample-datasource
 APP_LOG_LEVEL=INFO
