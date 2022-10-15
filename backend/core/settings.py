@@ -24,7 +24,7 @@ class Settings(AmisSettings):
     port: int = 8000
     debug: bool = True
     secret_key: str = ''
-    version: str = '0.1.1'
+    version: str = '0.1.2'
     site_title: str = 'CapricornusNG'
     site_icon: str = '/static/favicon.ico'
     language: str = 'zh_CN'
