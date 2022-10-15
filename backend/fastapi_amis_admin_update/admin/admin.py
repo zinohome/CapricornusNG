@@ -40,6 +40,7 @@ from fastapi_amis_admin.amis.components import (
     App,
     ColumnOperation,
     Dialog,
+    Drawer,
     Form,
     FormItem,
     Iframe,
@@ -1311,7 +1312,11 @@ class AdminApp(PageAdmin, AdminGroup):
         #    f'<div><a href="{fastapi_amis_admin.__url__}" target="_blank" '
         #    'title="Copyright"><i class="fa fa-github fa-2x"></i></a></div></div>',
         #)
-        app.header = '<div class="p-1 text-center bg-light">&nbsp;</div> '
+        app.header = Tpl(
+            className="w-full",
+            tpl='<div class="flex justify-between"><div></div>'
+            f'<div></div></div>',
+        )
         #app.footer = (
         #    '<div class="p-2 text-center bg-light">Copyright © 2021 - 2022  '
         #    f'<a href="{fastapi_amis_admin.__url__}" target="_blank" '

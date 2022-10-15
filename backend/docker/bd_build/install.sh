@@ -25,6 +25,7 @@ ls -l /opt/CapricornusNG/backend/.env && cat /opt/CapricornusNG/backend/.env && 
 ls -l /opt/CapricornusNG/backend/docker/bd_build/ && \
 cp /opt/CapricornusNG/backend/docker/bd_build/50_start_h.sh /etc/my_init.d/50_start_CapricornusNG.sh && \
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/admin/admin.py /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/admin/admin.py && \
+cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/admin/parser.py /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/admin/parser.py && \
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/admin/settings.py /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/admin/settings.py && \
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/amis/templates/app.html /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/amis/templates/app.html && \
 cp /opt/CapricornusNG/backend/fastapi_amis_admin_update/amis/templates/page.html /opt/CapricornusNG/backend/venv/lib/python3.8/site-packages/fastapi_amis_admin/amis/templates/page.html && \
