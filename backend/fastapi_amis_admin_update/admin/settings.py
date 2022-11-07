@@ -8,24 +8,24 @@ from fastapi_amis_admin.amis import API
 
 
 class Settings(BaseSettings):
-    """项目配置"""
+    """Project configuration"""
 
-    host: str = '127.0.0.1'
+    host: str = "127.0.0.1"
     port: int = 8000
     debug: bool = False
-    version: str = '0.0.0'
-    site_title: str = 'FastAPI Amis Admin'
-    site_icon: str = 'https://baidu.gitee.io/amis/static/favicon_b3b0647.png'
-    site_url: str = ''
-    root_path: str = '/admin'
-    database_url_async: str = Field('', env = 'DATABASE_URL_ASYNC')
-    database_url: str = Field('', env = 'DATABASE_URL')
-    language: str = ''  # 'zh_CN','en_US'
-    amis_cdn: str = 'https://unpkg.com'
-    amis_pkg: str = "amis@2.3.1"
+    version: str = "0.0.0"
+    site_title: str = "FastAPI Amis Admin"
+    site_icon: str = "https://baidu.gitee.io/amis/static/favicon_b3b0647.png"
+    site_url: str = ""
+    root_path: str = "/admin"
+    database_url_async: str = Field("", env="DATABASE_URL_ASYNC")
+    database_url: str = Field("", env="DATABASE_URL")
+    language: Union[Literal["zh_CN", "en_US", "de_DE"], str] = ""
+    amis_cdn: str = "https://unpkg.com"
+    amis_pkg: str = "amis@2.4.0"
     amis_theme: Literal["cxd", "antd", "dark", "ang"] = "cxd"
-    amis_image_receiver: API = None  # 图片上传接口
-    amis_file_receiver: API = None  # 文件上传接口
+    amis_image_receiver: API = None  # Image upload interface
+    amis_file_receiver: API = None  # File upload interface
     logger: Union[logging.Logger, Any] = logging.getLogger("fastapi_amis_admin")
     app_exception_detail: bool = Field('', env='APP_EXCEPTIONN_DETAIL')
     app_mode: str = Field('', env='APP_MODE')
@@ -33,9 +33,9 @@ class Settings(BaseSettings):
     app_log_level: str = Field('', env='APP_LOG_LEVEL')
     app_log_filename: str = Field('', env='APP_LOG_FILENAME')
 
-    @validator('amis_cdn', 'root_path', 'site_url', pre = True)
-    def valid_url(url: str):
-        return url[:-1] if url.endswith('/') else url
+    @validator("amis_cdn", "root_path", "site_url", pre=True)
+    def valid_url(cls, url: str):
+        return url[:-1] if url.endswith("/") else url
 
     @root_validator(pre=True)
     def valid_database_url(cls, values):
@@ -48,4 +48,4 @@ class Settings(BaseSettings):
 
     @validator("amis_image_receiver", "amis_file_receiver", pre=True)
     def valid_receiver(cls, v, values):
-        return v if v else f"post:{values.get('root_path', '')}/file/upload"
+        return v or f"post:{values.get('root_path', '')}/file/upload"

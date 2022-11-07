@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Iterable, Type, Union
+from typing import Any, Generator, Iterable, Type, TypeVar, Union
 
 from pydantic import BaseModel, Json
 from pydantic.fields import ModelField
@@ -20,6 +20,8 @@ from fastapi_amis_admin.amis.constants import LabelEnum
 from fastapi_amis_admin.models.enums import Choices
 from fastapi_amis_admin.utils.translation import i18n as _
 
+_T = TypeVar("_T")
+
 
 class AmisParser:
     """AmisParser,used to parse pydantic fields to amis form item or table column.
@@ -39,17 +41,17 @@ class AmisParser:
         self.image_receiver = image_receiver
         self.file_receiver = file_receiver
 
-    def as_form_item(self, modelfield: ModelField, set_default: bool = False, is_filter: bool = False) -> FormItem:
-        formitem = self._get_form_item_from_kwargs(modelfield, is_filter=is_filter)
-        formitem = self.update_common_attrs(modelfield, formitem, set_default=set_default, is_filter=is_filter)
-        if isinstance(formitem, amis.InputImage) and not formitem.receiver:
+    def _wrap_form_item(self, formitem: FormItem) -> FormItem:
+        """Wrap formitem, add image and file upload receiver."""
+        if formitem.type == "input-image" and not getattr(formitem, "receiver", None):
             formitem.receiver = self.image_receiver
-        elif isinstance(formitem, amis.InputFile) and not formitem.receiver:
+        elif formitem.type == "input-file" and not getattr(formitem, "receiver", None):
             formitem.receiver = self.file_receiver
-        elif isinstance(formitem, amis.InputRichText):
-            formitem.receiver = formitem.receiver or self.image_receiver
-            formitem.videoReceiver = formitem.videoReceiver or self.file_receiver
+        elif formitem.type == "input-rich-text":
+            formitem.receiver = getattr(formitem, "receiver", None) or self.image_receiver
+            formitem.videoReceiver = getattr(formitem, "videoReceiver", None) or self.file_receiver
         if formitem.type in {"input-image", "input-file"}:
+            # Add manual input file link component.
             formitem = amis.Group(
                 name=formitem.name,
                 body=[
@@ -61,6 +63,21 @@ class AmisParser:
                 ],
             )
         return formitem
+
+    def as_form_item(self, modelfield: ModelField, set_default: bool = False, is_filter: bool = False) -> FormItem:
+        """
+        Get amis form item from pydantic field.
+        Args:
+            modelfield: pydantic field
+            set_default: Is set default value
+            is_filter: Is filter form
+
+        Returns:
+
+        """
+        formitem = self._get_form_item_from_kwargs(modelfield, is_filter=is_filter)
+        formitem = self.update_common_attrs(modelfield, formitem, set_default=set_default, is_filter=is_filter)
+        return self._wrap_form_item(formitem)
 
     def as_table_column(self, modelfield: ModelField, quick_edit: bool = False) -> TableColumn:
         column = self._get_table_column_from_kwargs(modelfield)
@@ -83,10 +100,12 @@ class AmisParser:
         """Get amis form from pydantic model.
         Args:
             model: Pydantic model
+            set_default: Is set default value
+            is_filter: Is filter form
         Returns:
             amis.Form
         """
-        form = amis.Form(title=model.Config.title)
+        form = amis.Form(title=getattr(model.Config, "title", None))
         form.body = [
             self.as_form_item(modelfield, set_default=set_default, is_filter=is_filter)
             for modelfield in model.__fields__.values()
@@ -123,20 +142,20 @@ class AmisParser:
     def _get_form_item_from_kwargs(self, modelfield: ModelField, is_filter: bool = False) -> FormItem:
         formitem = self.get_field_amis_extra(modelfield, ["amis_form_item", "amis_filter_item"][is_filter])
         # List type parse to InputArray
-        '''
-        # Not Use in Capricornus
+        """ Not Use in Capricornus
         if modelfield.outer_type_ and get_origin(modelfield.outer_type_) is list:
             if not isinstance(formitem, FormItem):
                 formitem = InputArray(**formitem)
+            # Parse the internal type of the list.
             kwargs = self.get_field_amis_form_item_type(type_=modelfield.type_, is_filter=is_filter)
             update = formitem.items.amis_dict() if formitem.items else {}
             if update:
                 kwargs = deep_update(kwargs, update)
             formitem.items = FormItem(**kwargs)
-        '''
-        # other type parse to FormItem
+        """
         if isinstance(formitem, FormItem):
             return formitem
+        # other type parse to FormItem
         kwargs = self.get_field_amis_form_item_type(
             type_=modelfield.type_,
             is_filter=is_filter,
@@ -174,7 +193,8 @@ class AmisParser:
             kwargs["type"] = "mapping"
             kwargs["filterable"] = {"options": [{"label": v, "value": k} for k, v in type_.choices]}
             kwargs["map"] = {
-                k: f"<span class='label label-{l}'>{v}</span>" for (k, v), l in zip(type_.choices, cyclic_generator(LabelEnum))
+                k: f"<span class='label label-{l.value}'>{v}</span>"
+                for (k, v), l in zip(type_.choices, cyclic_generator(LabelEnum))
             }
         return kwargs
 
@@ -232,7 +252,7 @@ class AmisParser:
             # pydantic model parse to InputSubForm
             kwargs["type"] = "input-sub-form"
             kwargs["labelField"] = get_model_label_field_name(type_)
-            kwargs["btnLabel"] = type_.Config.title
+            kwargs["btnLabel"] = getattr(type_.Config, "title", None)
             kwargs["form"] = self.as_amis_form(type_, is_filter=is_filter)
         else:
             kwargs["type"] = "input-text"
@@ -259,7 +279,7 @@ class AmisParser:
         return extra
 
 
-def cyclic_generator(iterable: Iterable):
+def cyclic_generator(iterable: Iterable[_T]) -> Generator[_T, None, None]:
     while True:
         yield from iterable
 
