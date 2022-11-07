@@ -6,3 +6,5 @@
 
 # ingore log
 /log/
+
+/.DS_Store/

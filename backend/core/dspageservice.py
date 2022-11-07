@@ -209,11 +209,15 @@ class DspageService(metaclass=Cached):
                 del insertdict['meta_id']
             stmt = insert(DatasourcePage).values(insertdict)
             result = self.dsconfig.db.execute(stmt)
+            self.dsconfig.db.commit()
             return result.lastrowid
         except Exception as exp:
+            self.dsconfig.db.rollback()
             log.error('Exception at DspageService.create_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.dsconfig.db.close()
 
 
     async def async_create_table(self):
@@ -223,12 +227,16 @@ class DspageService(metaclass=Cached):
                 del insertdict['meta_id']
             stmt = insert(DatasourcePage).values(insertdict)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
+            self.dsconfig.asyncdb.commit()
             return result.lastrowid
         except Exception as exp:
+            self.dsconfig.asyncdb.rollback()
             log.error('Exception at DspageService.async_create_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return None
+        finally:
+            self.dsconfig.asyncdb.close()
 
 
     def create_update_table(self):
@@ -251,6 +259,7 @@ class DspageService(metaclass=Cached):
                 self.valuedict['meta_columns'] = updatedict['meta_columns']
                 stmt = update(DatasourcePage).where(DatasourcePage.meta_id == olddict['meta_id']).values(updatedict)
                 result = self.dsconfig.db.execute(stmt)
+                self.dsconfig.db.commit()
                 self.valuedict['meta_id'] = olddict['meta_id']
                 return self.valuedict['meta_id']
             else:
@@ -260,11 +269,15 @@ class DspageService(metaclass=Cached):
                     del insertdict['meta_id']
                 stmt = insert(DatasourcePage).values(insertdict)
                 result = self.dsconfig.db.execute(stmt)
+                self.dsconfig.db.commit()
                 return result.lastrowid
         except Exception as exp:
+            self.dsconfig.db.rollback()
             log.error('Exception at DspageService.create_update_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.dsconfig.db.close()
 
 
     async def async_create_update_table(self):
@@ -280,6 +293,7 @@ class DspageService(metaclass=Cached):
                 self.valuedict['label'] = olddict['label']
                 stmt = update(DatasourcePage).where(DatasourcePage.meta_id == olddict['meta_id']).values(updatedict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
+                self.dsconfig.asyncdb.commit()
                 self.valuedict['meta_id'] = olddict['meta_id']
                 return self.valuedict['meta_id']
             else:
@@ -289,35 +303,47 @@ class DspageService(metaclass=Cached):
                     del insertdict['meta_id']
                 stmt = insert(DatasourcePage).values(insertdict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
+                self.dsconfig.asyncdb.commit()
                 return result.lastrowid
         except Exception as exp:
+            self.dsconfig.asyncdb.rollback()
             log.error('Exception at DspageService.async_create_update_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return None
+        finally:
+            self.dsconfig.asyncdb.close()
 
 
     def delete_table(self):
         try:
             stmt = delete(DatasourcePage).where(DatasourcePage.meta_id == self.meta_id)
             result = self.dsconfig.db.execute(stmt)
+            self.dsconfig.db.commit()
             return result.rowcount
         except Exception as exp:
+            self.dsconfig.db.rollback()
             log.error('Exception at DspageService.delete_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.dsconfig.db.close()
 
 
     async def async_delete_table(self):
         try:
             stmt = delete(DatasourcePage).where(DatasourcePage.meta_id == self.meta_id)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
+            self.dsconfig.asyncdb.commit()
             return result.rowcount
         except Exception as exp:
+            self.dsconfig.asyncdb.rollback()
             log.error('Exception at DspageService.async_delete_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return None
+        finally:
+            self.dsconfig.asyncdb.close()
 
 
 if __name__ == '__main__':

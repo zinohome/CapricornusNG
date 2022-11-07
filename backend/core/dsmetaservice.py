@@ -192,11 +192,15 @@ class DsmetaService(metaclass=Cached):
                 del insertdict['meta_id']
             stmt = insert(DatasourceMeta).values(insertdict)
             result = self.dsconfig.db.execute(stmt)
+            self.dsconfig.db.commit()
             return result.lastrowid
         except Exception as exp:
+            self.dsconfig.db.rollback()
             log.error('Exception at DsmetaService.create_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.dsconfig.db.close()
 
 
     async def async_create_table(self):
@@ -206,12 +210,16 @@ class DsmetaService(metaclass=Cached):
                 del insertdict['meta_id']
             stmt = insert(DatasourceMeta).values(insertdict)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
+            self.dsconfig.asyncdb.commit()
             return result.lastrowid
         except Exception as exp:
+            self.dsconfig.asyncdb.rollback()
             log.error('Exception at DsmetaService.async_create_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return None
+        finally:
+            self.dsconfig.asyncdb.close()
 
 
     def create_update_table(self):
@@ -224,6 +232,7 @@ class DsmetaService(metaclass=Cached):
                 updatedict = self.valuedict.copy()
                 stmt = update(DatasourceMeta).where(DatasourceMeta.meta_id == olddict['meta_id']).values(updatedict)
                 result = self.dsconfig.db.execute(stmt)
+                self.dsconfig.db.commit()
                 self.valuedict['meta_id'] = olddict['meta_id']
                 return self.valuedict['meta_id']
             else:
@@ -233,11 +242,15 @@ class DsmetaService(metaclass=Cached):
                     del insertdict['meta_id']
                 stmt = insert(DatasourceMeta).values(insertdict)
                 result = self.dsconfig.db.execute(stmt)
+                self.dsconfig.db.commit()
                 return result.lastrowid
         except Exception as exp:
+            self.dsconfig.db.rollback()
             log.error('Exception at DsmetaService.create_update_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.dsconfig.db.close()
 
 
     async def async_create_update_table(self):
@@ -250,6 +263,7 @@ class DsmetaService(metaclass=Cached):
                 updatedict = self.valuedict.copy()
                 stmt = update(DatasourceMeta).where(DatasourceMeta.meta_id == olddict['meta_id']).values(updatedict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
+                self.dsconfig.asyncdb.commit()
                 self.valuedict['meta_id'] = olddict['meta_id']
                 return self.valuedict['meta_id']
             else:
@@ -259,35 +273,47 @@ class DsmetaService(metaclass=Cached):
                     del insertdict['meta_id']
                 stmt = insert(DatasourceMeta).values(insertdict)
                 result = await self.dsconfig.asyncdb.async_execute(stmt)
+                self.dsconfig.asyncdb.commit()
                 return result.lastrowid
         except Exception as exp:
+            self.dsconfig.asyncdb.rollback()
             log.error('Exception at DsmetaService.async_create_update_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return None
+        finally:
+            self.dsconfig.asyncdb.close()
 
 
     def delete_table(self):
         try:
             stmt = delete(DatasourceMeta).where(DatasourceMeta.meta_id == self.meta_id)
             result = self.dsconfig.db.execute(stmt)
+            self.dsconfig.db.commit()
             return result.rowcount
         except Exception as exp:
+            self.dsconfig.db.rollback()
             log.error('Exception at DsmetaService.delete_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.dsconfig.db.close()
 
 
     async def async_delete_table(self):
         try:
             stmt = delete(DatasourceMeta).where(DatasourceMeta.meta_id == self.meta_id)
             result = await self.dsconfig.asyncdb.async_execute(stmt)
+            self.dsconfig.asyncdb.commit()
             return result.rowcount
         except Exception as exp:
+            self.dsconfig.asyncdb.rollback()
             log.error('Exception at DsmetaService.async_delete_table() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return None
+        finally:
+            self.dsconfig.asyncdb.close()
 
 
 if __name__ == '__main__':

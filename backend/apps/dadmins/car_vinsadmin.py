@@ -22,6 +22,7 @@ class Car_vinsAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Car_Vins', page_title='Car_Vins', icon='fa fa-border-all')
     model = Car_vins
     pk_name = 'vin'
+    enable_bulk_create = True
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

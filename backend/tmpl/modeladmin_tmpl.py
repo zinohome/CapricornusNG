@@ -35,6 +35,7 @@ class {{ meta_name|trim|capitalize }}Admin(admin.ModelAdmin):
     {% if page_search_fields|trim|length >0 %}
     search_fields = [{{ page_search_fields }}]
     {% endif %}
+    enable_bulk_create = True
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

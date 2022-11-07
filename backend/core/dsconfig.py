@@ -114,6 +114,7 @@ class DSConfig(metaclass=Cached):
                 }
                 dscfgstmt = insert(DatasourceConfig).values(configdict)
                 dscfgresult = self.db.execute(dscfgstmt)
+                self.db.commit()
                 configid = dscfgresult.lastrowid
                 if configid > 0 :
                     log.debug('Initialize the system configration for DataSource: %s' % dsname)
@@ -126,13 +127,17 @@ class DSConfig(metaclass=Cached):
                     }
                     dsstmt = insert(Datasource).values(dsdict)
                     dsresult = self.db.execute(dsstmt)
+                    self.db.commit()
                     log.debug(dsresult.lastrowid)
                 else:
                     raise RuntimeError('DataSource Configration Initialize Error !')
         except Exception as exp:
+            self.db.rollback()
             log.error('Exception at DSConfig.readconfig() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
+        finally:
+            self.db.close()
 
     def create_datasource(self, dsconfigdict):
         Database_Config_dict = dsconfigdict
@@ -174,6 +179,7 @@ class DSConfig(metaclass=Cached):
                 }
                 dscfgstmt = insert(DatasourceConfig).values(configdict)
                 dscfgresult = self.db.execute(dscfgstmt)
+                self.db.commit()
                 configid = dscfgresult.lastrowid
                 if configid > 0 :
                     log.debug('Create the system configration for DataSource: %s' % dsname)
@@ -186,6 +192,7 @@ class DSConfig(metaclass=Cached):
                     }
                     dsstmt = insert(Datasource).values(dsdict)
                     dsresult = self.db.execute(dsstmt)
+                    self.db.commit()
                     #log.debug(dsresult.lastrowid)
                     return {"status": 0, "msg": _("DataSource Created")}
                 else:
@@ -193,10 +200,13 @@ class DSConfig(metaclass=Cached):
             else:
                 return {"status": 1, "msg": _("DataSource Name Must Be Unique !")}
         except Exception as exp:
+            self.db.rollback()
             log.error('Exception at DSConfig.readconfig() %s ' % exp)
             if settings.app_exception_detail:
                 traceback.print_exc()
             return {"status": 1, "msg": _("DataSource Create Error !")}
+        finally:
+            self.db.close()
 
     def loaddefault(self):
         Database_Config_dict = {'ds_name': 'sample-datasource', 'ds_uri': 'sqlite+aiosqlite:////opt/CapricornusNG/backend/data/sample.db?check_same_thread=False', 'ds_exclude_tablespaces': None, 'ds_id': 2, 'ds_schema': None, 'ds_config_id': 2}

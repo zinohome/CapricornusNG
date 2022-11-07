@@ -22,6 +22,7 @@ class BrandsAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Brands', page_title='Brands', icon='fa fa-border-all')
     model = Brands
     pk_name = 'brand_id'
+    enable_bulk_create = True
 
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

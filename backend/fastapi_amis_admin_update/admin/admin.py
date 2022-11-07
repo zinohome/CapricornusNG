@@ -421,14 +421,27 @@ class BaseModelAdmin(SQLModelCrud):
         )
 
     async def get_list_table(self, request: Request) -> TableCRUD:
-        headerToolbar = [{"type": "columns-toggler", "align": "left", "draggable": True},
-                         {"type": "drag-toggler", "align": "right"},
+        '''
+        headerToolbar = [{"type": "columns-toggler", "align": "left", "draggable": False},
                          {"type": "filter-toggler", "align": "left"},
                          {"type": "export-csv", "align": "right"},
                          {"type": "export-excel", "align": "right"},
                          {"type": "reload", "align": "right"},
                          {"type": "bulkActions", "align": "right"}]
+        headerToolbar = [{"type": "columns-toggler", "align": "left", "draggable": False},
+                         {"type": "filter-toggler", "align": "left"},
+                         {"type": "export-excel", "align": "right"},
+                         {"type": "export-csv", "align": "right"},
+                         {"type": "reload", "align": "right"},
+                         {"type": "bulkActions", "align": "right"}]
+        '''
+        headerToolbar = [{"type": "columns-toggler", "align": "left", "draggable": False},
+                         {"type": "filter-toggler", "align": "left"}]
         headerToolbar.extend(await self.get_actions_on_header_toolbar(request))
+        headerToolbarright =  [{"type": "export-excel", "align": "right"},
+                         {"type": "reload", "align": "right"},
+                         {"type": "bulkActions", "align": "right"}]
+        headerToolbar.extend(headerToolbarright)
         table = TableCRUD(
             api=await self.get_list_table_api(request),
             autoFillHeight=True,
@@ -442,11 +455,10 @@ class BaseModelAdmin(SQLModelCrud):
             itemActions=await self.get_actions_on_item(request),
             bulkActions=await self.get_actions_on_bulk(request),
             footerToolbar=[{"type": "switch-per-page", "align": "left"},
-                           {"type": "load-more", "align": "left"},
                            {"type": "pagination", "align": "right"},
                            {"type": "tpl", "tpl": _("SHOWING ${items|count} OF ${total} RESULT(S)"),
                             "className": "v-middle", "align": "right"},
-                           {"type": "statistics", "align": "right"}],
+                           {"type": "statistics", "align": "left"}],
             columns=await self.get_list_columns(request),
             primaryField=self.pk_name,
             quickSaveItemApi=f"put:{self.router_path}/item/" + "${id}",
@@ -611,6 +623,7 @@ class BaseModelAdmin(SQLModelCrud):
                 icon="fa fa-plus pull-left",
                 label=_("Create"),
                 level=LevelEnum.primary,
+                align='right',
                 drawer=Drawer(
                     title=_("Create") + " - " + _(self.page_schema.label),
                     position="right",
@@ -626,6 +639,7 @@ class BaseModelAdmin(SQLModelCrud):
             icon="fa fa-plus pull-left",
             label=_("Bulk Create"),
             level=LevelEnum.primary,
+            align='right',
             drawer=Drawer(
                 title=_("Bulk Create") + " - " + _(self.page_schema.label),
                 position="right",
