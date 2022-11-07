@@ -99,7 +99,7 @@ class DSConfig(metaclass=Cached):
         try:
             dsname = self.ds_name
             connstmt = select(Datasource).where(Datasource.ds_name == dsname)
-            connresult = self.db.scalars_all(connstmt)
+            connresult = self.db.scalars(connstmt).all()
             if len(connresult) == 0:
                 dsconfigname = dsname + '-config-' + ''.join(random.sample(string.ascii_letters + string.digits, 8))
                 log.debug('Initialize the system configration for DataSource: %s' % dsconfigname)
@@ -159,7 +159,7 @@ class DSConfig(metaclass=Cached):
         try:
             dsname = Database_Config_dict['ds_name']
             connstmt = select(Datasource).where(Datasource.ds_name == dsname)
-            connresult = self.db.scalars_all(connstmt)
+            connresult = self.db.scalars(connstmt).all()
             if len(connresult) == 0:
                 dsconfigname = dsname + '-config-' + ''.join(random.sample(string.ascii_letters + string.digits, 8))
                 log.debug('Create the system configration for DataSource: %s' % dsconfigname)
@@ -218,7 +218,7 @@ class DSConfig(metaclass=Cached):
         try:
             connstmt = select(Datasource).where(
                 Datasource.ds_name == self.ds_name)
-            connresult = self.db.scalars_all(connstmt)
+            connresult = self.db.scalars(connstmt).all()
             if len(connresult) > 0:
                 self.Database_Config = SimpleNamespace(**json.loads(connresult[0].json()))
                 self.Database_Config.ds_useschema = False
@@ -227,7 +227,7 @@ class DSConfig(metaclass=Cached):
                 #log.debug('Database_Config: %s' % self.Database_Config)
                 confstmt = select(DatasourceConfig).where(
                     DatasourceConfig.ds_config_id == self.Database_Config.ds_config_id)
-                confresult = self.db.scalars_all(confstmt)
+                confresult = self.db.scalars(confstmt).all()
                 if len(confresult) > 0:
                     self.Application_Config = SimpleNamespace(**confresult[0].application_params)
                     self.Schema_Config = SimpleNamespace(**confresult[0].schema_params)
@@ -242,7 +242,7 @@ class DSConfig(metaclass=Cached):
                     #log.debug('Connection_Config: %s' % self.Connection_Config)
                     #log.debug('Admin_Config: %s' % self.Admin_Config)
                 tablestmt = select(DatasourceMeta).where(DatasourceMeta.ds_id == self.Database_Config.ds_id)
-                tableresult = self.db.scalars_all(tablestmt)
+                tableresult = self.db.scalars(tablestmt).all()
                 if len(tableresult) > 0:
                     self.db_schema_existed = True
         except Exception as exp:

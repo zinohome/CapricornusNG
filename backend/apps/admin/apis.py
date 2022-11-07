@@ -133,7 +133,7 @@ async def get_ds_select_options():
     try:
         returndict = {'status':1,'msg':_("Get datasource select options Error")}
         stmt = select(Datasource)
-        result = await site.db.async_scalars_all(stmt)
+        result = (await site.db.async_scalars(stmt)).all()
         if len(result) > 0:
             datalist = []
             for ds in result:

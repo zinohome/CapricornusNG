@@ -120,7 +120,7 @@ class DspageService(metaclass=Cached):
     def query_table_byName(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.meta_name == self.meta_name, DatasourcePage.ds_id == self.ds_id)
-            result = self.dsconfig.db.scalars_all(stmt)
+            result = self.dsconfig.db.scalars(stmt).all()
             if len(result) > 0:
                 return result
             else:
@@ -134,7 +134,7 @@ class DspageService(metaclass=Cached):
     async def async_query_table_byName(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.meta_name == self.meta_name, DatasourcePage.ds_id == self.ds_id)
-            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
+            result = (await self.dsconfig.asyncdb.async_scalars(stmt)).all()
             if len(result) > 0:
                 return result
             else:
@@ -149,7 +149,7 @@ class DspageService(metaclass=Cached):
     def get_all_tables(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.ds_id == self.ds_id)
-            result = self.dsconfig.db.scalars_all(stmt)
+            result = self.dsconfig.db.scalars(stmt).all()
             return result
         except Exception as exp:
             log.error('Exception at DspageService.get_all_tables() %s ' % exp)
@@ -160,7 +160,7 @@ class DspageService(metaclass=Cached):
     async def async_get_all_tables(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.ds_id == self.ds_id)
-            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
+            result = (await self.dsconfig.asyncdb.async_scalars(stmt)).all()
             if len(result) > 0:
                 return result
             else:
@@ -175,7 +175,7 @@ class DspageService(metaclass=Cached):
     def getall_table_Name(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.ds_id == self.ds_id)
-            result = self.dsconfig.db.scalars_all(stmt)
+            result = self.dsconfig.db.scalars(stmt).all()
             return result
         except Exception as exp:
             log.error('Exception at DspageService.getall_table_Name() %s ' % exp)
@@ -186,7 +186,8 @@ class DspageService(metaclass=Cached):
     async def async_getall_table_Name(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.ds_id == self.ds_id)
-            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
+            #result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
+            result = (await self.dsconfig.asyncdb.async_scalars(stmt)).all()
             if len(result) > 0:
                 resultlist = []
                 for record in result:
@@ -233,7 +234,7 @@ class DspageService(metaclass=Cached):
     def create_update_table(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.meta_name == self.meta_name, DatasourcePage.ds_id == self.ds_id)
-            result = self.dsconfig.db.scalars_all(stmt)
+            result = self.dsconfig.db.scalars(stmt).all()
             if len(result) > 0:
                 # update ingore pagedef
                 olddict = result[0].dict()
@@ -269,7 +270,8 @@ class DspageService(metaclass=Cached):
     async def async_create_update_table(self):
         try:
             stmt = select(DatasourcePage).where(DatasourcePage.meta_name == self.meta_name, DatasourcePage.ds_id == self.ds_id)
-            result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
+            # result = await self.dsconfig.asyncdb.async_scalars_all(stmt)
+            result = (await self.dsconfig.asyncdb.async_scalars(stmt)).all()
             if len(result) > 0:
                 #update ingore pagedef
                 olddict = result[0].dict()

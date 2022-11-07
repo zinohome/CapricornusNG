@@ -1,9 +1,9 @@
 uvicorn>=0.17.6
 pydantic[dotenv]>=1.9.0
 aiosqlite==0.17.0
-fastapi-amis-admin>=0.2.5,<0.3.0
-fastapi-user-auth>=0.2.4,<0.3.0
-fastapi-scheduler>=0.0.9,<0.1.0
+fastapi_amis_admin>=0.4.0
+fastapi_user_auth>=0.4.1
+fastapi-scheduler>=0.0.11
 loguru>=0.6.0
 python-decouple>=3.6
 simplejson==3.17.6

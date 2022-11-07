@@ -77,4 +77,5 @@ async def delete_article2(request: Request, id: int):
 async def list_article2():
     # 通用的查询表达式可以写在ORM模型,提供一个方法调用.
     stmt = select(Article).where(Article.status == ArticleStatus.published.value).limit(10).order_by(Article.create_time)
-    return await site.db.async_scalars_all(stmt)
+    # return await site.db.async_scalars_all(stmt)
+    return (await site.db.async_scalars(stmt)).all()

@@ -1087,7 +1087,8 @@ class BaseModelAction:
 
     async def fetch_item_scalars(self, item_id: List[str]) -> List[BaseModel]:
         stmt = select(self.admin.model).where(self.admin.pk.in_(item_id))
-        return await self.admin.db.async_scalars_all(stmt)
+        # return await site.db.async_scalars_all(stmt)
+        return (await site.db.async_scalars(stmt)).all()
 
     def register_router(self):
         raise NotImplementedError
