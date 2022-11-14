@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends
 from fastapi_user_auth.auth import AuthRouter
 
 from core.adminsite import auth
-from crud import SQLModelCrud
+from util.crud import SQLModelCrud
 from main import dsconfig, apiengine, dbmeta, prefix
 from util.log import log as log
 from core import i18n as _
