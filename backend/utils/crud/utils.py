@@ -8,7 +8,7 @@ from pydantic.fields import ModelField
 from pydantic.main import ModelMetaclass
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import AsyncEngine
-from sqlalchemy_database import AsyncDatabase, Database
+from utils.sqlalchemy_database import AsyncDatabase, Database
 
 from .schema import BaseApiSchema
 

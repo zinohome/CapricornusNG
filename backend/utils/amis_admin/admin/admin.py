@@ -24,7 +24,7 @@ from sqlalchemy import Column, Table, delete, insert
 from sqlalchemy.orm import InstrumentedAttribute, RelationshipProperty
 from sqlalchemy.sql.elements import Label
 from sqlalchemy.util import md5_hex
-from sqlalchemy_database import AsyncDatabase, Database
+from utils.sqlalchemy_database import AsyncDatabase, Database
 from sqlmodel import SQLModel
 from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -604,11 +604,11 @@ class BaseModelAdmin(SQLModelCrud):
     async def get_read_action(self, request: Request) -> Optional[Action]:
         if not self.schema_read:
             return None
-        return ActionType.Dialog(
+        return ActionType.Drawer(
             icon="fa fa-eye",
             tooltip=_("View"),
             level=LevelEnum.primary,
-            dialog=Dialog(
+            drawer=Drawer(
                 title=_("View") + " - " + _(self.page_schema.label),
                 size=SizeEnum.lg,
                 body=await self.get_read_form(request),

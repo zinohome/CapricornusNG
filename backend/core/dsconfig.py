@@ -18,7 +18,7 @@ from types import SimpleNamespace
 from sqlalchemy import select, create_engine, insert
 import simplejson as json
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy_database import Database, AsyncDatabase
+from utils.sqlalchemy_database import Database, AsyncDatabase
 
 from apps.admin.models.datasourceconfig import DatasourceConfig
 from apps.admin.models.datasource import Datasource

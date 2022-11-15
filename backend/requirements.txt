@@ -1,7 +1,7 @@
 uvicorn>=0.17.6
 pydantic[dotenv]>=1.9.0
 aiosqlite==0.17.0
-fastapi_amis_admin>=0.4.0
+fastapi_amis_admin>=0.4.1
 fastapi_user_auth>=0.4.1
 fastapi-scheduler>=0.0.11
 loguru>=0.6.0

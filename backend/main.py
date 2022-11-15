@@ -11,7 +11,7 @@
 import os
 
 from asgi_correlation_id import CorrelationIdMiddleware
-from sqlalchemy_database import Database
+from utils.sqlalchemy_database import Database
 from sqlmodel import SQLModel, create_engine
 from starlette.responses import RedirectResponse
 from fastapi import FastAPI

@@ -26,7 +26,7 @@ from utils.amis_admin.utils.translation import i18n as _
 from passlib.context import CryptContext
 from pydantic import BaseModel, SecretStr
 from sqlalchemy.orm import Session
-from sqlalchemy_database import AsyncDatabase, Database
+from utils.sqlalchemy_database import AsyncDatabase, Database
 from sqlmodel import select
 from starlette.authentication import AuthenticationBackend
 from starlette.middleware.authentication import AuthenticationMiddleware

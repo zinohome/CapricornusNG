@@ -26,6 +26,7 @@ from sqlalchemy.sql import Select
 from sqlalchemy.sql.elements import BinaryExpression, Label, UnaryExpression
 from starlette.requests import Request
 
+
 try:
     from functools import cached_property
 except ImportError:
@@ -258,6 +259,13 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
         self.db = get_engine_db(self.engine)
         SQLModelSelector.__init__(self, model, pk_name, fields)
         BaseCrud.__init__(self, self.model, router)
+        self.read_fields = self.schema_model.__fields__.values()
+        """
+        updatefields = self.schema_model.__fields__.copy()
+        if pk_name in updatefields:
+            del updatefields[pk_name]
+        self.update_fields = updatefields
+        """
         # if self.readonly_fields:
         #     logging.warning(
         #         "readonly fields, deprecated, not recommended, will be removed in version 0.4.0."
@@ -354,13 +362,19 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
         for k, v in values.items():
             if isinstance(v, dict) and hasattr(obj, k):
                 # Relational attributes, nested;such as: setattr(article.content, "body", "new body")
-                self.update_item(getattr(obj, k), v)
-            elif not isinstance(v, list):
-                setattr(obj, k, v)
+                sub = getattr(obj, k)
+                if sub and not isinstance(sub, dict):  # Ensure that the attribute is an object.
+                    self.update_item(getattr(obj, k), v)
+                    continue
+            setattr(obj, k, v)
 
     def delete_item(self, obj: SchemaModelT) -> None:
         """delete database data"""
         object_session(obj).delete(obj)
+
+    def list_item(self, values: Dict[str, Any]) -> SchemaListT:
+        """Parse the database data query result dictionary into schema_list."""
+        return self.schema_list.parse_obj(values)
 
     def _fetch_item_scalars(self, session: Session, item_id: List[str]) -> List[SchemaModelT]:
         stmt = select(self.model).where(self.pk.in_(list(map(get_python_type_parse(self.pk), item_id))))
@@ -443,7 +457,7 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             stmt = stmt.limit(perPage).offset((page - 1) * perPage)
             result = await self.db.async_execute(stmt)
             data.items = self.parser.conv_row_to_dict(result.all())
-            data.items = [self.schema_list.parse_obj(item) for item in data.items] if data.items else []
+            data.items = [self.list_item(item) for item in data.items] if data.items else []
             data.query = request.query_params
             data.filters = filters_data
             return BaseApiOut(data=data)

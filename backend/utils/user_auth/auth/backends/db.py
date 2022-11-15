@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Union
 
 from sqlalchemy import Column, String, delete
-from sqlalchemy_database import AsyncDatabase, Database
+from utils.sqlalchemy_database import AsyncDatabase, Database
 from sqlmodel import Field, select
 
 from ..backends.base import BaseTokenStore, _TokenDataSchemaT

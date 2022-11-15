@@ -24,7 +24,7 @@ from sqlalchemy import Column, Table, delete, insert
 from sqlalchemy.orm import InstrumentedAttribute, RelationshipProperty
 from sqlalchemy.sql.elements import Label
 from sqlalchemy.util import md5_hex
-from sqlalchemy_database import AsyncDatabase, Database
+from utils.sqlalchemy_database import AsyncDatabase, Database
 from sqlmodel import SQLModel
 from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware

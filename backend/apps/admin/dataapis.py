@@ -45,9 +45,9 @@ if len(alltables)>0:
             apimodel = importlib.import_module('apps.dmodels.' + tbl.strip().lower())
             apiclass = getattr(apimodel, tbl.strip().capitalize())
             apisqlmodel = SQLModelCrud(apiclass, apiengine.async_connect(), pkname)
-            apisqlmodel.read_fields = apisqlmodel.schema_model.__fields__
+            #apisqlmodel.read_fields = apisqlmodel.schema_model.__fields__.values()
             #log.debug(apisqlmodel.read_fields)
-            updatefields = apisqlmodel.read_fields.copy()
+            updatefields = apisqlmodel.schema_model.__fields__.copy()
             if pkname in updatefields:
                 del updatefields[pkname]
             apisqlmodel.update_fields = updatefields
