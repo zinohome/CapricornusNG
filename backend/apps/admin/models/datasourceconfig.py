@@ -12,7 +12,7 @@
 import sqlmodel
 
 import simplejson as json
-from fastapi_amis_admin import amis,models
+from utils.amis_admin import amis,models
 from typing import TYPE_CHECKING,Optional
 from apps.admin.models.basesqlmodel import BaseSQLModel
 from core import i18n as _

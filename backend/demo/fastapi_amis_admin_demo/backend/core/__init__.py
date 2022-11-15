@@ -1,4 +1,4 @@
-from fastapi_amis_admin import i18n
+from utils.amis_admin import i18n
 
 from core.settings import settings
 

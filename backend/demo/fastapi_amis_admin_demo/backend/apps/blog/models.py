@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Optional, List
 
-from fastapi_amis_admin.amis.components import InputRichText, InputImage, ColumnImage
-from fastapi_amis_admin.models.enums import IntegerChoices
-from fastapi_amis_admin.models.fields import Field
+from utils.amis_admin.amis.components import InputRichText, InputImage, ColumnImage
+from utils.amis_admin.models.enums import IntegerChoices
+from utils.amis_admin.models.fields import Field
 from sqlalchemy import Column, String
 from sqlmodel import SQLModel, Relationship
 

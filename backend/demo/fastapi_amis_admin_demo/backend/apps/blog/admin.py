@@ -1,13 +1,13 @@
 import datetime
 from typing import List, Any
 
-from fastapi_amis_admin import admin
-from fastapi_amis_admin.admin import AdminApp
-from fastapi_amis_admin.amis.components import PageSchema, Action, ActionType, Dialog, TableColumn
-from fastapi_amis_admin.amis.constants import LevelEnum
-from fastapi_amis_admin.crud.schema import BaseApiOut
-from fastapi_amis_admin.models.enums import IntegerChoices
-from fastapi_amis_admin.models.fields import Field
+from utils.amis_admin import admin
+from utils.amis_admin.admin import AdminApp
+from utils.amis_admin.amis.components import PageSchema, Action, ActionType, Dialog, TableColumn
+from utils.amis_admin.amis.constants import LevelEnum
+from utils.amis_admin.crud.schema import BaseApiOut
+from utils.amis_admin.models.enums import IntegerChoices
+from utils.amis_admin.models.fields import Field
 from pydantic import BaseModel
 from sqlmodel.sql.expression import Select
 from starlette.requests import Request

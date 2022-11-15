@@ -4,7 +4,7 @@ from fastapi_user_auth.site import AuthAdminSite
 
 from core.settings import settings
 
-# from fastapi_amis_admin.utils.db import SqlalchemyAsyncClient
+# from utils.amis_admin.utils.db import SqlalchemyAsyncClient
 # from fastapi_user_auth.auth import Auth
 # from fastapi_user_auth.auth.backends.jwt import JwtTokenStore
 # from sqlalchemy.ext.asyncio import create_async_engine

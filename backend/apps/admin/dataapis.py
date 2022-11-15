@@ -12,7 +12,7 @@
 import importlib
 
 from fastapi import APIRouter, Depends
-from fastapi_user_auth.auth import AuthRouter
+from utils.user_auth.auth import AuthRouter
 
 from core.adminsite import auth
 from utils.crud import SQLModelCrud

@@ -11,7 +11,7 @@
 
 from asgiref.sync import sync_to_async
 from fastapi import APIRouter, Depends
-from fastapi_user_auth.auth.models import User
+from utils.user_auth.auth.models import User
 from sqlalchemy import text, select, func
 from sqlalchemy.ext.asyncio import create_async_engine
 import traceback

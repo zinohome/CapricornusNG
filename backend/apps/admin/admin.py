@@ -13,8 +13,8 @@ import importlib
 from typing import List
 
 from amis import Editor, Divider, Table, Drawer, Alert, Button, CRUD
-from fastapi_amis_admin import amis,admin
-from fastapi_amis_admin.admin import AdminApp
+from utils.amis_admin import amis,admin
+from utils.amis_admin.admin import AdminApp
 from sqlmodel.sql.expression import Select
 
 from apps.admin.models.datasourceconfig import DatasourceConfig
@@ -29,7 +29,7 @@ except ImportError:
 from core.adminsite import site
 from starlette.requests import Request
 
-from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
+from utils.amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
 from utils.log import log as log
 from core import i18n as _
 

@@ -1,6 +1,6 @@
-from fastapi_amis_admin import amis
-from fastapi_amis_admin import admin
-from fastapi_amis_admin.admin import AdminApp
+from utils.amis_admin import amis
+from utils.amis_admin import admin
+from utils.amis_admin.admin import AdminApp
 
 from core.adminsite import site
 

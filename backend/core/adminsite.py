@@ -11,13 +11,13 @@
 import os
 
 from fastapi import FastAPI
-from fastapi_amis_admin.admin import DocsAdmin, ReDocsAdmin, HomeAdmin
-from fastapi_amis_admin.amis import AmisAPI, SizeEnum
-from fastapi_amis_admin.amis.components import App, Flex, ActionType, Drawer, Service
+from utils.amis_admin.admin import DocsAdmin, ReDocsAdmin, HomeAdmin
+from utils.amis_admin.amis import AmisAPI, SizeEnum
+from utils.amis_admin.amis.components import App, Flex, ActionType, Drawer, Service
 from sqlalchemy.ext.asyncio import AsyncEngine
 from starlette.requests import Request
 from core.settings import settings, Settings
-from fastapi_user_auth.site import AuthAdminSite
+from utils.user_auth.site import AuthAdminSite
 from core import i18n as _
 from utils.log import log as log
 
@@ -30,7 +30,8 @@ class CapricornusAdminSite(AuthAdminSite):
     def __init__(self, settings: Settings, fastapi: FastAPI = None, engine: AsyncEngine = None):
         super().__init__(settings, fastapi, engine)
         # 取消注册默认管理类
-        self.unregister_admin(HomeAdmin,DocsAdmin, ReDocsAdmin)
+        #self.unregister_admin(HomeAdmin,DocsAdmin, ReDocsAdmin)
+        self.unregister_admin(HomeAdmin, ReDocsAdmin)
 
     async def get_page(self, request: Request) -> App:
         app = await super().get_page(request)

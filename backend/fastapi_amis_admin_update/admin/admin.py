@@ -32,11 +32,11 @@ from starlette.responses import HTMLResponse, JSONResponse, Response
 from starlette.templating import Jinja2Templates
 from typing_extensions import Literal
 
-import fastapi_amis_admin
-from fastapi_amis_admin.admin.handlers import register_exception_handlers
-from fastapi_amis_admin.admin.parser import AmisParser
-from fastapi_amis_admin.admin.settings import Settings
-from fastapi_amis_admin.amis.components import (
+import utils.amis_admin
+from utils.amis_admin.admin.handlers import register_exception_handlers
+from utils.amis_admin.admin.parser import AmisParser
+from utils.amis_admin.admin.settings import Settings
+from utils.amis_admin.amis.components import (
     Action,
     ActionType,
     App,
@@ -57,40 +57,40 @@ from fastapi_amis_admin.amis.components import (
     TableCRUD,
     Tpl,
 )
-from fastapi_amis_admin.amis.constants import (
+from utils.amis_admin.amis.constants import (
     DisplayModeEnum,
     LevelEnum,
     SizeEnum,
     TabsModeEnum,
 )
-from fastapi_amis_admin.amis.types import (
+from utils.amis_admin.amis.types import (
     AmisAPI,
     BaseAmisApiOut,
     BaseAmisModel,
     SchemaNode,
 )
-from fastapi_amis_admin.crud import RouterMixin, SQLModelCrud
-from fastapi_amis_admin.crud.base import (
+from utils.amis_admin.crud import RouterMixin, SQLModelCrud
+from utils.amis_admin.crud.base import (
     SchemaCreateT,
     SchemaFilterT,
     SchemaModelT,
     SchemaUpdateT,
 )
-from fastapi_amis_admin.crud.parser import (
+from utils.amis_admin.crud.parser import (
     SQLModelFieldParser,
     SQLModelListField,
     get_python_type_parse,
 )
-from fastapi_amis_admin.crud.schema import BaseApiOut, CrudEnum, Paginator
-from fastapi_amis_admin.crud.utils import (
+from utils.amis_admin.crud.schema import BaseApiOut, CrudEnum, Paginator
+from utils.amis_admin.crud.utils import (
     SqlalchemyDatabase,
     get_engine_db,
     parser_item_id,
     parser_str_set_list,
     schema_create_by_schema,
 )
-from fastapi_amis_admin.utils.functools import cached_property
-from fastapi_amis_admin.utils.translation import i18n as _
+from utils.amis_admin.utils.functools import cached_property
+from utils.amis_admin.utils.translation import i18n as _
 
 _BaseAdminT = TypeVar("_BaseAdminT", bound="BaseAdmin")
 _PageSchemaAdminT = TypeVar("_PageSchemaAdminT", bound="PageSchemaAdmin")
@@ -1346,7 +1346,7 @@ class AdminApp(PageAdmin, AdminGroup):
         app.header = Tpl(
             className="w-full",
             tpl='<div class="flex justify-between"><div></div>'
-            f'<div><a href="{fastapi_amis_admin.__url__}" target="_blank" '
+            f'<div><a href="{utils.amis_admin.__url__}" target="_blank" '
             'title="Copyright"><i class="fa fa-github fa-2x"></i></a></div></div>',
         )
         """
@@ -1358,16 +1358,16 @@ class AdminApp(PageAdmin, AdminGroup):
         """
         app.footer = (
             '<div class="p-2 text-center bg-light">Copyright © 2021 - 2022  '
-            f'<a href="{fastapi_amis_admin.__url__}" target="_blank" '
+            f'<a href="{utils.amis_admin.__url__}" target="_blank" '
             'class="link-secondary">fastapi-amis-admin</a>. All rights reserved. '
-            f'<a target="_blank" href="{fastapi_amis_admin.__url__}" '
-            f'class="link-secondary" rel="noopener">v{fastapi_amis_admin.__version__}</a></div> '
+            f'<a target="_blank" href="{utils.amis_admin.__url__}" '
+            f'class="link-secondary" rel="noopener">v{utils.amis_admin.__version__}</a></div> '
         )
         """
         app.footer = '<div class="p-1 text-center bg-light">&nbsp;</div> '
         # app.asideBefore = '<div class="p-2 text-center">菜单前面区域</div>'
         # app.asideAfter = f'<div class="p-2 text-center">' \
-        #                  f'<a href="{fastapi_amis_admin.__url__}"  target="_blank">fastapi-amis-admin</a></div>'
+        #                  f'<a href="{utils.amis_admin.__url__}"  target="_blank">fastapi-amis-admin</a></div>'
         children = await self.get_page_schema_children(request)
         app.pages = [{"children": children}] if children else []
         return app

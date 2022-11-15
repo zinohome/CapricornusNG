@@ -2,13 +2,13 @@ import datetime
 import time
 from typing import Dict, Any
 
-from fastapi_amis_admin import admin
-from fastapi_amis_admin.admin import AdminApp
-from fastapi_amis_admin.amis import TabsModeEnum
-from fastapi_amis_admin.amis.components import PageSchema, Page, InputImage
-from fastapi_amis_admin.crud.schema import BaseApiOut
-from fastapi_amis_admin.models.enums import IntegerChoices
-from fastapi_amis_admin.models.fields import Field
+from utils.amis_admin import admin
+from utils.amis_admin.admin import AdminApp
+from utils.amis_admin.amis import TabsModeEnum
+from utils.amis_admin.amis.components import PageSchema, Page, InputImage
+from utils.amis_admin.crud.schema import BaseApiOut
+from utils.amis_admin.models.enums import IntegerChoices
+from utils.amis_admin.models.fields import Field
 from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates

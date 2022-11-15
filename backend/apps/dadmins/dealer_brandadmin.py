@@ -10,8 +10,8 @@
 #  @Software: Capricornus
 
 from typing import List
-from fastapi_amis_admin import admin
-from fastapi_amis_admin.amis import PageSchema, TableColumn
+from utils.amis_admin import admin
+from utils.amis_admin.amis import PageSchema, TableColumn
 from starlette.requests import Request
 import simplejson as json
 from apps.dmodels.dealer_brand import Dealer_brand

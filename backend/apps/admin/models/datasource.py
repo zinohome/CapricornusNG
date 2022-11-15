@@ -11,7 +11,7 @@
 
 import sqlmodel
 
-from fastapi_amis_admin import amis,models
+from utils.amis_admin import amis,models
 from typing import TYPE_CHECKING,Optional, List
 from apps.admin.models.basesqlmodel import BaseSQLModel
 from core import i18n as _

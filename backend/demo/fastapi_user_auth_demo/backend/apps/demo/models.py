@@ -1,6 +1,6 @@
 import sqlmodel
-from fastapi_amis_admin import amis
-from fastapi_amis_admin.models.fields import Field
+from utils.amis_admin import amis
+from utils.amis_admin.models.fields import Field
 
 
 # Create your models here.

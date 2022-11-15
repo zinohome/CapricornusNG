@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from fastapi_amis_admin.amis.components import App
-from fastapi_amis_admin.admin.settings import Settings
-from fastapi_amis_admin.admin.site import AdminSite, ReDocsAdmin, DocsAdmin
+from utils.amis_admin.amis.components import App
+from utils.amis_admin.admin.settings import Settings
+from utils.amis_admin.admin.site import AdminSite, ReDocsAdmin, DocsAdmin
 from sqlalchemy.ext.asyncio import AsyncEngine
 from starlette.requests import Request
 

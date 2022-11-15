@@ -10,7 +10,7 @@
 #  @Software: Capricornus
 
 from datetime import date
-from fastapi_amis_admin import models
+from utils.amis_admin import models
 from typing import Optional
 import sqlmodel
 

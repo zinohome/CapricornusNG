@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 
-from fastapi_amis_admin import admin
-from fastapi_amis_admin.admin import AdminApp
-from fastapi_amis_admin.amis.components import PageSchema, TableColumn
-from fastapi_amis_admin.crud.schema import Paginator
+from utils.amis_admin import admin
+from utils.amis_admin.admin import AdminApp
+from utils.amis_admin.amis.components import PageSchema, TableColumn
+from utils.amis_admin.crud.schema import Paginator
 from fastapi_user_auth.auth.models import User
 from pydantic import BaseModel
 from sqlmodel.sql.expression import Select
