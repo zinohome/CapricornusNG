@@ -367,10 +367,12 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
                     self.update_item(getattr(obj, k), v)
                     continue
             setattr(obj, k, v)
+        object_session(obj).commit()
 
     def delete_item(self, obj: SchemaModelT) -> None:
         """delete database data"""
         object_session(obj).delete(obj)
+        object_session(obj).commit()
 
     def list_item(self, values: Dict[str, Any]) -> SchemaListT:
         """Parse the database data query result dictionary into schema_list."""
@@ -513,6 +515,8 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             values = await self.on_update_pre(request, data, item_id=item_id)
             if not values:
                 return self.error_data_handle(request)
+            print('======================')
+            print(self.db)
             result = await self.db.async_run_sync(self._update_items, item_id, values)
             return BaseApiOut(data=result)
 

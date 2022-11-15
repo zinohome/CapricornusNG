@@ -63,9 +63,9 @@ class DSConfig(metaclass=Cached):
         self.readconfig()
 
     def connect(self):
-        self.engine = create_engine(url=toolkit.sync_uri(settings.database_url_async), echo=settings.debug, future=True)
+        self.engine = create_engine(url=toolkit.sync_uri(settings.database_url_async), echo=settings.debug, isolation_level='AUTOCOMMIT', future=True)
         self.db = Database(self.engine)
-        self.asyncengine = create_async_engine(url=settings.database_url_async, echo=settings.debug, future=True)
+        self.asyncengine = create_async_engine(url=settings.database_url_async, echo=settings.debug, isolation_level='AUTOCOMMIT', future=True)
         self.asyncdb = AsyncDatabase(self.engine)
 
     def init_sysdb(self):

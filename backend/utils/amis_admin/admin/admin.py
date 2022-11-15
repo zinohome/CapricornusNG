@@ -671,7 +671,6 @@ class BaseModelAdmin(SQLModelCrud):
                     body=await self.get_update_form(request, bulk=bulk),
                 ),
             )
-
         elif self.bulk_update_fields:
             return ActionType.Drawer(
                 label=_("Bulk Update"),
@@ -686,7 +685,6 @@ class BaseModelAdmin(SQLModelCrud):
                     body=await self.get_update_form(request, bulk=True),
                 ),
             )
-
         else:
             return None
 

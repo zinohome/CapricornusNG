@@ -11,18 +11,38 @@
 
 from typing import List
 from utils.amis_admin import admin
-from utils.amis_admin.amis import PageSchema, TableColumn
+from utils.amis_admin.amis import PageSchema, TableColumn, Form, Action, ActionType, LevelEnum
 from starlette.requests import Request
 import simplejson as json
+from utils.log import log as log
 from apps.dmodels.dealers import Dealers
-
+from core import i18n as _
 
 class DealersAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Dealers', page_title='Dealers', icon='fa fa-border-all')
+    page_schema = PageSchema(label='Dealers000', page_title='Dealers000', icon='fa fa-border-all')
     model = Dealers
     pk_name = 'dealer_id'
+    list_display = [None]
+    search_fields = [None]
     enable_bulk_create = True
+    list_display = []
+    search_fields = []
+
+    async def get_update_action(self, request: Request, bulk: bool = False) -> Action:
+        u_action = await super().get_update_action(request, bulk)
+        u_action = await super().get_update_action(request, bulk)
+        if not bulk:
+            drawer = u_action.drawer
+            actions = []
+            actions.append(Action(actionType='cancel', label=_('Cancel'), level=LevelEnum.default))
+            actions.append(Action(actionType='submit', label=_('Submit'), level=LevelEnum.primary))
+            drawer.actions = actions
+        return u_action
+
+    async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
+        u_form = await super().get_update_form(request, bulk)
+        return u_form
     '''
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)
