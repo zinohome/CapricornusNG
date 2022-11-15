@@ -515,8 +515,6 @@ class SQLModelCrud(BaseCrud, SQLModelSelector):
             values = await self.on_update_pre(request, data, item_id=item_id)
             if not values:
                 return self.error_data_handle(request)
-            print('======================')
-            print(self.db)
             result = await self.db.async_run_sync(self._update_items, item_id, values)
             return BaseApiOut(data=result)
 

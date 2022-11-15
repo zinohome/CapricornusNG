@@ -66,15 +66,15 @@ class DSEngine(metaclass=Cached):
         elif toolkit.get_db_type_from_uri(self.dsconfig.Database_Config.ds_uri).lower() == 'sqlite':
             self.__async_engine = create_async_engine(uri,
                                                 echo=False,
+                                                echo_pool=True,
                                                 future=True,
-                                                isolation_level='AUTOCOMMIT',
                                                 pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
                                                 pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle
                                                 )
             self.__engine = create_engine(syncuri,
                                                 echo=False,
+                                                echo_pool=True,
                                                 future=True,
-                                                isolation_level='AUTOCOMMIT',
                                                 pool_pre_ping=self.dsconfig.Connection_Config.con_pool_pre_ping,
                                                 pool_recycle=self.dsconfig.Connection_Config.con_pool_recycle
                                                 )
