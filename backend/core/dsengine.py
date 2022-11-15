@@ -15,8 +15,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from util import toolkit
-from util.log import log as log
+from utils import toolkit
+from utils.log import log as log
 
 
 class Cached(type):

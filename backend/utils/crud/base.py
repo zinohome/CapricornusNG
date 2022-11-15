@@ -93,6 +93,14 @@ class BaseCrud(RouterMixin, Generic[SchemaModelT, SchemaListT, SchemaFilterT, Sc
             dependencies=depends_list,
             name=CrudEnum.list,
         )
+        self.router.add_api_route(
+            "/list",
+            self.route_list,
+            methods=["GET"],
+            response_model=BaseApiOut[ItemListSchema[self.schema_list]],
+            dependencies=depends_list,
+            name=CrudEnum.list,
+        )
         if self.schema_read:
             self.router.add_api_route(
                 "/item/{item_id}",

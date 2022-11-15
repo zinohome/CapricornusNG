@@ -30,7 +30,7 @@ from core.adminsite import site
 from starlette.requests import Request
 
 from fastapi_amis_admin.amis import Page, PageSchema, Form, Action, ActionType, LevelEnum, DisplayModeEnum, TableCRUD
-from util.log import log as log
+from utils.log import log as log
 from core import i18n as _
 
 from main import dsconfig, apiengine, dbmeta

@@ -29,8 +29,8 @@ from core.dsmetaservice import DsmetaService
 from core.dsconfig import DSConfig
 from core.pageschema import PageSchema
 from core.metaschema import MetaSchema
-from util import toolkit
-from util.log import log as log
+from utils import toolkit
+from utils.log import log as log
 
 # cache file define
 cache_path = os.path.join(os.path.expanduser("~"), ".capricornus_cache")

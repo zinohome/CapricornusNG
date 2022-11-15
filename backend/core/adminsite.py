@@ -19,7 +19,7 @@ from starlette.requests import Request
 from core.settings import settings, Settings
 from fastapi_user_auth.site import AuthAdminSite
 from core import i18n as _
-from util.log import log as log
+from utils.log import log as log
 
 CORE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMP_DIR = os.path.join(CORE_DIR, 'templates/app.html')

@@ -18,7 +18,7 @@ import simplejson as json
 import sqlalchemy.types as satypes
 from sqlalchemy.engine.url import URL
 from core.settings import settings
-from util.log import log as log
+from utils.log import log as log
 from datetime import datetime
 
 type_sql2py_dict = {}

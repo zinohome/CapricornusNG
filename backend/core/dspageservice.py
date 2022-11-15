@@ -17,8 +17,8 @@ import simplejson as json
 
 from apps.admin.models.dspage import DatasourcePage
 from core.settings import settings
-from util import toolkit
-from util.log import log as log
+from utils import toolkit
+from utils.log import log as log
 
 
 class Cached(type):

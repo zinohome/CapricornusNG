@@ -17,7 +17,7 @@ import simplejson as json
 
 from apps.admin.models.dsmeta import DatasourceMeta
 from core.settings import settings
-from util.log import log as log
+from utils.log import log as log
 
 class Cached(type):
     def __init__(self, *args, **kwargs):

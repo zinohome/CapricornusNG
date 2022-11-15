@@ -24,8 +24,8 @@ from apps.admin.models.datasourceconfig import DatasourceConfig
 from apps.admin.models.datasource import Datasource
 from apps.admin.models.dsmeta import DatasourceMeta
 from core.settings import settings
-from util import toolkit
-from util.log import log as log
+from utils import toolkit
+from utils.log import log as log
 from core import i18n as _
 
 

@@ -15,12 +15,12 @@ from fastapi import APIRouter, Depends
 from fastapi_user_auth.auth import AuthRouter
 
 from core.adminsite import auth
-from util.crud import SQLModelCrud
+from utils.crud import SQLModelCrud
 from main import dsconfig, apiengine, dbmeta, prefix
-from util.log import log as log
+from utils.log import log as log
 from core import i18n as _
 
-from util.toolkit import get_first_primarykey
+from utils.toolkit import get_first_primarykey
 
 router = APIRouter(prefix=prefix)
 #router = APIRouter(prefix=prefix, dependencies=[Depends(auth.requires()())])
@@ -44,7 +44,15 @@ if len(alltables)>0:
         if not pkname is None:
             apimodel = importlib.import_module('apps.dmodels.' + tbl.strip().lower())
             apiclass = getattr(apimodel, tbl.strip().capitalize())
-            apicrud = SQLModelCrud(apiclass, apiengine.async_connect(), pkname).register_crud()
+            apisqlmodel = SQLModelCrud(apiclass, apiengine.async_connect(), pkname)
+            apisqlmodel.read_fields = apisqlmodel.schema_model.__fields__
+            #log.debug(apisqlmodel.read_fields)
+            updatefields = apisqlmodel.read_fields.copy()
+            if pkname in updatefields:
+                del updatefields[pkname]
+            apisqlmodel.update_fields = updatefields
+            #log.debug(apisqlmodel.update_fields)
+            apicrud = apisqlmodel.register_crud()
             router.include_router(apicrud.router, dependencies=[Depends(auth.requires()())])
             #router.include_router(apicrud.router)
 

@@ -1,6 +1,6 @@
 import gettext
 import os
-from util.translation import i18n
+from utils.translation import i18n
 from core.settings import settings
 
 applan = settings.language

@@ -28,7 +28,7 @@ from core.dsconfig import DSConfig
 from core.adminsite import site, auth
 from core.dbmeta import DBMeta
 from main import dsconfig
-from util.log import log as log
+from utils.log import log as log
 from core import i18n as _
 
 router = APIRouter(prefix='/admin', tags=['admin'], dependencies=[Depends(auth.requires()())])

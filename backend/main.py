@@ -30,8 +30,8 @@ from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
-from util.log import log as log
-from util.toolkit import sync_uri
+from utils.log import log as log
+from utils.toolkit import sync_uri
 from core import i18n as _
 
 from jaeger_client import Config as jaeger_config
