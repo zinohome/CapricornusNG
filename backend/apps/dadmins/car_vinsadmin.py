@@ -23,6 +23,8 @@ class Car_vinsAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Car_Vins', page_title='Car_Vins', icon='fa fa-border-all')
     model = Car_vins
     pk_name = 'vin'
+    list_display = [None]
+    search_fields = [None]
     enable_bulk_create = True
     list_display = []
     search_fields = []

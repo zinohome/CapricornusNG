@@ -30,8 +30,8 @@ class CapricornusAdminSite(AuthAdminSite):
     def __init__(self, settings: Settings, fastapi: FastAPI = None, engine: AsyncEngine = None):
         super().__init__(settings, fastapi, engine)
         # 取消注册默认管理类
-        #self.unregister_admin(HomeAdmin,DocsAdmin, ReDocsAdmin)
-        self.unregister_admin(HomeAdmin, ReDocsAdmin)
+        self.unregister_admin(HomeAdmin,DocsAdmin, ReDocsAdmin)
+        #self.unregister_admin(HomeAdmin, ReDocsAdmin)
 
     async def get_page(self, request: Request) -> App:
         app = await super().get_page(request)
