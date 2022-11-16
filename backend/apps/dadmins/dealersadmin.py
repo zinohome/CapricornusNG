@@ -43,6 +43,7 @@ class DealersAdmin(admin.ModelAdmin):
     async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
         u_form = await super().get_update_form(request, bulk)
         return u_form
+
     '''
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

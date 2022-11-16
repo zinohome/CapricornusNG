@@ -23,6 +23,8 @@ class CustomersAdmin(admin.ModelAdmin):
     page_schema = PageSchema(label='Customers', page_title='Customers', icon='fa fa-border-all')
     model = Customers
     pk_name = 'customer_id'
+    list_display = [None]
+    search_fields = [None]
     enable_bulk_create = True
     list_display = []
     search_fields = []
@@ -41,6 +43,7 @@ class CustomersAdmin(admin.ModelAdmin):
     async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
         u_form = await super().get_update_form(request, bulk)
         return u_form
+
     '''
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)

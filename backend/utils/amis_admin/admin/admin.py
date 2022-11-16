@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 from functools import lru_cache
 from typing import (
@@ -461,7 +462,7 @@ class BaseModelAdmin(SQLModelCrud):
                            {"type": "statistics", "align": "left"}],
             columns=await self.get_list_columns(request),
             primaryField=self.pk_name,
-            quickSaveItemApi=f"put:{self.router_path}/item/" + "${id}",
+            quickSaveItemApi=f"put:{self.router_path}/item/${self.pk_name}",
         )
         if self.link_model_forms:
             table.footable = True
@@ -610,7 +611,12 @@ class BaseModelAdmin(SQLModelCrud):
             level=LevelEnum.primary,
             drawer=Drawer(
                 title=_("View") + " - " + _(self.page_schema.label),
+                position="right",
+                showCloseButton=False,
+                overlay=False,
+                closeOnOutside=True,
                 size=SizeEnum.lg,
+                resizable=True,
                 body=await self.get_read_form(request),
             ),
         )
@@ -631,7 +637,6 @@ class BaseModelAdmin(SQLModelCrud):
                     overlay=False,
                     closeOnOutside=True,
                     size=SizeEnum.lg,
-                    resizable=True,
                     body=await self.get_create_form(request, bulk=bulk),
                 ),
             )

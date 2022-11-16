@@ -20,7 +20,7 @@ from core import i18n as _
 
 class Customer_ownershipAdmin(admin.ModelAdmin):
     group_schema = None
-    page_schema = PageSchema(label='Customer_Ownership', page_title='Customer_Ownership', icon='fa fa-border-all')
+    page_schema = PageSchema(label='Customer_Ownership66', page_title='Customer_Ownership66', icon='fa fa-border-all')
     model = Customer_ownership
     pk_name = 'customer_id'
     list_display = [None]
@@ -43,6 +43,7 @@ class Customer_ownershipAdmin(admin.ModelAdmin):
     async def get_update_form(self, request: Request, bulk: bool = False) -> Form:
         u_form = await super().get_update_form(request, bulk)
         return u_form
+
     '''
     async def get_list_columns(self, request: Request) -> List[TableColumn]:
         c_list = await super().get_list_columns(request)
