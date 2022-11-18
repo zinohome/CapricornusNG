@@ -42,7 +42,6 @@ class {{ meta_name|trim|capitalize }}Admin(admin.ModelAdmin):
 
     async def get_update_action(self, request: Request, bulk: bool = False) -> Action:
         u_action = await super().get_update_action(request, bulk)
-        u_action = await super().get_update_action(request, bulk)
         if not bulk:
             drawer = u_action.drawer
             actions = []
