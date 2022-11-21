@@ -39,4 +39,4 @@ settings = Settings(_env_file=os.path.join(BASE_DIR, '.env'))
 if __name__ == '__main__':
     print(settings.app_profile)
     print(settings.database_url_async)
-    print(settings.debug)
+    print(settings.allow_origins)

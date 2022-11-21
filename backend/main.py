@@ -45,7 +45,7 @@ asyncurl = str(site.db.engine.sync_engine.url)
 syncurl = sync_uri(asyncurl)
 syncengine = create_engine(syncurl, echo=False)
 metatables = DatasourceConfig.metadata.tables
-Database(syncengine).run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
+Database(syncengine).run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['auth_token'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
 syncengine.dispose()
 
 # dsconfig & dsengine
@@ -122,8 +122,8 @@ site.mount_app(app)
 async def startup():
 
     from core.adminsite import auth
-    #metatables = DatasourceConfig.metadata.tables
-    #log.debug(metatables.keys())
+    metatables = DatasourceConfig.metadata.tables
+    log.debug(metatables.keys())
     #await site.db.async_run_sync(SQLModel.metadata.create_all, tables=[metatables['auth_user_roles'],metatables['auth_user_groups'],metatables['auth_group_roles'],metatables['auth_role_permissions'],metatables['auth_user'],metatables['auth_role'],metatables['auth_group'],metatables['auth_permission'],metatables['capricornus_datasource_config'],metatables['auth_token'],metatables['capricornus_datasource'],metatables['capricornus_meta'],metatables['capricornus_page']], is_session=False)
     await auth.create_role_user(role_key='admin')
     await auth.create_role_user(role_key='writer')

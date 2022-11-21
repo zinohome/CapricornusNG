@@ -1,117 +1,232 @@
 
-CREATE TABLE "Brands" (
-	`brand_id` INTEGER, 
-	`brand_name` VARCHAR(50) NOT NULL, 
-	PRIMARY KEY  `(brand_id`) 
-)
+CREATE TABLE `credential` (
+	`credential_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50), 
+	`description` VARCHAR(100), 
+	`organization_id` INTEGER(11), 
+	`credential_type` INTEGER(11), 
+	PRIMARY KEY  `(credential_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Car_Options" (
-	`option_set_id` INTEGER, 
-	`model_id` INTEGER, 
-	`engine_id` INTEGER NOT NULL, 
-	`transmission_id` INTEGER NOT NULL, 
-	`chassis_id` INTEGER NOT NULL, 
-	`premium_sound_id` INTEGER, 
-	`color` VARCHAR(30) NOT NULL, 
-	`option_set_price` INTEGER NOT NULL, 
-	PRIMARY KEY  `(option_set_id`) , 
-	FOREIGN KEY `(model_id`)  REFERENCES "Models"  `(model_id`) , 
-	FOREIGN KEY `(engine_id`)  REFERENCES "Car_Parts" (part_id), 
-	FOREIGN KEY `(premium_sound_id`)  REFERENCES "Car_Parts" (part_id), 
-	FOREIGN KEY `(transmission_id`)  REFERENCES "Car_Parts" (part_id), 
-	FOREIGN KEY `(chassis_id`)  REFERENCES "Car_Parts" (part_id)
-)
+CREATE TABLE `host` (
+	`host_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50), 
+	`description` VARCHAR(100), 
+	`inventory_id` INTEGER(11), 
+	`enabled` TINYINT(1), 
+	`instance_id` INTEGER(11), 
+	`variables` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, 
+	`last_job` INTEGER(11), 
+	`last_job_host_summary` INTEGER(11), 
+	`ansible_facts_modified` VARCHAR(100), 
+	PRIMARY KEY  `(host_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Car_Parts" (
-	`part_id` INTEGER, 
-	`part_name` VARCHAR(100) NOT NULL, 
-	`manufacture_plant_id` INTEGER NOT NULL, 
-	`manufacture_start_date` DATE NOT NULL, 
-	`manufacture_end_date` DATE, 
-	`part_recall` INTEGER DEFAULT 0, 
-	PRIMARY KEY  `(part_id`) , 
-	FOREIGN KEY `(manufacture_plant_id`)  REFERENCES "Manufacture_Plant"  `(manufacture_plant_id`) , 
-	CHECK (part_recall = 0 or part_recall = 1)
-)
+CREATE TABLE `instance` (
+	`instance_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`uuid` VARCHAR(100), 
+	`hostname` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`capacity_adjustment` DECIMAL(10, 0), 
+	`version` VARCHAR(20), 
+	`capacity` INTEGER(11), 
+	`jobs_running` INTEGER(11), 
+	`jobs_total` INTEGER(11), 
+	`cpu` INTEGER(11), 
+	`memory` INTEGER(11), 
+	`cpu_capacity` INTEGER(11), 
+	`mem_capacity` INTEGER(11), 
+	`enabled` TINYINT(1), 
+	`managed_by_policy` TINYINT(1), 
+	PRIMARY KEY  `(instance_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Car_Vins" (
-	`vin` INTEGER, 
-	`model_id` INTEGER NOT NULL, 
-	`option_set_id` INTEGER NOT NULL, 
-	`manufactured_date` DATE NOT NULL, 
-	`manufactured_plant_id` INTEGER NOT NULL, 
-	PRIMARY KEY  `(vin`) , 
-	FOREIGN KEY `(model_id`)  REFERENCES "Models"  `(model_id`) , 
-	FOREIGN KEY `(manufactured_plant_id`)  REFERENCES "Manufacture_Plant" (manufacture_plant_id), 
-	FOREIGN KEY `(option_set_id`)  REFERENCES "Car_Options"  `(option_set_id`) 
-)
+CREATE TABLE `inventory` (
+	`inventory_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50) NOT NULL, 
+	`description` VARCHAR(100), 
+	`organization_id` INTEGER(11), 
+	`kind` VARCHAR(10), 
+	`host_filter` VARCHAR(100), 
+	`variables` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, 
+	`has_active_failures` TINYINT(1), 
+	`total_hosts` INTEGER(11), 
+	`hosts_with_active_failures` INTEGER(11), 
+	`total_groups` INTEGER(11), 
+	`has_inventory_sources` TINYINT(1), 
+	`total_inventory_sources` INTEGER(11), 
+	`inventory_sources_with_failures` INTEGER(11), 
+	PRIMARY KEY  `(inventory_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Customer_Ownership" (
-	`customer_id` INTEGER NOT NULL, 
-	`vin` INTEGER NOT NULL, 
-	`purchase_date` DATE NOT NULL, 
-	`purchase_price` INTEGER NOT NULL, 
-	`warantee_expire_date` DATE, 
-	`dealer_id` INTEGER NOT NULL, 
-	PRIMARY KEY (customer_id, vin), 
-	FOREIGN KEY `(customer_id`)  REFERENCES "Customers"  `(customer_id`) , 
-	FOREIGN KEY `(vin`)  REFERENCES "Car_Vins"  `(vin`) , 
-	FOREIGN KEY `(dealer_id`)  REFERENCES "Dealers"  `(dealer_id`) 
-)
+CREATE TABLE `job` (
+	`job_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50), 
+	`description` VARCHAR(100), 
+	`unified_job_template` INTEGER(11), 
+	`launch_type` VARCHAR(50), 
+	`status` VARCHAR(20), 
+	`failed` TINYINT(1), 
+	`started` VARCHAR(50), 
+	`finished` VARCHAR(50), 
+	`canceled_on` VARCHAR(50), 
+	`elapsed` DECIMAL(10, 0), 
+	`job_explanation` VARCHAR(100), 
+	`execution_node` VARCHAR(20), 
+	`controller_node` VARCHAR(20), 
+	`job_type` VARCHAR(10), 
+	`inventory_id` INTEGER(11), 
+	`project` INTEGER(11), 
+	`playbook` VARCHAR(50), 
+	`scm_branch` VARCHAR(50), 
+	`forks` INTEGER(11), 
+	`limit` VARCHAR(50), 
+	`verbosity` INTEGER(11), 
+	`extra_vars` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, 
+	`job_tags` VARCHAR(50), 
+	`force_handlers` TINYINT(1), 
+	`skip_tags` VARCHAR(50), 
+	`start_at_task` VARCHAR(50), 
+	`timeout` INTEGER(11), 
+	`use_fact_cache` TINYINT(1), 
+	`organization_id` INTEGER(11), 
+	`job_template_id` INTEGER(11), 
+	PRIMARY KEY  `(job_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Customers" (
-	`customer_id` INTEGER, 
-	`first_name` TEXT(50) NOT NULL, 
-	`last_name` TEXT(50) NOT NULL, 
-	`gender` TEXT(20), 
-	`household_income` INTEGER, 
-	`birthdate` DATE NOT NULL, 
-	`phone_number` INTEGER NOT NULL, 
-	`email` TEXT(128), 
-	PRIMARY KEY  `(customer_id`) 
-)
+CREATE TABLE `job_template` (
+	`job_template_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50), 
+	`description` VARCHAR(100), 
+	`job_type` VARCHAR(10), 
+	`inventory_id` INTEGER(11), 
+	`project_id` INTEGER(11), 
+	`playbook` VARCHAR(50), 
+	`scm_branch` VARCHAR(50), 
+	`forks` INTEGER(11), 
+	`limit` VARCHAR(50), 
+	`verbosity` VARCHAR(20), 
+	`extra_vars` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, 
+	`job_tags` VARCHAR(20), 
+	`force_handlers` TINYINT(1), 
+	`skip_tags` VARCHAR(20), 
+	`start_at_task` VARCHAR(20), 
+	`timeout` INTEGER(11), 
+	`use_fact_cache` TINYINT(1), 
+	`organization_id` INTEGER(11), 
+	`last_job_run` VARCHAR(50), 
+	`last_job_failed` TINYINT(1), 
+	`next_job_run` VARCHAR(100), 
+	`status` VARCHAR(20), 
+	`host_config_key` VARCHAR(100), 
+	`ask_scm_branch_on_launch` TINYINT(1), 
+	`ask_diff_mode_on_launch` TINYINT(1), 
+	`ask_variables_on_launch` TINYINT(1), 
+	`ask_limit_on_launch` TINYINT(1), 
+	`ask_tags_on_launch` TINYINT(1), 
+	`ask_skip_tags_on_launch` TINYINT(1), 
+	`ask_job_type_on_launch` TINYINT(1), 
+	`ask_verbosity_on_launch` TINYINT(1), 
+	`ask_inventory_on_launch` TINYINT(1), 
+	`ask_credential_on_launch` TINYINT(1), 
+	`survey_enabled` TINYINT(1), 
+	`become_enabled` TINYINT(1), 
+	`diff_mode` TINYINT(1), 
+	`allow_simultaneous` TINYINT(1), 
+	`custom_virtualenv` VARCHAR(100), 
+	`job_slice_count` INTEGER(11), 
+	`webhook_service` VARCHAR(20), 
+	`webhook_credential` INTEGER(11), 
+	PRIMARY KEY  `(job_template_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Dealer_Brand" (
-	`dealer_id` INTEGER NOT NULL, 
-	`brand_id` INTEGER NOT NULL, 
-	PRIMARY KEY (dealer_id, brand_id), 
-	FOREIGN KEY `(dealer_id`)  REFERENCES "Dealers"  `(dealer_id`) , 
-	FOREIGN KEY `(brand_id`)  REFERENCES "Brands"  `(brand_id`) 
-)
+CREATE TABLE `project` (
+	`project_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50), 
+	`description` VARCHAR(100), 
+	`local_path` VARCHAR(100), 
+	`scm_type` VARCHAR(20), 
+	`scm_url` VARCHAR(100), 
+	`scm_branch` VARCHAR(50), 
+	`scm_refspec` VARCHAR(100), 
+	`scm_clean` TINYINT(1), 
+	`scm_delete_on_update` TINYINT(1), 
+	`credential_id` INTEGER(11), 
+	`timeout` INTEGER(11), 
+	`scm_revision` VARCHAR(100), 
+	`last_job_run` VARCHAR(100), 
+	`last_job_failed` TINYINT(1), 
+	`next_job_run` VARCHAR(100), 
+	`status` VARCHAR(20), 
+	`organization_id` INTEGER(11), 
+	`scm_update_on_launch` TINYINT(1), 
+	`scm_update_cache_timeout` INTEGER(11), 
+	`allow_override` TINYINT(1), 
+	`custom_virtualenv` VARCHAR(50), 
+	`last_update_failed` TINYINT(1), 
+	`last_updated` VARCHAR(100), 
+	PRIMARY KEY  `(project_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 
 
-CREATE TABLE "Dealers" (
-	`dealer_id` INTEGER, 
-	`dealer_name` VARCHAR(50) NOT NULL, 
-	`dealer_address` VARCHAR(100), 
-	PRIMARY KEY  `(dealer_id`) 
-)
-
-
-CREATE TABLE "Manufacture_Plant" (
-	`manufacture_plant_id` INTEGER, 
-	`plant_name` VARCHAR(50) NOT NULL, 
-	`plant_type` TEXT(7), 
-	`plant_location` VARCHAR(100), 
-	`company_owned` INTEGER, 
-	PRIMARY KEY  `(manufacture_plant_id`) , 
-	CHECK (plant_type="Assembly" or plant_type="Parts"), 
-	CHECK (company_owned=0 or company_owned=1)
-)
-
-
-CREATE TABLE "Models" (
-	`model_id` INTEGER, 
-	`model_name` VARCHAR(50) NOT NULL, 
-	`model_base_price` INTEGER NOT NULL, 
-	`brand_id` INTEGER NOT NULL, 
-	PRIMARY KEY  `(model_id`) , 
-	FOREIGN KEY `(brand_id`)  REFERENCES "Brands"  `(brand_id`) 
-)
+CREATE TABLE `workflow_job_template` (
+	`workflow_job_template_id` INTEGER(11) NOT NULL AUTO_INCREMENT, 
+	`type` VARCHAR(20), 
+	`url` VARCHAR(50), 
+	`created` VARCHAR(50), 
+	`modified` VARCHAR(50), 
+	`name` VARCHAR(50), 
+	`description` VARCHAR(100), 
+	`last_job_run` VARCHAR(50), 
+	`last_job_failed` TINYINT(1), 
+	`next_job_run` VARCHAR(50), 
+	`status` VARCHAR(20), 
+	`extra_vars` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, 
+	`organization_id` INTEGER(11), 
+	`survey_enabled` TINYINT(1), 
+	`allow_simultaneous` TINYINT(1), 
+	`ask_variables_on_launch` TINYINT(1), 
+	`inventory_id` INTEGER(11), 
+	`limit` VARCHAR(100), 
+	`scm_branch` VARCHAR(100), 
+	`ask_inventory_on_launch` TINYINT(1), 
+	`ask_scm_branch_on_launch` TINYINT(1), 
+	`ask_limit_on_launch` TINYINT(1), 
+	`webhook_service` VARCHAR(10), 
+	`webhook_credential` INTEGER(11), 
+	PRIMARY KEY  `(workflow_job_template_id`) 
+)DEFAULT CHARSET=utf8mb4 ENGINE=InnoDB
 

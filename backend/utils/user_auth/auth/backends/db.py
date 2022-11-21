@@ -13,7 +13,7 @@ from ..models import CreateTimeMixin, PkMixin
 class TokenStoreModel(PkMixin, CreateTimeMixin, table=True):
     __tablename__ = "auth_token"
     token: str = Field(..., max_length=48, sa_column=Column(String(48), unique=True, index=True, nullable=False))
-    data: str = Field(default="")
+    tokendata: str = Field(default="")
 
 
 class DbTokenStore(BaseTokenStore):
@@ -35,12 +35,12 @@ class DbTokenStore(BaseTokenStore):
         if obj.create_time < datetime.now() - timedelta(seconds=self.expire_seconds):
             await self.destroy_token(token=token)
             return None
-        return self.TokenDataSchema.parse_raw(obj.data)
+        return self.TokenDataSchema.parse_raw(obj.tokendata)
 
     async def write_token(self, token_data: Union[_TokenDataSchemaT, dict]) -> str:
         obj = self.TokenDataSchema.parse_obj(token_data) if isinstance(token_data, dict) else token_data
         token = secrets.token_urlsafe()
-        model = TokenStoreModel(token=token, data=obj.json())
+        model = TokenStoreModel(token=token, tokendata=obj.json())
         self.db.add(model)
         await self.db.async_flush()
         return token

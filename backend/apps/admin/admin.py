@@ -243,7 +243,7 @@ class DataApp(admin.AdminApp):
     router_prefix = '/data'
     engine = apiengine.async_connect()
 
-    def __init__(self, app: "AdminApp"):
+    def __init__(self, app: "DataApp"):
         super().__init__(app)
         alltables = dbmeta.get_table_pages()
         if len(alltables)>0:
@@ -266,11 +266,11 @@ class BlankDataPageAdmin(admin.PageAdmin):
 
 # QueryApp
 @site.register_admin
-class AdminApp(admin.AdminApp):
+class QueryApp(admin.AdminApp):
     page_schema = amis.PageSchema(label=_('Data Query'), icon='fa fa-laptop', sort=98)
     router_prefix = '/query'
 
-    def __init__(self, app: "AdminApp"):
+    def __init__(self, app: "QueryApp"):
         super().__init__(app)
         self.register_admin(DataQueryAdmin)
 
