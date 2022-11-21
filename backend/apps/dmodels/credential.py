@@ -25,11 +25,10 @@ class BaseSQLModel(sqlmodel.SQLModel):
 class Credential(BaseSQLModel, table=True):
     __tablename__ = 'credential'
     credential_id: Optional[int] = models.Field(default=None, title=_('credential_id'), primary_key=True, amis_form_item='', amis_table_column='')
-    type: Optional[str] = models.Field(default=None, title=_('type'), nullable=True, amis_form_item='', amis_table_column='')
-    url: Optional[str] = models.Field(default=None, title=_('url'), nullable=True, amis_form_item='', amis_table_column='')
-    created: Optional[str] = models.Field(default=None, title=_('created'), nullable=True, amis_form_item='', amis_table_column='')
-    modified: Optional[str] = models.Field(default=None, title=_('modified'), nullable=True, amis_form_item='', amis_table_column='')
-    name: Optional[str] = models.Field(default=None, title=_('name'), nullable=True, amis_form_item='', amis_table_column='')
+    name: str = models.Field(default=None, title=_('name'), nullable=False, amis_form_item='', amis_table_column='')
     description: Optional[str] = models.Field(default=None, title=_('description'), nullable=True, amis_form_item='', amis_table_column='')
     organization_id: Optional[int] = models.Field(default=None, title=_('organization_id'), nullable=True, amis_form_item='', amis_table_column='')
-    credential_type: Optional[int] = models.Field(default=None, title=_('credential_type'), nullable=True, amis_form_item='', amis_table_column='')
+    credential_type_id: Optional[int] = models.Field(default=None, title=_('credential_type_id'), nullable=True, amis_form_item='', amis_table_column='')
+    awx_credential_id: Optional[int] = models.Field(default=None, title=_('awx_credential_id'), nullable=True, amis_form_item='', amis_table_column='')
+    created: Optional[str] = models.Field(default=None, title=_('created'), nullable=True, amis_form_item='', amis_table_column='')
+    modified: Optional[str] = models.Field(default=None, title=_('modified'), nullable=True, amis_form_item='', amis_table_column='')

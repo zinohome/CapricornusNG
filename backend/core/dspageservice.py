@@ -19,6 +19,7 @@ from apps.admin.models.dspage import DatasourcePage
 from core.settings import settings
 from utils import toolkit
 from utils.log import log as log
+import six
 
 
 class Cached(type):
@@ -68,7 +69,19 @@ class DspageService(metaclass=Cached):
             self.meta_primarykeys = jsonobj['meta_primarykeys']
         if 'meta_indexes' in jsonobj:
             if isinstance(jsonobj['meta_indexes'],list):
-                jsonobj['meta_indexes'] = ','.join(jsonobj['meta_indexes'])
+                #log.debug(jsonobj['meta_indexes'])
+                if len(jsonobj['meta_indexes']) > 0:
+                    if isinstance(jsonobj['meta_indexes'][0], six.string_types):
+                        jsonobj['meta_indexes'] = ','.join(jsonobj['meta_indexes'])
+                    elif isinstance(jsonobj['meta_indexes'][0], dict):
+                        idxcloumnlist = []
+                        for idxdict in jsonobj['meta_indexes']:
+                            idxcloumnlist.extend(idxdict['column_names'])
+                        jsonobj['meta_indexes'] = ','.join(idxcloumnlist)
+                    else:
+                        jsonobj['meta_indexes'] = ''
+                else:
+                    jsonobj['meta_indexes'] = ''
             self.meta_indexes = jsonobj['meta_indexes']
         if 'meta_columns' in jsonobj:
             self.meta_columns = jsonobj['meta_columns']
